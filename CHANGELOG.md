@@ -1,6 +1,6 @@
 ## [Unreleased]
 
-## [0.1.1] - 2023-09-29
+## [0.1.3] - 2023-09-29
 
 - Fix for erb_lint --config
 
