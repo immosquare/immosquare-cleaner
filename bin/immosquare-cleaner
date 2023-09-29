@@ -1,8 +1,7 @@
 #!/usr/bin/env ruby
 
-# $LOAD_PATH.unshift(File.expand_path("../../lib", __FILE__))
 
-require "immosquare-cleaner"
+require "immosquare_cleaner"
 require "optparse"
 
 options = {}
@@ -16,7 +15,7 @@ OptionParser.new do |opts|
   ##===========================================================================##
   ## Capture all single-letter options (like '-t', '-a', etc.)                 ##
   ##===========================================================================##
-  ('a'..'z').each do |letter|
+  ("a".."z").each do |letter|
     opts.on("-#{letter} [OPTION]", "Option -#{letter}") do |value|
       options[letter.to_sym] = value
     end
@@ -36,7 +35,7 @@ end.parse!
 ##===========================================================================##
 file_path = ARGV[0]
 if !file_path
-  $stderr.puts("Error: Please provide a file path.")
+  puts("Error: Please provide a file path.")
   exit 1
 end
 
@@ -44,14 +43,12 @@ end
 ## Check if the file exists                                                   ##
 ##===========================================================================##
 if !File.exist?(file_path)
-  $stderr.puts("Error: The file '#{file_path}' does not exist.")
+  puts("Error: The file '#{file_path}' does not exist.")
   exit 1
 end
 
-File.open("/Users/jules/Desktop/toto.txt", "a") do |f|
-  f.puts("Let's clean #{file_path}...")
-end
 
-$stderr.puts("Let's clean #{file_path}...")
-
-ImmosquareCleaner.clean(file_path, options)
+##===========================================================================##
+## We can now call the clean method, passing the file path and options        ##
+##===========================================================================##
+ImmosquareCleaner.clean(file_path, **options)

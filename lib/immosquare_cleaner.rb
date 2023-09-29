@@ -1,12 +1,10 @@
-require_relative "Immosquare-cleaner/configuration"
-require_relative "Immosquare-cleaner/railtie" if defined?(Rails)
+require_relative "immosquare-cleaner/configuration"
 
 
 module ImmosquareCleaner
   
   class << self
 
-    
     ##===========================================================================##
     ## Gem configuration
     ##===========================================================================##
@@ -19,18 +17,29 @@ module ImmosquareCleaner
     def config
       yield(configuration)
     end
-
     
     def clean(file_path, **options)
       ##============================================================##
       ## Default options
       ##============================================================##
-      options = {
-      }.merge(options)
-      
+      options = {}.merge(options)
+
+
+
+
       begin
-        $stderr.puts("Cleaning #{file_path}...")
-        $stderr.puts("Options: #{options}")
+        raise("Error: The file '#{file_path}' does not exist.") if !File.exist?(file_path)
+
+        cmd = nil
+        if file_path.end_with?(".html.erb")
+          cmd = "bundle exec htmlbeautifier #{file_path} --keep-blank-lines 4"
+        elsif file_path.end_with?(".rb")  
+          cmd = "bundle exec rubocop #{file_path} --autocorrect-all"
+        end
+
+        puts(cmd)
+        system(cmd) if !cmd.nil?
+    
       rescue StandardError => e
         puts(e.message)
         false

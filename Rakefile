@@ -1,6 +1,6 @@
 require "json"
 require "rake"
-require "Immosquare-cleaner"
+require "Immosquare_cleaner"
 
 namespace :immosquare_cleaner do
   
