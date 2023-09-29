@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.homepage       = "https://github.com/IMMOSQUARE/Immosquare-cleaner"
 
 
-  spec.files          = Dir.glob("{bin,lib}/**/*")
+  spec.files          = Dir.glob("{bin, lib, linters}/**/*")
   spec.executables    = Dir["bin/**"].map {|f| File.basename(f) }
   spec.require_paths  = ["lib"]
 
