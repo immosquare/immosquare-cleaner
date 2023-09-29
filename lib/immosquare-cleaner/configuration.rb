@@ -9,9 +9,8 @@ module ImmosquareCleaner
       @erblint_options        = nil
     end
 
-    
+
 
 
   end
 end
-

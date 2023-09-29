@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-
 require "immosquare_cleaner"
 require "optparse"
 
@@ -52,4 +51,3 @@ end
 ## We can now call the clean method, passing the file path and options        ##
 ##===========================================================================##
 ImmosquareCleaner.clean(file_path, **options)
-

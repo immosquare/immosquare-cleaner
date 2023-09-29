@@ -1,5 +1,4 @@
 namespace :immosquare_cleaner do
-  
   ##============================================================##
   ## Function to clean translation files in rails app
   ##============================================================##
@@ -9,5 +8,4 @@ namespace :immosquare_cleaner do
       ImmosquareCleaner.clean(file)
     end
   end
-  
 end

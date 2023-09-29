@@ -132,7 +132,5 @@ module ImmosquareCleaner
       content.lines.size
     end
 
-
-
   end
 end
