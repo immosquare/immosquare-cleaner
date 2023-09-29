@@ -1,5 +1,5 @@
 {
-  "name"        :"immosquare-cleaner",
+  "name"        :"immosquare-cleaner-2",
   "version"     :"0.1.0",
   "description" :"A package to lint and organize files in a Rails application.",
   "repository"  :{

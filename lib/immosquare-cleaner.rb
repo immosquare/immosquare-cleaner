@@ -15,7 +15,8 @@ module ImmosquareCleaner
     ##===========================================================================##
     ## Constants
     ##===========================================================================##
-    SHEBANG = "#!/usr/bin/env ruby".freeze
+    SHEBANG    = "#!/usr/bin/env ruby".freeze
+    RUBY_FILES = [".rb", ".rake", "Gemfile", "Rakefile", ".axlsx", ".gemspec", ".ru", ".podspec", ".jbuilder", ".rabl", ".thor", "config.ru", "Berksfile", "Capfile", "Guardfile", "Podfile", "Thorfile", "Vagrantfile"].freeze
 
     ##===========================================================================##
     ## Gem configuration
@@ -47,29 +48,48 @@ module ImmosquareCleaner
         normalize_last_line(file_path)
 
         ##============================================================##
-        ## We clean files based on their extension
+        ## .html.erb files
         ##============================================================##
         if file_path.end_with?(".html.erb")
           cmd << [true, "bundle exec htmlbeautifier #{file_path} #{ImmosquareCleaner.configuration.htmlbeautifier_options || "--keep-blank-lines 4"}"]
           cmd << [true, "bundle exec erblint --config #{gem_root}/linters/erb-lint.yml #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}"]
-        elsif file_path.end_with?(".rb", ".rake", "Gemfile", "Rakefile", ".axlsx", ".gemspec", ".ru", ".podspec", ".jbuilder", ".rabl", ".thor", "config.ru", "Berksfile", "Capfile", "Guardfile", "Podfile", "Thorfile", "Vagrantfile") || File.open(file_path, &:gets)&.include?(SHEBANG)
-          cmd << [true, "bundle exec rubocop -c #{gem_root}/linters/rubocop.yml #{file_path} #{ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all"}"]
-        elsif file_path =~ %r{locales/.*\.yml$}
-          ImmosquareYaml.clean(file_path)
-        elsif file_path.end_with?(".js")
-          cmd << [false, "npx eslint --config #{gem_root}/linters/eslintrc.json  #{file_path} --fix"]
-        elsif file_path.end_with?(".json")
+        end
+
+        ##============================================================##
+        ## Ruby Files
+        ##============================================================##
+        cmd << [true, "bundle exec rubocop -c #{gem_root}/linters/rubocop.yml #{file_path} #{ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all"}"] if cmd.empty? && (file_path.end_with?(*RUBY_FILES) || File.open(file_path, &:gets)&.include?(SHEBANG))
+
+        ##============================================================##
+        ## Yml translations files
+        ##============================================================##
+        ImmosquareYaml.clean(file_path) if cmd.empty? && file_path =~ %r{locales/.*\.yml$}
+
+        ##============================================================##
+        ## JS files
+        ##============================================================##
+        cmd << [false, "npx eslint --config #{gem_root}/linters/eslintrc.json  #{file_path} --fix"] if cmd.empty? && file_path.end_with?(".js")
+
+        ##============================================================##
+        ## JSON files
+        ##============================================================##
+        if cmd.empty? && file_path.end_with?(".json")
           json_str    = File.read(file_path)
           parsed_data = JSON.parse(json_str)
-          formated     = JSON.neat_generate(parsed_data, :aligned => true)
+          formated    = JSON.neat_generate(parsed_data, :aligned => true)
           File.write(file_path, formated)
-        elsif npx_installed? && prettier_installed?
+        end
+
+        ##============================================================##
+        ## Autres formats
+        ##============================================================##
+        if npx_installed? && prettier_installed?
           prettier_parser = nil
           prettier_parser = "--parser markdown" if file_path.end_with?(".md.erb")
           cmd << [false, "npx prettier --write #{file_path} #{prettier_parser} --config #{gem_root}/linters/prettier.yml"]
         else
           puts("Warning: npx and/or prettier are not installed. Skipping formatting.")
-        end
+        end if cmd.empty?
 
 
 
