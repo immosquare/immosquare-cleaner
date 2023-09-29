@@ -12,7 +12,12 @@ Gem::Specification.new do |spec|
 
   spec.homepage       = "https://github.com/IMMOSQUARE/Immosquare-cleaner"
 
-  spec.files          = Dir["lib/**/*", "bin/*", "linters/*", "node_modules/**/*"] + ["package.json"] + Dir["node_modules/.bin/**/*"]
+
+  ##===========================================================================##
+  ## we add package.json so that the gems is autonomous to launch prettier
+  ## & eslint (all the necessary libs are in the node_modules folder)
+  ##===========================================================================##
+  spec.files          = Dir["lib/**/*", "bin/*", "linters/*"] + ["package.json"] + Dir["node_modules/**/*", "node_modules/.bin/**/*"]
   spec.executables    = ["immosquare-cleaner"]
   spec.require_paths  = ["lib", "linters"]
 
