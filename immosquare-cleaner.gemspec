@@ -18,7 +18,6 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency("erb_lint", "~> 0")
   spec.add_dependency("htmlbeautifier", "~> 1")
-  spec.add_dependency("immosquare-rubocop", "~> 0")
   spec.add_dependency("immosquare-yaml", "~> 0")
 
   spec.required_ruby_version = Gem::Requirement.new(">= 2.7.2")

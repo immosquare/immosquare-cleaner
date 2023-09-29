@@ -55,6 +55,8 @@ module ImmosquareCleaner
           cmd << [true, "bundle exec rubocop -c #{gem_root}/linters/rubocop.yml #{file_path} #{ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all"}"]
         elsif file_path =~ %r{locales/.*\.yml$}
           ImmosquareYaml.clean(file_path)
+        elsif file_path.end_with?(".js")
+          cmd << [false, "npx eslint --config #{gem_root}/linters/eslintrc.json  #{file_path} --fix"]
         elsif npx_installed? && prettier_installed?
           prettier_parser = nil
           prettier_parser = "--parser markdown" if file_path.end_with?(".md.erb")

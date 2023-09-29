@@ -1,2 +1,94 @@
-inherit_gem:
-  immosquare-rubocop: rubocop.yml
+# Pour activer toutes les méthodes de Rubocop et activer le cache pour les gros fichiers
+AllCops:
+  NewCops: enable
+  EnabledByDefault: false
+  UseCache: true
+  SuggestExtensions: false
+
+#################### Metrics ###########################
+Metrics:
+  Enabled: false # On désactive tous les métrics
+
+#################### Lint ###########################
+Lint/UselessAssignment:
+  Enabled: false # Pour pouvoir utiliser des variables que l'on n'utlise pas...(dans les fichiers .erb si on les utilises dans un autre bloc, il ne détecte pas..)
+Lint/RescueException:
+  Enabled: false # On veut pouvour utiliser rescue Exception => e dans devoir mettre StandardError
+Lint/UnusedMethodArgument:
+  Enabled: false # On veut pouvoir créer des fonctions sans que tous les paramètes soient utlisés dans la fonction... Utilises quand on est en train d'écrire la fonction et que l'on sauvegarde.. SInon cela cahnge le nom du paramètre avec un _devant
+
+#################### Naming ###########################
+Naming/VariableNumber:
+  Enabled: false # On veut pouvour utiliser administrative_area_level_1 avec cette synthase
+
+#################### Layout ###########################
+Layout/LeadingEmptyLines:
+  Enabled: false # Pour pouvoir utliser des lignes vides au débur des fichiers ()
+Layout/InitialIndentation:
+  Enabled: false # Pour les fichiers .erb pour ne pas faire de pb au débur du fichier
+Layout/TrailingEmptyLines:
+  Enabled: false # Pour les fichiers .erb pour ne pas faire de pb au débur du fichier
+Layout/ExtraSpacing:
+  Enabled: false # Pour ne permettre de mettre les espaces que l'on veut (.erb)
+Layout/LineLength:
+  Enabled: false # Pour ne limiter le nombre de caractères par ligne
+Layout/TrailingWhitespace:
+  Enabled: true # On ne veut pas de white spaces en fin de ligne
+Layout/EmptyLines:
+  Enabled: false # On veut pouvoir mettre des lignes blanches comme on veut
+Layout/SpaceInsideBlockBraces:
+  SpaceBeforeBlockParameters: false # On ne veut pas d'espace au début des block PitchBlock.all.each {|b| b.save}
+
+Layout/EmptyLinesAroundClassBody:
+  EnforcedStyle: empty_lines # Pour ajouter une ligne vide au débout d'une classe (controller)
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent # On indente les paramètres avec un tab (très utiles dans les fichiers .erb)
+Layout/ArgumentAlignment:
+  EnforcedStyle: with_fixed_indentation # On indente les paramètres les un end dessous des autres (très utlises dans les fichiers .erb)
+Layout/HashAlignment:
+  EnforcedHashRocketStyle: table # Pour formater les hashs sur le nom le plus long
+Layout/MultilineAssignmentLayout:
+  EnforcedStyle: same_line # Pour Garder sur le même ligne les ? classification_id = case etc
+Layout/SpaceInsideHashLiteralBraces:
+  EnforcedStyle: no_space # On ne veut pas d'espace au début des braces {:a => 1, :b => 2}
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+#################### Style ###########################
+Style/RedundantBegin:
+  Enabled: false # Cette méthode retire les begin au début des méthodes
+Style/MultilineTernaryOperator:
+  Enabled: false # On ne veut pas des mutlilines sur les ternary expressions.
+Style/NestedTernaryOperator:
+  Enabled: false # On veut autoriser les nested ternary expressions : a == 1 ? "a" : (a == 2 ? "b" : "c)
+Style/MultilineIfModifier:
+  Enabled: false # On veut pouvoir mettre des ends à la fin des blocs
+Style/FrozenStringLiteralComment:
+  Enabled: false # On ne veut pas mettre frozen_string_literal: true en haut des fichiers car c'est par défault sur Ruby.3x
+Style/Next:
+  Enabled: false # L'idée est bonne de vouloir changer en next si on a juste un if... mais parfois c'est plus dur à comprendre ce que l'on voulait faire... car souvent les || du if sont des && dans le next
+Style/Documentation:
+  Enabled: false # On ne veut pas être obligé de mettre une documentation
+Style/IfUnlessModifierOfIfUnless:
+  Enabled: false # On veut pourvoir mettre un if à la fin de end
+Style/NegatedIf:
+  Enabled: false # On veut remplacer les if ! par des unless
+Style/MethodCallWithArgsParentheses:
+  Enabled: true # On veut forcer les parenthèses où elles sont utilises pour rendre le code plus propre
+
+Style/NumericPredicate:
+  EnforcedStyle: comparison # On ne veut pas des .zero? .negative? .positif?
+Style/StringLiterals:
+  EnforcedStyle: double_quotes # Pour utiliser les doubles quotes partout (string)
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes # Pour utiliser les doubles quotes partout (interpolation)
+Style/HashSyntax:
+  EnforcedStyle: hash_rockets # Pour utiliser la syntax :key => value plutôt que key: value
+Style/WordArray:
+  EnforcedStyle: brackets # Pour formater les arrays de la forme ["a", "b", "c] et pas %w[a b c]
+Style/SymbolArray:
+  EnforcedStyle: brackets # Pour formater les arrays de la forme [:a, :b, :c] et pas %i[a b c]
+
+#################### GEM ###########################
+Gemspec/RequireMFA:
+  Enabled: false # On ne veut pas obliger le MFA pour pusher un gem

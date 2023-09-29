@@ -1,3 +1,5 @@
 *.gem
 Gemfile.lock
 /spec/output
+node_modules/*
+```
