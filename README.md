@@ -1,27 +1,42 @@
 # ImmosquareCleaner
 
-A professional Ruby gem crafted meticulously to enhance the cleanliness and structure of your project's files. Whether they're Ruby, ERB, YAML, Markdown, JSON, JS, CSS, SASS, LESS, or any format supported by Prettier, this gem ensures consistency and uniformity.
+A meticulously crafted Ruby gem and npm module to enhance the cleanliness and structure of your project's files. This tool ensures consistency and uniformity across various formats, including Ruby, ERB, YAML, Markdown, JSON, JS, CSS, SASS, LESS, and other formats supported by Prettier.
 
-## Features
+## Supported Formats
 
-- 🧹 **Automated File Cleaning:** Formats and auto-corrects files.
-- 📝 **Extensive Format Support:** Ruby, ERB, YAML, Markdown, JSON, JS, CSS, SASS, LESS and any format supported by Prettier.
-- 🎨 **Prettier Integration:** Seamlessly integrates if `npx` and `prettier` are installed.
-- 🚀 **Rails Friendly:** Comes with an integrated Railtie for smooth operation within Rails projects.
-- 🔧 **Highly Configurable:** Offers various configuration options for a tailored cleaning experience.
+The cleaner recognizes and caters to various file formats:
+
+- **ERB:** `.html.erb` processed with [erb-lint](https://github.com/Shopify/erb-lint)
+- **Ruby:** `.rb`, `.rake`, `Gemfile`, `Rakefile`, `.axlsx`, `.gemspec`, `.ru`, `.podspec`, `.jbuilder`, `.rabl`, `.thor`, `config.ru`, `Berksfile`, `Capfile`, `Guardfile`, `Podfile`, `Thorfile`, `Vagrantfile` processed with [rubocop](https://rubocop.org/)
+- **YAML:** (rails translation files) `.yml` processed with [ImmosquareYaml](https://github.com/IMMOSQUARE/immosquare-yaml)
+- **JS:** `.js` processed with [eslint](https://eslint.org/)
+- **JSON:** Processed with [NeatJSON](https://github.com/Phrogz/NeatJSON)
+- **Others:** Any other format processed with [prettier](https://prettier.io/)
+
+## Linter Configurations
+
+You can view the specific configurations for all supported linters in the [linters folder](https://github.com/IMMOSQUARE/immosquare-cleaner/tree/main/linters) of the repository.
 
 ## Installation
 
-Add this line to your application's Gemfile:
+For the Ruby gem:
 
-```ruby
+```markdown
 gem 'immosquare-cleaner'
 ```
 
-And then execute:
+Then execute:
 
-```
+```markdown
 $ bundle install
+```
+
+For the npm module:
+
+Add `immosquare-cleaner` to your development dependencies. For instance, using `bun`:
+
+```markdown
+$ bun add immosquare-cleaner
 ```
 
 ## Usage
@@ -34,34 +49,22 @@ ImmosquareCleaner.clean("path/to/your/file.rb")
 
 ### Configuration
 
-Tailor the behavior of the gem using the provided configuration options:
+Tailor the behavior of the gem/module with the provided configuration options:
 
 ```ruby
 ImmosquareCleaner.config do |config|
   # Set custom rubocop options
   config.rubocop_options = "--your-rubocop-options-here"
-
   # Set custom htmlbeautifier options
   config.htmlbeautifier_options = "--your-htmlbeautifier-options-here"
-
   # Set custom erblint options
   config.erblint_options = "--your-erblint-options-here"
 end
 ```
 
-### Supported File Formats
+## Integration with Visual Studio Code
 
-The cleaner recognizes and caters to various file formats:
-
-- Ruby: `.rb`, `.rake`, `Gemfile`, and more
-- ERB: `.html.erb`
-- YAML: especially locales (`locales/*.yml`)
-- Web Development: JSON, JS, CSS, SASS, LESS
-- And any other format supported by Prettier
-
-## Integrating with Visual Studio Code
-
-You can automate the cleaning process for all files upon saving in VS Code:
+Automate the cleaning process for all files upon saving in VS Code:
 
 1. Install the [Run on Save](https://github.com/emeraldwalk/vscode-runonsave) extension from the VS Code marketplace.
 2. Add the following configuration to your `settings.json` in VS Code:

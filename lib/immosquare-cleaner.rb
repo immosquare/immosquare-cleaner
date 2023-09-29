@@ -1,4 +1,5 @@
-require          "English"
+require "English"
+require "neatjson"
 require_relative "immosquare-cleaner/configuration"
 require_relative "immosquare-cleaner/railtie" if defined?(Rails)
 
@@ -57,6 +58,11 @@ module ImmosquareCleaner
           ImmosquareYaml.clean(file_path)
         elsif file_path.end_with?(".js")
           cmd << [false, "npx eslint --config #{gem_root}/linters/eslintrc.json  #{file_path} --fix"]
+        elsif file_path.end_with?(".json")
+          json_str    = File.read(file_path)
+          parsed_data = JSON.parse(json_str)
+          formated     = JSON.neat_generate(parsed_data, :aligned => true)
+          File.write(file_path, formated)
         elsif npx_installed? && prettier_installed?
           prettier_parser = nil
           prettier_parser = "--parser markdown" if file_path.end_with?(".md.erb")
