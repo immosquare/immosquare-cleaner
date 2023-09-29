@@ -1,11 +1,12 @@
 module ImmosquareCleaner
   class Configuration
 
-    attr_accessor :htmlbeautifier_options, :rubocop_options
+    attr_accessor :rubocop_options, :htmlbeautifier_options, :erblint_options
 
     def initialize
-      @htmlbeautifier_options = nil
       @rubocop_options        = nil
+      @htmlbeautifier_options = nil
+      @erblint_options        = nil
     end
 
     
@@ -13,3 +14,4 @@ module ImmosquareCleaner
 
   end
 end
+

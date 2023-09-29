@@ -27,7 +27,7 @@ module ImmosquareCleaner
       ##============================================================##
       ## Default options
       ##============================================================##
-      cmd     = nil
+      cmd     = []
       options = {}.merge(options)
 
       
@@ -39,26 +39,31 @@ module ImmosquareCleaner
         ##============================================================##
         normalize_last_line(file_path)
 
-
         ##============================================================##
         ## We clean files based on their extension
         ##============================================================##
         if file_path.end_with?(".html.erb")
-          cmd_options = ImmosquareCleaner.configuration.htmlbeautifier_options || "--keep-blank-lines 4"
-          cmd         = "bundle exec htmlbeautifier #{file_path} #{cmd_options}"
-        elsif file_path.end_with?(".rb", ".rake", "Gemfile", "Rakefile", ".axlsx") || File.open(file_path, &:gets)&.include?(SHEBANG)
-          cmd_options = ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all"
-          cmd         = "bundle exec rubocop #{file_path} #{cmd_options}"
+          cmd << "bundle exec htmlbeautifier #{file_path} #{ImmosquareCleaner.configuration.htmlbeautifier_options || "--keep-blank-lines 4"}"
+          cmd << "bundle exec erblint -c #{gem_root}/linters/erb-lint.yml #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}"
+        elsif file_path.end_with?(".rb", ".rake", "Gemfile", "Rakefile", ".axlsx", ".gemspec", ".ru", ".podspec", ".jbuilder", ".rabl", ".thor", "config.ru", "Berksfile", "Capfile", "Guardfile", "Podfile", "Thorfile", "Vagrantfile") || File.open(file_path, &:gets)&.include?(SHEBANG)
+          cmd << "bundle exec rubocop -c #{gem_root}/linters/rubocop.yml #{file_path} #{ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all"}"
         end
 
-        
-        
-        if !cmd.nil?
+
+        if cmd.empty?
           extension = File.extname(file_path)
           puts("extension: #{extension} not supported") if cmd.nil?
-          system(cmd)
+        else
+          ##===========================================================================##
+          ## We change the current directory to the gem root to ensure the gem's paths
+          ## are used when executing the commands
+          ##===========================================================================##
+          Dir.chdir(gem_root) do
+            cmd.each do |c|
+              system(c)
+            end
+          end
         end
-    
       rescue StandardError => e
         puts(e.message)
         false
@@ -69,6 +74,10 @@ module ImmosquareCleaner
 
 
     private
+
+    def gem_root
+      File.expand_path("..", __dir__)
+    end
 
     ##===========================================================================##
     ## This method ensures the file ends with a single newline, facilitating

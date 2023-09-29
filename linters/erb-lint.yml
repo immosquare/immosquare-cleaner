@@ -1,0 +1,15 @@
+---
+EnableDefaultLinters: true
+linters:
+  NoJavascriptTagHelper:
+    enabled: false
+  SpaceInHtmlTag:
+    enabled: false
+  Rubocop:
+    enabled: true
+    rubocop_config:
+      inherit_from:
+        - linters/rubocop.yml
+      Layout/TrailingWhitespace:
+        Enabled: false 
+
