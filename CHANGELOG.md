@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.3] - 2023-09-29
+
+- Improve gemspec
+
 ## [0.1.2] - 2023-09-29
 
 - Add linters config files to files
