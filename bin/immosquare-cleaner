@@ -4,7 +4,6 @@ require "immosquare_cleaner"
 require "optparse"
 
 options = {}
-
 ##===========================================================================##
 ## optparse is a standard library of ruby, it's used to parse command line   ##
 ##===========================================================================##

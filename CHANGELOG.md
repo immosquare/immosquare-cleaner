@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.6] - 2023-09-29
+
+- Test export node_modules
+
 ## [0.1.5] - 2023-09-29
 
 - Add new linters for JS & JSON

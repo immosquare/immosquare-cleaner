@@ -1,7 +1,7 @@
 require "English"
 require "neatjson"
-require_relative "immosquare-cleaner/configuration"
-require_relative "immosquare-cleaner/railtie" if defined?(Rails)
+require_relative "immosquare_cleaner/configuration"
+require_relative "immosquare_cleaner/railtie" if defined?(Rails)
 
 ##===========================================================================##
 ## Importing the 'English' library allows us to use more human-readable
@@ -35,49 +35,56 @@ module ImmosquareCleaner
       ##============================================================##
       ## Default options
       ##============================================================##
-      cmd     = []
-      options = {}.merge(options)
+      procesed = false
+      cmd      = []
+      options  = {}.merge(options)
 
 
       begin
         raise("Error: The file '#{file_path}' does not exist.") if !File.exist?(file_path)
 
         ##============================================================##
-        ## We normalize the last line of the file to ensure it ends with a single
-        ##============================================================##
-        normalize_last_line(file_path)
-
-        ##============================================================##
         ## .html.erb files
         ##============================================================##
         if file_path.end_with?(".html.erb")
-          cmd << [true, "bundle exec htmlbeautifier #{file_path} #{ImmosquareCleaner.configuration.htmlbeautifier_options || "--keep-blank-lines 4"}"]
-          cmd << [true, "bundle exec erblint --config #{gem_root}/linters/erb-lint.yml #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}"]
+          cmd << "bundle exec htmlbeautifier #{file_path} #{ImmosquareCleaner.configuration.htmlbeautifier_options || "--keep-blank-lines 4"}"
+          cmd << "bundle exec erblint --config #{gem_root}/linters/erb-lint.yml #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}"
+          procesed = true
         end
 
         ##============================================================##
         ## Ruby Files
         ##============================================================##
-        cmd << [true, "bundle exec rubocop -c #{gem_root}/linters/rubocop.yml #{file_path} #{ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all"}"] if cmd.empty? && (file_path.end_with?(*RUBY_FILES) || File.open(file_path, &:gets)&.include?(SHEBANG))
+        if !procesed && (file_path.end_with?(*RUBY_FILES) || File.open(file_path, &:gets)&.include?(SHEBANG))
+          cmd << "bundle exec rubocop -c #{gem_root}/linters/rubocop.yml #{file_path} #{ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all"}"
+          procesed = true
+        end
 
         ##============================================================##
         ## Yml translations files
         ##============================================================##
-        ImmosquareYaml.clean(file_path) if cmd.empty? && file_path =~ %r{locales/.*\.yml$}
+        if !procesed && file_path =~ %r{locales/.*\.yml$}
+          ImmosquareYaml.clean(file_path)
+          procesed = true
+        end
 
         ##============================================================##
         ## JS files
         ##============================================================##
-        cmd << [false, "npx eslint --config #{gem_root}/linters/eslintrc.json  #{file_path} --fix"] if cmd.empty? && file_path.end_with?(".js")
+        if !procesed && file_path.end_with?(".js")
+          cmd << "npx eslint --config #{gem_root}/linters/eslintrc.json  #{file_path} --fix"
+          procesed = true
+        end
 
         ##============================================================##
         ## JSON files
         ##============================================================##
-        if cmd.empty? && file_path.end_with?(".json")
+        if !procesed && file_path.end_with?(".json")
           json_str    = File.read(file_path)
           parsed_data = JSON.parse(json_str)
           formated    = JSON.neat_generate(parsed_data, :aligned => true)
           File.write(file_path, formated)
+          procesed = true
         end
 
         ##============================================================##
@@ -86,24 +93,24 @@ module ImmosquareCleaner
         if npx_installed? && prettier_installed?
           prettier_parser = nil
           prettier_parser = "--parser markdown" if file_path.end_with?(".md.erb")
-          cmd << [false, "npx prettier --write #{file_path} #{prettier_parser} --config #{gem_root}/linters/prettier.yml"]
+          cmd << "npx prettier --write #{file_path} #{prettier_parser} --config #{gem_root}/linters/prettier.yml"
         else
           puts("Warning: npx and/or prettier are not installed. Skipping formatting.")
-        end if cmd.empty?
-
+        end if !procesed
 
 
         ##===========================================================================##
         ## We change the current directory to the gem root to ensure the gem's paths
         ## are used when executing the commands
         ##===========================================================================##
-        cmd.each do |from_gem_root, c|
-          if from_gem_root
-            Dir.chdir(gem_root) { system(c) }
-          else
-            system(c)
-          end
+        Dir.chdir(gem_root) do
+          cmd.each {|c| system(c) }
         end if !cmd.empty?
+
+        ##============================================================##
+        ## We normalize the last line of the file to ensure it ends with a single
+        ##============================================================##
+        normalize_last_line(file_path)
       rescue StandardError => e
         puts(e.message)
         puts(e.backtrace)

@@ -1,4 +1,4 @@
-require_relative "lib/immosquare-cleaner/version"
+require_relative "lib/immosquare_cleaner/version"
 
 Gem::Specification.new do |spec|
   spec.license        = "MIT"
@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
 
   spec.homepage       = "https://github.com/IMMOSQUARE/Immosquare-cleaner"
 
-  spec.files          = Dir["lib/**/*", "bin/*", "linters/*"]
+  spec.files          = Dir["lib/**/*", "bin/*", "linters/*", "node_modules/**/*"]
   spec.executables    = ["immosquare-cleaner"]
   spec.require_paths  = ["lib", "linters"]
 
