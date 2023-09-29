@@ -1,0 +1,12 @@
+# https://www.prettier.cn/docs/options.html
+printWidth: 10000
+tabWidth: 2
+useTabs: false
+semi: false
+singleQuote: false
+quoteProps: "as-needed"
+trailingComma: "none"
+bracketSpacing: true
+arrowParens: "always"
+endOfLine: "lf"
+singleAttributePerLine: false

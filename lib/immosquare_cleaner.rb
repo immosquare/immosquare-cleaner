@@ -8,7 +8,6 @@ module ImmosquareCleaner
     ##===========================================================================##
     ## Constants
     ##===========================================================================##
-    NEWLINE = "\n".freeze
     SHEBANG = "#!/usr/bin/env ruby".freeze
 
     ##===========================================================================##
@@ -44,29 +43,34 @@ module ImmosquareCleaner
         ## We clean files based on their extension
         ##============================================================##
         if file_path.end_with?(".html.erb")
-          cmd << "bundle exec htmlbeautifier #{file_path} #{ImmosquareCleaner.configuration.htmlbeautifier_options || "--keep-blank-lines 4"}"
-          cmd << "bundle exec erblint -c #{gem_root}/linters/erb-lint.yml #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}"
+          cmd << [true, "bundle exec htmlbeautifier #{file_path} #{ImmosquareCleaner.configuration.htmlbeautifier_options || "--keep-blank-lines 4"}"]
+          cmd << [true, "bundle exec erblint -c #{gem_root}/linters/erb-lint.yml #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}"]
         elsif file_path.end_with?(".rb", ".rake", "Gemfile", "Rakefile", ".axlsx", ".gemspec", ".ru", ".podspec", ".jbuilder", ".rabl", ".thor", "config.ru", "Berksfile", "Capfile", "Guardfile", "Podfile", "Thorfile", "Vagrantfile") || File.open(file_path, &:gets)&.include?(SHEBANG)
-          cmd << "bundle exec rubocop -c #{gem_root}/linters/rubocop.yml #{file_path} #{ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all"}"
+          cmd << [true, "bundle exec rubocop -c #{gem_root}/linters/rubocop.yml #{file_path} #{ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all"}"]
         elsif file_path =~ %r{locales/.*\.yml$}
           ImmosquareYaml.clean(file_path)
-        end
-
-
-        if cmd.empty?
-          extension = File.extname(file_path)
-          puts("extension: #{extension} not supported") if cmd.nil?
+        elsif npx_installed? && prettier_installed?
+          prettier_parser = nil
+          prettier_parser = "--parser markdown" if file_path.end_with?(".md.erb")
+          cmd << [false, "npx prettier --write #{file_path} #{prettier_parser} --config #{gem_root}/linters/prettier.yml"]
         else
-          ##===========================================================================##
-          ## We change the current directory to the gem root to ensure the gem's paths
-          ## are used when executing the commands
-          ##===========================================================================##
-          Dir.chdir(gem_root) do
-            cmd.each do |c|
-              system(c)
-            end
-          end
+          puts("Warning: npx and/or prettier are not installed. Skipping formatting.")
         end
+
+        
+        
+        ##===========================================================================##
+        ## We change the current directory to the gem root to ensure the gem's paths
+        ## are used when executing the commands
+        ##===========================================================================##
+        cmd.each do |from_gem_root, c|
+          if from_gem_root
+            Dir.chdir(gem_root) { system(c) }
+          else
+            system(c)
+          end
+        end if !cmd.empty? 
+        
       rescue StandardError => e
         puts(e.message)
         false
@@ -74,12 +78,18 @@ module ImmosquareCleaner
     end
 
 
-
-
     private
 
     def gem_root
       File.expand_path("..", __dir__)
+    end
+
+    def npx_installed?
+      system("which npx > /dev/null 2>&1")
+    end
+
+    def prettier_installed?
+      system("npx prettier --version > /dev/null 2>&1")
     end
 
     ##===========================================================================##
@@ -100,35 +110,30 @@ module ImmosquareCleaner
       ## Read all lines from the file
       ## https://gist.github.com/guilhermesimoes/d69e547884e556c3dc95
       ##============================================================##
-      lines = File.read(file_path).lines
-
-      ##============================================================##
-      ## Ensure the last line ends with a newline character
-      ##============================================================##
-      lines[-1] = "#{lines[-1]}#{NEWLINE}" if !lines[-1].end_with?(NEWLINE)
-      
+      content = File.read(file_path)
+          
       ##===========================================================================##
       ## Remove all trailing empty lines at the end of the file
+      content.gsub!(/#{Regexp.escape($INPUT_RECORD_SEPARATOR)}+\z/, "")
       ##===========================================================================##
-      lines.pop while lines.last && lines.last.strip.empty?
     
       ##===========================================================================##
       ## Append a newline at the end to maintain the file structure
       ###===========================================================================##
-      lines += [NEWLINE]
-      
+      content += $INPUT_RECORD_SEPARATOR
+    
       ##===========================================================================##
       ## Write the modified lines back to the file
       ##===========================================================================##
-      File.write(file_path, lines.join)
-
+      File.write(file_path, content)
+    
       ##===========================================================================##
       ## Return the total number of lines in the modified file
       ##===========================================================================##
-      lines.size
+      content.lines.size
     end
+    
 
 
   end
 end
-

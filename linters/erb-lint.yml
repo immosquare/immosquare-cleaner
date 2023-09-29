@@ -1,4 +1,3 @@
----
 EnableDefaultLinters: true
 linters:
   NoJavascriptTagHelper:
@@ -11,5 +10,4 @@ linters:
       inherit_from:
         - linters/rubocop.yml
       Layout/TrailingWhitespace:
-        Enabled: false 
-
+        Enabled: false
