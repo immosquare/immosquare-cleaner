@@ -1,36 +1,30 @@
 {
-  "env": {
-    "browser": true,
-    "es2021": true
-  },
-  "ignorePatterns": ["package.json"],
-  "extends": ["airbnb-base", "plugin:jsonc/recommended-with-jsonc"],
-  "overrides": [],
-  "parserOptions": {
-    "ecmaVersion": "latest",
-    "sourceType": "module"
-  },
-  "rules": {
-    "quotes": [2, "double"],
-    "semi": [2, "never"],
-    "camelcase": 0,
-    "no-console": 0,
-    "no-restricted-globals": 0,
-    "no-multi-spaces": 0,
-    "no-undef": 0,
-    "radix": 0,
-    "key-spacing": [2, { "align": "value" }],
-    "max-len": 0,
-    "no-unused-expressions": 0,
-    "padded-blocks": 0,
-    "no-multiple-empty-lines": 0,
-    "default-case": 0,
-    "no-alert": 0,
-    "no-lonely-if": 0,
-    "no-nested-ternary": 0,
-    "no-param-reassign": ["error", { "props": false }],
-    "comma-dangle": ["error", "never"],
-    "jsonc/auto": 2,
-    "jsonc/indent": ["error", 2, {}]
+  "env"           :{"browser":true,"es2021":true},
+  "ignorePatterns":["package.json"],
+  "extends"       :["airbnb-base","plugin:jsonc/recommended-with-jsonc"],
+  "overrides"     :[],
+  "parserOptions" :{"ecmaVersion":"latest","sourceType":"module"},
+  "rules"         :{
+    "quotes"                 :[2,"double"],
+    "semi"                   :[2,"never"],
+    "camelcase"              :0,
+    "no-console"             :0,
+    "no-restricted-globals"  :0,
+    "no-multi-spaces"        :0,
+    "no-undef"               :0,
+    "radix"                  :0,
+    "key-spacing"            :[2,{"align":"value"}],
+    "max-len"                :0,
+    "no-unused-expressions"  :0,
+    "padded-blocks"          :0,
+    "no-multiple-empty-lines":0,
+    "default-case"           :0,
+    "no-alert"               :0,
+    "no-lonely-if"           :0,
+    "no-nested-ternary"      :0,
+    "no-param-reassign"      :["error",{"props":false}],
+    "comma-dangle"           :["error","never"],
+    "jsonc/auto"             :2,
+    "jsonc/indent"           :["error",2,{}]
   }
 }

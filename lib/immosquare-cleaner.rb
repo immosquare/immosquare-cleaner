@@ -1,7 +1,7 @@
 require "English"
 require "neatjson"
-require_relative "immosquare_cleaner/configuration"
-require_relative "immosquare_cleaner/railtie" if defined?(Rails)
+require_relative "immosquare-cleaner/configuration"
+require_relative "immosquare-cleaner/railtie" if defined?(Rails)
 
 ##===========================================================================##
 ## Importing the 'English' library allows us to use more human-readable
@@ -35,82 +35,67 @@ module ImmosquareCleaner
       ##============================================================##
       ## Default options
       ##============================================================##
-      procesed = false
-      cmd      = []
-      options  = {}.merge(options)
-
+      options = {}.merge(options)
 
       begin
-        raise("Error: The file '#{file_path}' does not exist.") if !File.exist?(file_path)
-
         ##============================================================##
         ## .html.erb files
         ##============================================================##
         if file_path.end_with?(".html.erb")
-          cmd << "bundle exec htmlbeautifier #{file_path} #{ImmosquareCleaner.configuration.htmlbeautifier_options || "--keep-blank-lines 4"}"
-          cmd << "bundle exec erblint --config #{gem_root}/linters/erb-lint.yml #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}"
-          procesed = true
+          cmds = []
+          cmds << "bundle exec htmlbeautifier #{file_path} #{ImmosquareCleaner.configuration.htmlbeautifier_options || "--keep-blank-lines 4"}"
+          cmds << "bundle exec erblint --config #{gem_root}/linters/erb-lint.yml #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}"
+          launch_cmds(cmds)
+          normalize_last_line(file_path)
+          return
         end
 
         ##============================================================##
         ## Ruby Files
         ##============================================================##
-        if !procesed && (file_path.end_with?(*RUBY_FILES) || File.open(file_path, &:gets)&.include?(SHEBANG))
-          cmd << "bundle exec rubocop -c #{gem_root}/linters/rubocop.yml #{file_path} #{ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all"}"
-          procesed = true
+        if file_path.end_with?(*RUBY_FILES) || File.open(file_path, &:gets)&.include?(SHEBANG)
+          cmds = ["bundle exec rubocop -c #{gem_root}/linters/rubocop.yml #{file_path} #{ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all"}"]
+          launch_cmds(cmds)
+          normalize_last_line(file_path)
+          return
         end
 
         ##============================================================##
         ## Yml translations files
         ##============================================================##
-        if !procesed && file_path =~ %r{locales/.*\.yml$}
+        if file_path =~ %r{locales/.*\.yml$}
           ImmosquareYaml.clean(file_path)
-          procesed = true
+          return
         end
 
         ##============================================================##
         ## JS files
         ##============================================================##
-        if !procesed && file_path.end_with?(".js")
-          cmd << "npx eslint --config #{gem_root}/linters/eslintrc.json  #{file_path} --fix"
-          procesed = true
+        if file_path.end_with?(".js")
+          cmds = ["bun eslint --config #{gem_root}/linters/eslintrc.json  #{file_path} --fix"]
+          launch_cmds(cmds)
+          normalize_last_line(file_path)
+          return
         end
 
         ##============================================================##
         ## JSON files
         ##============================================================##
-        if !procesed && file_path.end_with?(".json")
+        if file_path.end_with?(".json")
           json_str    = File.read(file_path)
           parsed_data = JSON.parse(json_str)
           formated    = JSON.neat_generate(parsed_data, :aligned => true)
           File.write(file_path, formated)
-          procesed = true
+          normalize_last_line(file_path)
+          return
         end
 
         ##============================================================##
         ## Autres formats
         ##============================================================##
-        if npx_installed? && prettier_installed?
-          prettier_parser = nil
-          prettier_parser = "--parser markdown" if file_path.end_with?(".md.erb")
-          cmd << "npx prettier --write #{file_path} #{prettier_parser} --config #{gem_root}/linters/prettier.yml"
-        else
-          puts("Warning: npx and/or prettier are not installed. Skipping formatting.")
-        end if !procesed
-
-
-        ##===========================================================================##
-        ## We change the current directory to the gem root to ensure the gem's paths
-        ## are used when executing the commands
-        ##===========================================================================##
-        Dir.chdir(gem_root) do
-          cmd.each {|c| system(c) }
-        end if !cmd.empty?
-
-        ##============================================================##
-        ## We normalize the last line of the file to ensure it ends with a single
-        ##============================================================##
-        normalize_last_line(file_path)
+        prettier_parser = nil
+        prettier_parser = "--parser markdown" if file_path.end_with?(".md.erb")
+        cmds = "bun prettier --write #{file_path} #{prettier_parser} --config #{gem_root}/linters/prettier.yml"
       rescue StandardError => e
         puts(e.message)
         puts(e.backtrace)
@@ -124,12 +109,14 @@ module ImmosquareCleaner
       File.expand_path("..", __dir__)
     end
 
-    def npx_installed?
-      system("which npx > /dev/null 2>&1")
-    end
-
-    def prettier_installed?
-      system("npx prettier --version > /dev/null 2>&1")
+    ##===========================================================================##
+    ## We change the current directory to the gem root to ensure the gem's paths
+    ## are used when executing the commands
+    ##===========================================================================##
+    def launch_cmds(cmds)
+      Dir.chdir(gem_root) do
+        cmds.each {|cmd| system(cmd) }
+      end
     end
 
     ##===========================================================================##

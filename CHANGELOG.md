@@ -1,5 +1,13 @@
 ## [Unreleased]
 
+## [0.1.8] - 2023-09-29
+
+- fix Tasks
+
+## [0.1.7] - 2023-09-29
+
+- Add node_modules./bin +  package.json into the build
+
 ## [0.1.6] - 2023-09-29
 
 - Test export node_modules

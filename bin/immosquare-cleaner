@@ -1,7 +1,21 @@
 #!/usr/bin/env ruby
 
-require "immosquare_cleaner"
+require "immosquare-cleaner"
 require "optparse"
+
+
+##===========================================================================##
+## We check if bun.sh is installed
+##===========================================================================##
+def bun_installed?
+  system("which bun > /dev/null 2>&1")
+end
+
+if !bun_installed?
+  puts "Error: 'bun' is not installed. Please install it first.(https://bun.sh/)"
+  exit(1)
+end
+
 
 options = {}
 ##===========================================================================##
