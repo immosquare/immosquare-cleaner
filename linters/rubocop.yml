@@ -20,6 +20,8 @@ Lint/UnusedMethodArgument:
 #################### Naming ###########################
 Naming/VariableNumber:
   Enabled: false # On veut pouvour utiliser administrative_area_level_1 avec cette synthase
+Naming/FileName:
+  Enabled: false # on veut pouvoir faire des nom de fichier avec des - immosquare-cleaner.rb
 
 #################### Layout ###########################
 Layout/LeadingEmptyLines:
