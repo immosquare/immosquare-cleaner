@@ -1,6 +1,6 @@
 # ImmosquareCleaner
 
-A meticulously crafted Ruby gem and npm module to enhance the cleanliness and structure of your project's files. This tool ensures consistency and uniformity across various formats, including Ruby, ERB, YAML, Markdown, JSON, JS, CSS, SASS, LESS, and other formats supported by Prettier.
+A meticulously crafted Ruby gem to enhance the cleanliness and structure of your project's files. This tool ensures consistency and uniformity across various formats, including Ruby, ERB, YAML, Markdown, JSON, JS, CSS, SASS, LESS, and other formats supported by Prettier.
 
 ## Supported Formats
 
@@ -19,15 +19,17 @@ You can view the specific configurations for all supported linters in the [linte
 
 ## Installation
 
+**Prerequisite**: Please be sure to have [bun](https://bun.sh/) installed. This is necessary to launch eslint & prettier commands.
+
 For the Ruby gem:
 
-```markdown
-gem 'immosquare-cleaner'
+```ruby
+gem "immosquare-cleaner"
 ```
 
 Then execute:
 
-```markdown
+```bash
 $ bundle install
 ```
 
@@ -35,7 +37,7 @@ For the npm module:
 
 Add `immosquare-cleaner` to your development dependencies. For instance, using `bun`:
 
-```markdown
+```bash
 $ bun add immosquare-cleaner
 ```
 
@@ -74,7 +76,7 @@ Automate the cleaning process for all files upon saving in VS Code:
   "commands": [
     {
       "match": ".*",
-      "cmd": "cd ${workspaceFolder} && if [[ '${file}' == ${workspaceFolder}* ]] && bundle info immosquare-cleaner &>/dev/null; then bundle exec immosquare-cleaner ${file}; fi"
+      "cmd": "if bundle info immosquare-cleaner &>/dev/null; then bundle exec immosquare-cleaner '${file}'; else echo 'please install the gem immosquare-cleaner'; fi"
     }
   ]
 }
