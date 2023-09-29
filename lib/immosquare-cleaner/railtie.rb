@@ -1,4 +1,4 @@
-module ImmosquareYaml
+module ImmosquareCleaner
   class Railtie < Rails::Railtie
 
     rake_tasks do

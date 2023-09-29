@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require "immosquare_cleaner"
+require "immosquare-cleaner"
 require "optparse"
 
 options = {}
