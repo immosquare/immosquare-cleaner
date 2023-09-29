@@ -12,20 +12,19 @@ Gem::Specification.new do |spec|
 
 
   spec.homepage       = "https://github.com/IMMOSQUARE/Immosquare-cleaner"
-  
-  
+
+
   spec.files          = ["Rakefile", "README.md"] + Dir.glob("{bin,lib}/**/*")
   spec.executables    = Dir["bin/**"].map {|f| File.basename(f) }
   spec.require_paths  = ["lib"]
 
-  spec.add_dependency("erb_lint")
-  spec.add_dependency("htmlbeautifier")
-  spec.add_dependency("immosquare-rubocop")
-  spec.add_dependency("immosquare-yaml")
+  spec.add_dependency("erb_lint", "~> 0")
+  spec.add_dependency("htmlbeautifier", "~> 1")
+  spec.add_dependency("immosquare-rubocop", "~> 0")
+  spec.add_dependency("immosquare-yaml", "~> 0")
 
-  
+
   spec.required_ruby_version = Gem::Requirement.new(">= 2.7.2")
-  
+
   spec.metadata["rubygems_mfa_required"] = "true"
 end
-

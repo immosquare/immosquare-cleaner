@@ -1,8 +1,8 @@
-require_relative "immosquare-cleaner/configuration"
 require          "immosquare-yaml"
+require_relative "immosquare-cleaner/configuration"
+require_relative "immosquare-yaml/railtie" if defined?(Rails)
 
 module ImmosquareCleaner
-  
   class << self
 
     ##===========================================================================##
@@ -22,7 +22,7 @@ module ImmosquareCleaner
     def config
       yield(configuration)
     end
-    
+
     def clean(file_path, **options)
       ##============================================================##
       ## Default options
@@ -30,7 +30,7 @@ module ImmosquareCleaner
       cmd     = []
       options = {}.merge(options)
 
-      
+
       begin
         raise("Error: The file '#{file_path}' does not exist.") if !File.exist?(file_path)
 
@@ -57,8 +57,8 @@ module ImmosquareCleaner
           puts("Warning: npx and/or prettier are not installed. Skipping formatting.")
         end
 
-        
-        
+
+
         ##===========================================================================##
         ## We change the current directory to the gem root to ensure the gem's paths
         ## are used when executing the commands
@@ -69,8 +69,7 @@ module ImmosquareCleaner
           else
             system(c)
           end
-        end if !cmd.empty? 
-        
+        end if !cmd.empty?
       rescue StandardError => e
         puts(e.message)
         false
@@ -95,8 +94,8 @@ module ImmosquareCleaner
     ##===========================================================================##
     ## This method ensures the file ends with a single newline, facilitating
     ## cleaner multi-line blocks. It operates by reading all lines of the file,
-    ## removing any empty lines at the end, and then appending a newline. 
-    ## This guarantees the presence of a newline at the end, and also prevents 
+    ## removing any empty lines at the end, and then appending a newline.
+    ## This guarantees the presence of a newline at the end, and also prevents
     ## multiple newlines from being present at the end.
     ##
     ## Params:
@@ -111,28 +110,28 @@ module ImmosquareCleaner
       ## https://gist.github.com/guilhermesimoes/d69e547884e556c3dc95
       ##============================================================##
       content = File.read(file_path)
-          
+
       ##===========================================================================##
       ## Remove all trailing empty lines at the end of the file
       content.gsub!(/#{Regexp.escape($INPUT_RECORD_SEPARATOR)}+\z/, "")
       ##===========================================================================##
-    
+
       ##===========================================================================##
       ## Append a newline at the end to maintain the file structure
       ###===========================================================================##
       content += $INPUT_RECORD_SEPARATOR
-    
+
       ##===========================================================================##
       ## Write the modified lines back to the file
       ##===========================================================================##
       File.write(file_path, content)
-    
+
       ##===========================================================================##
       ## Return the total number of lines in the modified file
       ##===========================================================================##
       content.lines.size
     end
-    
+
 
 
   end
