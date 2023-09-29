@@ -1,9 +1,14 @@
 require_relative "immosquare-cleaner/configuration"
 
-
 module ImmosquareCleaner
   
   class << self
+
+    ##===========================================================================##
+    ## Constants
+    ##===========================================================================##
+    NEWLINE = "\n".freeze
+    SHEBANG = "#!/usr/bin/env ruby".freeze
 
     ##===========================================================================##
     ## Gem configuration
@@ -22,23 +27,37 @@ module ImmosquareCleaner
       ##============================================================##
       ## Default options
       ##============================================================##
+      cmd     = nil
       options = {}.merge(options)
 
-
-
-
+      
       begin
         raise("Error: The file '#{file_path}' does not exist.") if !File.exist?(file_path)
 
-        cmd = nil
+        ##============================================================##
+        ## We normalize the last line of the file to ensure it ends with a single
+        ##============================================================##
+        normalize_last_line(file_path)
+
+
+        ##============================================================##
+        ## We clean files based on their extension
+        ##============================================================##
         if file_path.end_with?(".html.erb")
-          cmd = "bundle exec htmlbeautifier #{file_path} --keep-blank-lines 4"
-        elsif file_path.end_with?(".rb")  
-          cmd = "bundle exec rubocop #{file_path} --autocorrect-all"
+          cmd_options = ImmosquareCleaner.configuration.htmlbeautifier_options || "--keep-blank-lines 4"
+          cmd         = "bundle exec htmlbeautifier #{file_path} #{cmd_options}"
+        elsif file_path.end_with?(".rb", ".rake", "Gemfile", "Rakefile", ".axlsx") || File.open(file_path, &:gets)&.include?(SHEBANG)
+          cmd_options = ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all"
+          cmd         = "bundle exec rubocop #{file_path} #{cmd_options}"
         end
 
-        puts(cmd)
-        system(cmd) if !cmd.nil?
+        
+        
+        if !cmd.nil?
+          extension = File.extname(file_path)
+          puts("extension: #{extension} not supported") if cmd.nil?
+          system(cmd)
+        end
     
       rescue StandardError => e
         puts(e.message)
@@ -98,7 +117,6 @@ module ImmosquareCleaner
     end
 
 
-
-
   end
 end
+
