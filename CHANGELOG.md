@@ -1,8 +1,12 @@
 ## [Unreleased]
 
+## [0.1.10] - 2023-09-29
+
+- Change JSON dumper
+
 ## [0.1.9] - 2023-09-29
 
-- Naming/FileName: false
+- Rubocop : Naming/FileName: false
 
 ## [0.1.8] - 2023-09-29
 
