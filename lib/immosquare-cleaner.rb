@@ -1,5 +1,6 @@
 require "English"
-require "neatjson"
+require "immosquare-yaml"
+require "immosquare-extensions"
 require_relative "immosquare-cleaner/configuration"
 require_relative "immosquare-cleaner/railtie" if defined?(Rails)
 
@@ -84,7 +85,7 @@ module ImmosquareCleaner
         if file_path.end_with?(".json")
           json_str    = File.read(file_path)
           parsed_data = JSON.parse(json_str)
-          formated    = JSON.neat_generate(parsed_data, :aligned => true)
+          formated    = parsed_data.to_beautiful_json
           File.write(file_path, formated)
           normalize_last_line(file_path)
           return
