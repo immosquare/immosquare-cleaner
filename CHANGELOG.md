@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+## [0.1.12] - 2023-10-01
+
+- Add vendor folder into task
+
+
 ## [0.1.11] - 2023-09-29
 
 - Add custom Mardown cleaner

@@ -7,7 +7,7 @@ namespace :immosquare_cleaner do
     file_paths = Dir.glob("#{Rails.root}/**/*").reject do |file_path|
       test1 = file_path.gsub("#{Rails.root}/", "")
       File.directory?(file_path) ||
-        test1.start_with?("node_modules", "tmp", "public", "log", "app/assets/builds", "app/assets/fonts", "app/assets/images") ||
+        test1.start_with?("node_modules", "tmp", "public", "log", "app/assets/builds", "app/assets/fonts", "app/assets/images", "vendor") ||
         file_path.end_with?(".lock", ".lockb")
     end
     file_paths.each do |file|
