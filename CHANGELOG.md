@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+## [0.1.11] - 2023-09-29
+
+- Add custom Mardown cleaner
+
+
 ## [0.1.10] - 2023-09-29
 
 - Change JSON dumper

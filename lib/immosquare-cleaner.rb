@@ -2,6 +2,7 @@ require "English"
 require "immosquare-yaml"
 require "immosquare-extensions"
 require_relative "immosquare-cleaner/configuration"
+require_relative "immosquare-cleaner/markdown"
 require_relative "immosquare-cleaner/railtie" if defined?(Rails)
 
 ##===========================================================================##
@@ -90,6 +91,17 @@ module ImmosquareCleaner
           normalize_last_line(file_path)
           return
         end
+
+        ##============================================================##
+        ## Markdown files
+        ##============================================================##
+        if file_path.end_with?(".md", ".md.erb")
+          formatted_md = ImmosquareCleaner::Markdown.clean(file_path)
+          File.write(file_path, formatted_md)
+          normalize_last_line(file_path)
+          return
+        end
+
 
         ##============================================================##
         ## Autres formats
