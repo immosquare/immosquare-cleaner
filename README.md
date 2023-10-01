@@ -10,7 +10,7 @@ The cleaner recognizes and caters to various file formats:
 - **Ruby:** `.rb`, `.rake`, `Gemfile`, `Rakefile`, `.axlsx`, `.gemspec`, `.ru`, `.podspec`, `.jbuilder`, `.rabl`, `.thor`, `config.ru`, `Berksfile`, `Capfile`, `Guardfile`, `Podfile`, `Thorfile`, `Vagrantfile` processed with [rubocop](https://rubocop.org/)
 - **YAML:** (rails translation files) `.yml` processed with [ImmosquareYaml](https://github.com/IMMOSQUARE/immosquare-yaml)
 - **JS:** `.js` processed with [eslint](https://eslint.org/)
-- **JSON:** Processed with [NeatJSON](https://github.com/Phrogz/NeatJSON)
+- **JSON:** Processed with [ImmosquareExtensions](https://github.com/IMMOSQUARE/immosquare-extensions)
 - **Others:** Any other format processed with [prettier](https://prettier.io/)
 
 ## Linter Configurations
