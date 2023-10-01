@@ -6,12 +6,15 @@ A meticulously crafted Ruby gem to enhance the cleanliness and structure of your
 
 The cleaner recognizes and caters to various file formats:
 
-- **ERB:** `.html.erb` processed with [erb-lint](https://github.com/Shopify/erb-lint)
-- **Ruby:** `.rb`, `.rake`, `Gemfile`, `Rakefile`, `.axlsx`, `.gemspec`, `.ru`, `.podspec`, `.jbuilder`, `.rabl`, `.thor`, `config.ru`, `Berksfile`, `Capfile`, `Guardfile`, `Podfile`, `Thorfile`, `Vagrantfile` processed with [rubocop](https://rubocop.org/)
-- **YAML:** (rails translation files) `.yml` processed with [ImmosquareYaml](https://github.com/IMMOSQUARE/immosquare-yaml)
-- **JS:** `.js` processed with [eslint](https://eslint.org/)
-- **JSON:** Processed with [ImmosquareExtensions](https://github.com/IMMOSQUARE/immosquare-extensions)
-- **Others:** Any other format processed with [prettier](https://prettier.io/)
+| File Type | File Extension                                                                                                                                                                        | Processor                                                    |
+|-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|
+| ERB       | `.html.erb`                                                                                                                                                                           | [erb-lint](https://github.com/Shopify/erb-lint)              |
+| Ruby      | `.rb`, `.rake`, `Gemfile`, `Rakefile`, `.axlsx`, `.gemspec`, `.ru`, `.podspec`, `.jbuilder`, `.rabl`, `.thor`, `config.ru`, `Berksfile`, `Capfile`, `Guardfile`, `Podfile`, `Thorfile`, `Vagrantfile` | [rubocop](https://rubocop.org/)                              |
+| YAML      | `.yml` (only files in locales folder)                                                                                                                                                                 | [ImmosquareYaml](https://github.com/IMMOSQUARE/immosquare-yaml) |
+| JS        | `.js`                                                                                                                                                                                | [eslint](https://eslint.org/)                                |
+| JSON      | `.json`                                                                                                                                                                              | [ImmosquareExtensions](https://github.com/IMMOSQUARE/immosquare-extensions) |
+| Others    | Any other format                                                                                                                                                                     | [prettier](https://prettier.io/)                             |
+
 
 ## Linter Configurations
 
