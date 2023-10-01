@@ -4,8 +4,8 @@ PATH
     immosquare-cleaner (0.1.9)
       erb_lint (~> 0)
       htmlbeautifier (~> 1)
-      immosquare-extensions (~> 0, >= 0.1.4)
-      immosquare-yaml (~> 0, >= 0.1.15)
+      immosquare-extensions (~> 0, >= 0.1.5)
+      immosquare-yaml (~> 0, >= 0.1.16)
       rubocop (~> 1)
 
 GEM
@@ -48,11 +48,11 @@ GEM
       multi_xml (>= 0.5.2)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
-    immosquare-extensions (0.1.4)
+    immosquare-extensions (0.1.5)
       unicode_utils (~> 1.4.0)
-    immosquare-yaml (0.1.15)
+    immosquare-yaml (0.1.16)
       httparty (~> 0)
-      immosquare-extensions (~> 0, >= 0.1.4)
+      immosquare-extensions (~> 0, >= 0.1.5)
       iso-639 (~> 0)
     iso-639 (0.3.6)
     json (2.6.3)
@@ -115,4 +115,4 @@ DEPENDENCIES
   rake
 
 BUNDLED WITH
-   2.4.12
+   2.4.13
