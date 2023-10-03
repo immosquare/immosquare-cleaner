@@ -1,14 +1,16 @@
 ## [Unreleased]
 
+## [0.1.13] - 2023-10-01
+
+- Style/FormatStringToken : template
+
 ## [0.1.12] - 2023-10-01
 
 - Add vendor folder into task
 
-
 ## [0.1.11] - 2023-09-29
 
 - Add custom Mardown cleaner
-
 
 ## [0.1.10] - 2023-09-29
 

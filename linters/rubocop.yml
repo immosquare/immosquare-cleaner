@@ -77,6 +77,8 @@ Style/NegatedIf:
   Enabled: false # On veut remplacer les if ! par des unless
 Style/MethodCallWithArgsParentheses:
   Enabled: true # On veut forcer les parenthèses où elles sont utilises pour rendre le code plus propre
+Style/FormatStringToken:
+  EnforcedStyle: "template" ## On veut les interpolation avec le format %{my_string} et avec avec %<my_string>s
 
 Style/NumericPredicate:
   EnforcedStyle: comparison # On ne veut pas des .zero? .negative? .positif?

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    immosquare-cleaner (0.1.12)
+    immosquare-cleaner (0.1.13)
       erb_lint (~> 0)
       htmlbeautifier (~> 1)
       immosquare-extensions (~> 0, >= 0.1.5)
@@ -48,7 +48,7 @@ GEM
       multi_xml (>= 0.5.2)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
-    immosquare-extensions (0.1.5)
+    immosquare-extensions (0.1.11)
       unicode_utils (~> 1.4.0)
     immosquare-yaml (0.1.16)
       httparty (~> 0)
@@ -101,7 +101,7 @@ GEM
     smart_properties (1.17.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    unicode-display_width (2.4.2)
+    unicode-display_width (2.5.0)
     unicode_utils (1.4.0)
 
 PLATFORMS
