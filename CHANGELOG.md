@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+## [0.1.14] - 2023-10-04
+
+- Update dependencies
+
+
 ## [0.1.13] - 2023-10-01
 
 - Style/FormatStringToken : template
