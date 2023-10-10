@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.15] - 2023-10-10
+
+- Update dependencies
+
 ## [0.1.14] - 2023-10-04
 
 - Update dependencies
