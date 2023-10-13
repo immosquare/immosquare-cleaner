@@ -43,7 +43,7 @@ module ImmosquareCleaner
         ##============================================================##
         ## .html.erb files
         ##============================================================##
-        if file_path.end_with?(".html.erb")
+        if file_path.end_with?(".html.erb", ".html")
           cmds = []
           cmds << "bundle exec htmlbeautifier #{file_path} #{ImmosquareCleaner.configuration.htmlbeautifier_options || "--keep-blank-lines 4"}"
           cmds << "bundle exec erblint --config #{gem_root}/linters/erb-lint.yml #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}"
@@ -102,7 +102,6 @@ module ImmosquareCleaner
           return
         end
 
-
         ##============================================================##
         ## Autres formats
         ##============================================================##
@@ -114,7 +113,6 @@ module ImmosquareCleaner
         puts(e.backtrace)
       end
     end
-
 
     private
 
@@ -152,7 +150,6 @@ module ImmosquareCleaner
       ## https://gist.github.com/guilhermesimoes/d69e547884e556c3dc95
       ##============================================================##
       content = File.read(file_path)
-
 
       ##===========================================================================##
       ## Remove all trailing empty lines at the end of the file

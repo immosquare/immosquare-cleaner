@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.16] - 2023-10-10
+
+- Add support for html file
+
 ## [0.1.15] - 2023-10-10
 
 - Update dependencies
