@@ -1,12 +1,12 @@
 PATH
   remote: .
   specs:
-    immosquare-cleaner (0.1.16)
+    immosquare-cleaner (0.1.17)
       erb_lint (~> 0)
       htmlbeautifier (~> 1)
       immosquare-extensions (~> 0, >= 0.1.11)
       immosquare-yaml (~> 0, >= 0.1.18)
-      rubocop (~> 1)
+      rubocop (~> 1, >= 1.57.2)
 
 GEM
   remote: https://rubygems.org/
