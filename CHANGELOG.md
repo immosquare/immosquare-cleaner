@@ -1,6 +1,10 @@
 ## [Unreleased]
 
-## [0.1.17] - 2023-10-10
+## [0.1.18] - 2023-11-26
+
+- Dynamic RubVersion for Rubocop
+
+## [0.1.17] - 2023-11-25
 
 - Update rubocop min version
 

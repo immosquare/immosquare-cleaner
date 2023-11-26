@@ -54,9 +54,23 @@ module ImmosquareCleaner
 
         ##============================================================##
         ## Ruby Files
+        ## We create a rubocop config file with the ruby version
+        ## if it does not exist...Normally rubocop does it alone
+        ## of this based on .ruby-version file but it doesn't work
+        ## in our case where rubocop is in a gem which is called
+        ## in a project...
         ##============================================================##
         if file_path.end_with?(*RUBY_FILES) || File.open(file_path, &:gets)&.include?(SHEBANG)
-          cmds = ["bundle exec rubocop -c #{gem_root}/linters/rubocop.yml #{file_path} #{ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all"}"]
+          rubocop_config_with_version_path = "#{gem_root}/linters/rubocop-#{RUBY_VERSION}.yml"
+
+          if !File.exist?(rubocop_config_with_version_path)
+            rubocop_config = YAML.load_file("#{gem_root}/linters/rubocop.yml")
+            rubocop_config["AllCops"] ||= {}
+            rubocop_config["AllCops"]["TargetRubyVersion"] = RUBY_VERSION
+            File.write(rubocop_config_with_version_path, rubocop_config.to_yaml)
+          end
+
+          cmds = ["bundle exec rubocop -c #{rubocop_config_with_version_path} #{file_path} #{ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all"}"]
           launch_cmds(cmds)
           normalize_last_line(file_path)
           return
