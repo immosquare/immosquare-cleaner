@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.20] - 2023-12-01
+
+- Bump Rubocop Version
+
 ## [0.1.19] - 2023-12-01
 
 - Bump Rubocop Version
