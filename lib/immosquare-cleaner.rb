@@ -121,7 +121,8 @@ module ImmosquareCleaner
         ##============================================================##
         prettier_parser = nil
         prettier_parser = "--parser markdown" if file_path.end_with?(".md.erb")
-        cmds = "bun prettier --write #{file_path} #{prettier_parser} --config #{gem_root}/linters/prettier.yml"
+        cmds = ["bun prettier --write #{file_path} #{prettier_parser} --config #{gem_root}/linters/prettier.yml"]
+        launch_cmds(cmds)
       rescue StandardError => e
         puts(e.message)
         puts(e.backtrace)
