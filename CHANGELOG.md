@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.23] - 2024-01-15
+
+- Bump Prettier Version
+
 ## [0.1.22] - 2024-01-15
 
 - Bump Rubocop Version
