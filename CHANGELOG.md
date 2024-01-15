@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.22] - 2024-01-15
+
+- Bump Rubocop Version
+
 ## [0.1.21] - 2023-12-01
 
 - Fix issue with css/scss files
