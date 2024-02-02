@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.24] - 2024-02-02
+
+- Jbuilder Custom Style
+
 ## [0.1.23] - 2024-01-15
 
 - Bump Prettier Version
