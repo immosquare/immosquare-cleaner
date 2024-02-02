@@ -1,3 +1,5 @@
+require: rubocop/cop/style/method_call_with_args_parentheses_override
+
 # Pour activer toutes les méthodes de Rubocop et activer le cache pour les gros fichiers
 AllCops:
   NewCops: enable
