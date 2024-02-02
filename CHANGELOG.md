@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.25] - 2024-02-02
+
+- Fix spec.files for linters subfolders
+
 ## [0.1.24] - 2024-02-02
 
 - Jbuilder Custom Style

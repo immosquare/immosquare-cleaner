@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   ## we add package.json so that the gems is autonomous to launch prettier
   ## & eslint (all the necessary libs are in the node_modules folder)
   ##===========================================================================##
-  spec.files          = Dir["lib/**/*", "bin/*", "linters/*"] + ["package.json"] + Dir["node_modules/**/*", "node_modules/.bin/**/*"]
+  spec.files          = Dir["lib/**/*", "bin/*", "linters/**/*"] + ["package.json"] + Dir["node_modules/**/*", "node_modules/.bin/**/*"]
   spec.executables    = ["immosquare-cleaner"]
   spec.require_paths  = ["lib", "linters"]
 
