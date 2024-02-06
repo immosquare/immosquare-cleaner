@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.27] - 2024-02-05
+
+- bump immosquare gems to the most recent versions
+
 ## [0.1.26] - 2024-02-05
 
 - File.normalize_last_line from immosquare-extensions gem

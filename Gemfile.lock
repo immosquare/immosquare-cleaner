@@ -1,11 +1,11 @@
 PATH
   remote: .
   specs:
-    immosquare-cleaner (0.1.26)
+    immosquare-cleaner (0.1.27)
       erb_lint (~> 0)
       htmlbeautifier (~> 1)
       immosquare-extensions (~> 0, >= 0.1.13)
-      immosquare-yaml (~> 0, >= 0.1.18)
+      immosquare-yaml (~> 0, >= 0.1.20)
       rubocop (~> 1, >= 1.60.2)
 
 GEM
@@ -59,9 +59,9 @@ GEM
       concurrent-ruby (~> 1.0)
     immosquare-extensions (0.1.13)
       unicode_utils (~> 1.4.0)
-    immosquare-yaml (0.1.19)
+    immosquare-yaml (0.1.20)
       httparty (~> 0)
-      immosquare-extensions (~> 0, >= 0.1.11)
+      immosquare-extensions (~> 0, >= 0.1.13)
       iso-639 (~> 0)
     iso-639 (0.3.6)
     json (2.7.1)
