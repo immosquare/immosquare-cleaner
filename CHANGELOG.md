@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.26] - 2024-02-05
+
+- File.normalize_last_line from immosquare-extensions gem
+
 ## [0.1.25] - 2024-02-02
 
 - Fix spec.files for linters subfolders

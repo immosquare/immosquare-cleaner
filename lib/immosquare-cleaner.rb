@@ -48,7 +48,7 @@ module ImmosquareCleaner
           cmds << "bundle exec htmlbeautifier #{file_path} #{ImmosquareCleaner.configuration.htmlbeautifier_options || "--keep-blank-lines 4"}"
           cmds << "bundle exec erblint --config #{gem_root}/linters/erb-lint.yml #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}"
           launch_cmds(cmds)
-          normalize_last_line(file_path)
+          File.normalize_last_line(file_path)
           return
         end
 
@@ -72,7 +72,7 @@ module ImmosquareCleaner
 
           cmds = ["bundle exec rubocop -c #{rubocop_config_with_version_path} #{file_path} #{ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all"}"]
           launch_cmds(cmds)
-          normalize_last_line(file_path)
+          File.normalize_last_line(file_path)
           return
         end
 
@@ -90,7 +90,7 @@ module ImmosquareCleaner
         if file_path.end_with?(".js")
           cmds = ["bun eslint --config #{gem_root}/linters/eslintrc.json  #{file_path} --fix"]
           launch_cmds(cmds)
-          normalize_last_line(file_path)
+          File.normalize_last_line(file_path)
           return
         end
 
@@ -102,7 +102,7 @@ module ImmosquareCleaner
           parsed_data = JSON.parse(json_str)
           formated    = parsed_data.to_beautiful_json
           File.write(file_path, formated)
-          normalize_last_line(file_path)
+          File.normalize_last_line(file_path)
           return
         end
 
@@ -112,7 +112,7 @@ module ImmosquareCleaner
         if file_path.end_with?(".md", ".md.erb")
           formatted_md = ImmosquareCleaner::Markdown.clean(file_path)
           File.write(file_path, formatted_md)
-          normalize_last_line(file_path)
+          File.normalize_last_line(file_path)
           return
         end
 
@@ -145,47 +145,6 @@ module ImmosquareCleaner
       end
     end
 
-    ##===========================================================================##
-    ## This method ensures the file ends with a single newline, facilitating
-    ## cleaner multi-line blocks. It operates by reading all lines of the file,
-    ## removing any empty lines at the end, and then appending a newline.
-    ## This guarantees the presence of a newline at the end, and also prevents
-    ## multiple newlines from being present at the end.
-    ##
-    ## Params:
-    ## +file_path+:: The path to the file to be normalized.
-    ##
-    ## Returns:
-    ## The total number of lines in the normalized file.
-    ##===========================================================================##
-    def normalize_last_line(file_path)
-      end_of_line = $INPUT_RECORD_SEPARATOR
-      ##============================================================##
-      ## Read all lines from the file
-      ## https://gist.github.com/guilhermesimoes/d69e547884e556c3dc95
-      ##============================================================##
-      content = File.read(file_path)
-
-      ##===========================================================================##
-      ## Remove all trailing empty lines at the end of the file
-      ##===========================================================================##
-      content.gsub!(/#{Regexp.escape(end_of_line)}+\z/, "")
-
-      ##===========================================================================##
-      ## Append an EOL at the end to maintain the file structure
-      ##===========================================================================##
-      content << end_of_line
-
-      ##===========================================================================##
-      ## Write the modified lines back to the file
-      ##===========================================================================##
-      File.write(file_path, content)
-
-      ##===========================================================================##
-      ## Return the total number of lines in the modified file
-      ##===========================================================================##
-      content.lines.size
-    end
 
   end
 end
