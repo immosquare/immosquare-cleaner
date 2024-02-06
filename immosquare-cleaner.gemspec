@@ -23,8 +23,8 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency("erb_lint", "~> 0")
   spec.add_dependency("htmlbeautifier", "~> 1")
-  spec.add_dependency("immosquare-extensions", "~> 0", ">= 0.1.13")
-  spec.add_dependency("immosquare-yaml", "~> 0", ">= 0.1.20")
+  spec.add_dependency("immosquare-extensions", "~> 0", ">= 0.1.14")
+  spec.add_dependency("immosquare-yaml", "~> 0", ">= 0.1.21")
   spec.add_dependency("rubocop", "~> 1", ">= 1.60.2")
 
 
