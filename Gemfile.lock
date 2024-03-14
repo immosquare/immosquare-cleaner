@@ -4,7 +4,7 @@ PATH
     immosquare-cleaner (0.1.28)
       erb_lint (~> 0)
       htmlbeautifier (~> 1)
-      immosquare-extensions (~> 0, >= 0.1.17)
+      immosquare-extensions (~> 0, >= 0.1.18)
       immosquare-yaml (~> 0, >= 0.1.21)
       rubocop (~> 1, >= 1.60.2)
 
@@ -56,7 +56,7 @@ GEM
       multi_xml (>= 0.5.2)
     i18n (1.14.4)
       concurrent-ruby (~> 1.0)
-    immosquare-extensions (0.1.17)
+    immosquare-extensions (0.1.18)
       unicode_utils (~> 1.4.0)
     immosquare-yaml (0.1.23)
       httparty (~> 0)
