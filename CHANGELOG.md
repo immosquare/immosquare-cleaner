@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.30] - 2024-03-14
+
+- bump immosquare-yaml gem version
+
 ## [0.1.29] - 2024-03-14
 
 - bump immosquare-exentension gem version
