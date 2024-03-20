@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency("htmlbeautifier", "~> 1")
   spec.add_dependency("immosquare-extensions", "~> 0", ">= 0.1.18")
   spec.add_dependency("immosquare-yaml", "~> 0", ">= 0.1.26")
-  spec.add_dependency("rubocop", "~> 1", ">= 1.60.2")
+  spec.add_dependency("rubocop", "~> 1", ">= 1.62.1")
 
 
 

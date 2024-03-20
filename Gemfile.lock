@@ -1,12 +1,12 @@
 PATH
   remote: .
   specs:
-    immosquare-cleaner (0.1.31)
+    immosquare-cleaner (0.1.32)
       erb_lint (~> 0)
       htmlbeautifier (~> 1)
       immosquare-extensions (~> 0, >= 0.1.18)
       immosquare-yaml (~> 0, >= 0.1.26)
-      rubocop (~> 1, >= 1.60.2)
+      rubocop (~> 1, >= 1.62.1)
 
 GEM
   remote: https://rubygems.org/
@@ -29,7 +29,7 @@ GEM
       tzinfo (~> 2.0)
     ast (2.4.2)
     base64 (0.2.0)
-    better_html (2.1.0)
+    better_html (2.1.1)
       actionview (>= 6.0)
       activesupport (>= 6.0)
       ast (~> 2.0)
@@ -64,9 +64,9 @@ GEM
       nokogiri (>= 1.12.0)
     minitest (5.22.3)
     mutex_m (0.2.0)
-    nokogiri (1.16.2-arm64-darwin)
+    nokogiri (1.16.3-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.16.2-x86_64-darwin)
+    nokogiri (1.16.3-x86_64-darwin)
       racc (~> 1.4)
     parallel (1.24.0)
     parser (3.3.0.5)
