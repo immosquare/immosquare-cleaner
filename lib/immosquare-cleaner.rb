@@ -1,5 +1,6 @@
 require "English"
 require "yaml"
+require "json"
 require "immosquare-yaml"
 require "immosquare-extensions"
 require_relative "immosquare-cleaner/configuration"
