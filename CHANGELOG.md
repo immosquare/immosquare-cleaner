@@ -1,8 +1,12 @@
 ## [Unreleased]
 
+## [0.1.32] - 2024-03-20
+
+- add missing require JSON
+
 ## [0.1.31] - 2024-03-18
 
-- add missing require
+- add missing require YAML
 
 ## [0.1.30] - 2024-03-14
 
