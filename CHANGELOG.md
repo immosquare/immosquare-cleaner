@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.33] - 2024-05-09
+
+- bump to eslint v9.x
+
 ## [0.1.32] - 2024-03-20
 
 - add missing require JSON
