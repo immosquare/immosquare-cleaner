@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.34] - 2024-05-10
+
+- setup MinNameLength to 1 in rubocop.yml
+
 ## [0.1.33] - 2024-05-09
 
 - bump to eslint v9.x
