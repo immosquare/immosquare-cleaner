@@ -2,11 +2,11 @@
   "name":            "immosquare-cleaner",
   "private":         true,
   "dependencies": {
-    "eslint":                    "^8.57.0",
+    "eslint":                    "^9.2.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import":      "^2.29.1",
     "prettier":                  "^3.2.5"
   },
-  "devDependencies": {"npm-check-updates": "^16.14.17"},
+  "devDependencies": {"npm-check-updates": "^16.14.20"},
   "scripts": {"bun-ncu": "bun ncu -u && bun install"}
 }
