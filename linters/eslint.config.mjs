@@ -7,7 +7,7 @@ export default [
     rules:   {
       indent:                    [2, 2],
       quotes:                    [2, "double"],
-      semi:                      [2,"never"],
+      semi:                      [2, "never"],
       camelcase:                 0,
       "no-console":              0,
       "no-restricted-globals":   0,
@@ -24,7 +24,9 @@ export default [
       "no-lonely-if":            0,
       "no-nested-ternary":       0,
       "no-param-reassign":       [2, { props: false }],
-      "comma-dangle":            [2, "never"]
+      "comma-dangle":            [2, "never"],
+      "prefer-destructuring":    [2, {"VariableDeclarator": { "array": false, "object": true}, "AssignmentExpression": { "array": false, "object": true} }, {"enforceForRenamedProperties": false}],
+      "comma-spacing":           [2, {"before": false, "after": true}]
     }
   }
 ]

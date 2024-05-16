@@ -88,13 +88,30 @@ module ImmosquareCleaner
 
         ##============================================================##
         ## JS files
+        ## 16/05/2024
+        ## Depuis eslint V9 (acutellement en V9.2.0), il y a des
+        ## erreurs/warnings
+        ## File ignored because of a matching ignore pattern. Use "--no-ignore" to disable file ignore settings or use "--no-warn-ignored" to suppress this warning
+        ## alors que le fichier ne devrait pas être ignoré...
+        ## Cela se produit quand le fichier est dans un dossier supérieur
+        ## à celui de la racine du gem. Pour éviter ce problème on
+        ## met le fichier dans un dossier temporaire et on le supprime
+        ## par la suite.
         ##============================================================##
-        if file_path.end_with?(".js") || file_path.end_with?(".mjs")
-          cmds = ["bun eslint --config #{gem_root}/linters/eslint.config.mjs  #{file_path} --fix"]
+        begin
+          temp_folder_path = "#{gem_root}/tmp"
+          temp_file_path   = "#{temp_folder_path}/#{File.basename(file_path)}"
+          FileUtils.mkdir_p(temp_folder_path)
+          File.write(temp_file_path, File.read(file_path))
+          cmds = ["bun eslint --config #{gem_root}/linters/eslint.config.mjs  #{temp_file_path} --fix"]
           launch_cmds(cmds)
-          File.normalize_last_line(file_path)
+          File.normalize_last_line(temp_file_path)
+          File.write(file_path, File.read(temp_file_path))
+        rescue StandardError => e
+        ensure
+          FileUtils.rm_f(temp_file_path)
           return
-        end
+        end if file_path.end_with?(".js") || file_path.end_with?(".mjs")
 
         ##============================================================##
         ## JSON files
