@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.36] - 2024-05-16
+
+- Fix for eslint v9
+
 ## [0.1.35] - 2024-05-16
 
 - Update eslint Config files for v9
