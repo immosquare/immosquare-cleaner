@@ -89,8 +89,8 @@ module ImmosquareCleaner
         ##============================================================##
         ## JS files
         ##============================================================##
-        if file_path.end_with?(".js")
-          cmds = ["bun eslint --config #{gem_root}/linters/eslintrc.json  #{file_path} --fix"]
+        if file_path.end_with?(".js") || file_path.end_with?(".mjs")
+          cmds = ["bun eslint --config #{gem_root}/linters/eslint.config.mjs  #{file_path} --fix"]
           launch_cmds(cmds)
           File.normalize_last_line(file_path)
           return
