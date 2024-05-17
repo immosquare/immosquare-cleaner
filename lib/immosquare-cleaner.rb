@@ -103,7 +103,11 @@ module ImmosquareCleaner
           temp_file_path   = "#{temp_folder_path}/#{File.basename(file_path)}"
           FileUtils.mkdir_p(temp_folder_path)
           File.write(temp_file_path, File.read(file_path))
-          cmds = ["bun eslint --config #{gem_root}/linters/eslint.config.mjs  #{temp_file_path} --fix"]
+          cmds = [
+            "bun eslint --config #{gem_root}/linters/eslint.config.mjs  #{temp_file_path} --fix",
+            "bun jscodeshift -t #{gem_root}/linters/jscodeshift/arrow-function-transform.js #{temp_file_path}"
+          ]
+          puts(cmds)
           launch_cmds(cmds)
           File.normalize_last_line(temp_file_path)
           File.write(file_path, File.read(temp_file_path))
