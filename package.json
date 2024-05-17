@@ -2,9 +2,11 @@
   "name":            "immosquare-cleaner",
   "private":         true,
   "dependencies": {
-    "@eslint/js": "^9.2.0",
-    "eslint":     "^9.2.0",
-    "prettier":   "^3.2.5"
+    "@eslint/js":                 "^9.2.0",
+    "eslint":                     "^9.2.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-sonarjs":      "^1.0.3",
+    "prettier":                   "^3.2.5"
   },
   "devDependencies": {"npm-check-updates": "^16.14.20"},
   "scripts": {"bun-ncu": "bun ncu -u && bun install"}
