@@ -1,13 +1,20 @@
-import js from "@eslint/js"
-import preferArrow from "eslint-plugin-prefer-arrow"
-import sonarjs from "eslint-plugin-sonarjs"
+import js               from "@eslint/js"
+import preferArrow      from "eslint-plugin-prefer-arrow"
+import sonarjs          from "eslint-plugin-sonarjs"
+import alignAssignments from "eslint-plugin-align-assignments"
+import alignImport      from "eslint-plugin-align-import"
 
 export default [
-  js.configs.recommended,
+  js.configs.recommended, js.configs.recommended,
   {
     ignores: ["package.json"],
-    plugins: { "prefer-arrow": preferArrow, "sonarjs": sonarjs },
-    rules:   {
+    plugins: {
+      "prefer-arrow":      preferArrow,
+      "sonarjs":           sonarjs,
+      "align-assignments": alignAssignments,
+      "align-import":      alignImport
+    },
+    rules: {
       // ============================================================##
       // Indentation rule: enforces consistent indentation of 2 spaces
       // ============================================================##
@@ -69,7 +76,15 @@ export default [
       "sonarjs/no-small-switch":              [2],
       "sonarjs/no-nested-template-literals":  [2],
       "sonarjs/prefer-single-boolean-return": [2],
-      "sonarjs/prefer-immediate-return":      [2]
+      "sonarjs/prefer-immediate-return":      [2],
+      // ============================================================##
+      // Align assignments rule: enforces alignment of assignments
+      // ============================================================##
+      "align-assignments/align-assignments":  [2],
+      // ============================================================##
+      // Align imports rule: enforces alignment of import statements
+      // ============================================================##
+      "align-import/align-import":            [2]
     }
   }
 ]
