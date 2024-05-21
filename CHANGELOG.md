@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.37] - 2024-05-20
+
+- Add jscodeshift processor (+ eslint upgrade 9.2 => 9.3)
+
 ## [0.1.36] - 2024-05-16
 
 - Fix for eslint v9
