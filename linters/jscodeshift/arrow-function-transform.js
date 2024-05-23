@@ -2,33 +2,40 @@ module.exports = (fileInfo, api) => {
   const j    = api.jscodeshift
   const root = j(fileInfo.source)
 
-  // Trouver toutes les expressions de fonction
-  const functions = root.find(j.FunctionExpression)
+  // Find all function declarations
+  const functions = root.find(j.FunctionDeclaration)
 
-  // Journal détaillé des fonctions trouvées
+  // Log details of the found functions
   functions.forEach((path) => {
-    const { id, generator, async } = path.value
+    const { id, generator, async, loc } = path.value
     console.log("Function found:", {
       id:  id ? id.name : "anonymous",
       generator,
       async,
-      loc: path.value.loc.start
+      loc: loc.start
     })
   })
 
-  // Filtrer les fonctions à transformer
+  // Filter non-generator, non-async functions
   const functionsToTransform = functions.filter((path) => {
-    const { id, generator, async } = path.value
-    return !id && !generator && !async
+    const { generator, async } = path.value
+    return !generator && !async
   })
 
-  // Log les fonctions à transformer
+  // Log the number of functions to be transformed
   console.log("Functions to be transformed:", functionsToTransform.size())
 
-  // Appliquer la transformation
+  // Transform to arrow functions and preserve comments
   functionsToTransform.replaceWith((path) => {
-    const { params, body, async } = path.value
-    return j.arrowFunctionExpression(params, body, async)
+    const { id, params, body, async, comments } = path.value
+    const arrowFunction                         = j.variableDeclaration("const", [
+      j.variableDeclarator(
+        j.identifier(id.name),
+        j.arrowFunctionExpression(params, body, async)
+      )
+    ])
+    arrowFunction.comments                      = comments
+    return arrowFunction
   })
 
   return root.toSource()
