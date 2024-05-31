@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.38] - 2024-05-31
+
+- Improve arrow functions parser (jscodeshift)
+
 ## [0.1.37] - 2024-05-20
 
 - Add jscodeshift processor (+ eslint upgrade 9.2 => 9.3)
