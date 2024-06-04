@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.39] - 2024-06-04
+
+- Upgrade eslint + prettier
+
 ## [0.1.38] - 2024-05-31
 
 - Improve arrow functions parser (jscodeshift)
