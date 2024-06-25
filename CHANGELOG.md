@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.40] - 2024-06-25
+
+- ruby-3.3.3 + Udate eslint,prettier & jscodeshift
+
 ## [0.1.39] - 2024-06-04
 
 - Upgrade eslint + prettier
