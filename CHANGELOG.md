@@ -1,8 +1,12 @@
 ## [Unreleased]
 
+## [0.1.41] - 2024-06-25
+
+- ruby-3.3.3 + Update eslint,prettier & rubocop versions
+
 ## [0.1.40] - 2024-06-25
 
-- ruby-3.3.3 + Udate eslint,prettier & jscodeshift
+- ruby-3.3.3 + Update eslint,prettier & jscodeshift versions
 
 ## [0.1.39] - 2024-06-04
 
