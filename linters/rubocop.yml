@@ -6,6 +6,7 @@ AllCops:
   EnabledByDefault: false
   UseCache: true
   SuggestExtensions: false
+  ActiveSupportExtensionsEnabled: true # Pour activer le support de ActiveSupport
 
 #################### Metrics ###########################
 Metrics:
