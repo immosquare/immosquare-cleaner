@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.42] - 2024-07-26
+
+- Improve rubocop rules for rails (AllCops:ActiveSupportExtensionsEnabled)
+
 ## [0.1.41] - 2024-07-15
 
 - Update eslint, prettier & rubocop versions
