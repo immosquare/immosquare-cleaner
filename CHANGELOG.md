@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.43] - 2024-08-02
+
+- Update erblint & eslint
+
 ## [0.1.42] - 2024-07-26
 
 - Improve rubocop rules for rails (AllCops:ActiveSupportExtensionsEnabled)
