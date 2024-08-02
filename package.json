@@ -2,8 +2,8 @@
   "name":            "immosquare-cleaner",
   "private":         true,
   "dependencies": {
-    "@eslint/js":                      "^9.7.0",
-    "eslint":                          "^9.7.0",
+    "@eslint/js":                      "^9.8.0",
+    "eslint":                          "^9.8.0",
     "eslint-plugin-align-assignments": "^1.1.2",
     "eslint-plugin-align-import":      "^1.0.0",
     "eslint-plugin-prefer-arrow":      "^1.2.3",
@@ -11,6 +11,6 @@
     "jscodeshift":                     "^0.16.1",
     "prettier":                        "^3.3.3"
   },
-  "devDependencies": {"npm-check-updates": "^16.14.20"},
+  "devDependencies": {"npm-check-updates": "^17.0.0"},
   "scripts": {"bun-ncu": "bun ncu -u && bun install"}
 }
