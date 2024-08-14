@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.44] - 2024-08-14
+
+- Update jscodeshift version
+
 ## [0.1.43] - 2024-08-02
 
 - Update erblint & eslint
