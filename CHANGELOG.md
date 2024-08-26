@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.45] - 2024-08-26
+
+- Update eslint-plugin-sonarjs
+
 ## [0.1.44] - 2024-08-14
 
 - Update jscodeshift version
