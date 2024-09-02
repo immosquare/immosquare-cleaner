@@ -1,6 +1,6 @@
 ## [Unreleased]
 
-## [0.1.45] - 2024-09-02
+## [0.1.46] - 2024-09-02
 
 - Update rubocop version
 
