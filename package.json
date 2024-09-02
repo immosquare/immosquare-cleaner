@@ -7,10 +7,10 @@
     "eslint-plugin-align-assignments": "^1.1.2",
     "eslint-plugin-align-import":      "^1.0.0",
     "eslint-plugin-prefer-arrow":      "^1.2.3",
-    "eslint-plugin-sonarjs":           "^2.0.1",
+    "eslint-plugin-sonarjs":           "^2.0.2",
     "jscodeshift":                     "^17.0.0",
     "prettier":                        "^3.3.3"
   },
-  "devDependencies": {"npm-check-updates": "^17.1.0"},
+  "devDependencies": {"npm-check-updates": "^17.1.1"},
   "scripts": {"bun-ncu": "bun ncu -u && bun install"}
 }
