@@ -1,8 +1,12 @@
 ## [Unreleased]
 
+## [0.1.45] - 2024-09-02
+
+- Update rubocop version
+
 ## [0.1.45] - 2024-08-26
 
-- Update eslint-plugin-sonarjs
+- Update eslint-plugin-sonarjs (1.x => 2.x)
 
 ## [0.1.44] - 2024-08-14
 
