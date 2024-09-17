@@ -52,7 +52,7 @@ GEM
       smart_properties
     erubi (1.13.0)
     htmlbeautifier (1.4.3)
-    i18n (1.14.5)
+    i18n (1.14.6)
       concurrent-ruby (~> 1.0)
     immosquare-extensions (0.1.25)
       unicode_utils (~> 1.4.0)
@@ -101,7 +101,7 @@ GEM
     smart_properties (1.17.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    unicode-display_width (2.5.0)
+    unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
 
 PLATFORMS
