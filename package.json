@@ -11,6 +11,6 @@
     "jscodeshift":                     "^17.0.0",
     "prettier":                        "^3.3.3"
   },
-  "devDependencies": {"npm-check-updates": "^17.1.1"},
+  "devDependencies": {"npm-check-updates": "^17.1.2"},
   "scripts": {"bun-ncu": "bun ncu -u && bun install"}
 }
