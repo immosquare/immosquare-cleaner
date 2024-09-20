@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.47] - 2024-09-20
+
+- Update dig rule for Rubocop
+
 ## [0.1.46] - 2024-09-02
 
 - Update rubocop version
