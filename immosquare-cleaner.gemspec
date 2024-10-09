@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.summary        = "A gem to lint and organize files in a Rails application."
   spec.description    = "Immosquare-cleaner streamlines Rails applications by running tools like RuboCop, ERBLint, Stylelint and more. It ensures code quality, readability, and consistency across the application."
 
-  spec.homepage       = "https://github.com/IMMOSQUARE/Immosquare-cleaner"
+  spec.homepage       = "https://github.com/immosquare/Immosquare-cleaner"
 
 
   ##===========================================================================##

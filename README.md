@@ -10,15 +10,15 @@ The cleaner recognizes and caters to various file formats:
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | ERB         | `.html.erb`                                                                                                                                                                                           | [htmlbeautifier](https://github.com/threedaymonk/htmlbeautifier) && [erb-lint](https://github.com/Shopify/erb-lint) |
 | Ruby        | `.rb`, `.rake`, `Gemfile`, `Rakefile`, `.axlsx`, `.gemspec`, `.ru`, `.podspec`, `.jbuilder`, `.rabl`, `.thor`, `config.ru`, `Berksfile`, `Capfile`, `Guardfile`, `Podfile`, `Thorfile`, `Vagrantfile` | [rubocop](https://rubocop.org/)                                                                                     |
-| YAML        | `.yml` (only files in locales folder)                                                                                                                                                                 | [ImmosquareYaml](https://github.com/IMMOSQUARE/immosquare-yaml)                                                     |
+| YAML        | `.yml` (only files in locales folder)                                                                                                                                                                 | [ImmosquareYaml](https://github.com/immosquare/immosquare-yaml)                                                     |
 | JS          | `.js`                                                                                                                                                                                                 | [eslint](https://eslint.org/)                                                                                       |
-| JSON        | `.json`                                                                                                                                                                                               | [ImmosquareExtensions](https://github.com/IMMOSQUARE/immosquare-extensions)                                         |
-| Markdown    | `.md`, `.md.erb`                                                                                                                                                                                      | [ImmosquareCleaner](https://github.com/IMMOSQUARE/immosquare-cleaner)                                               |
+| JSON        | `.json`                                                                                                                                                                                               | [ImmosquareExtensions](https://github.com/immosquare/immosquare-extensions)                                         |
+| Markdown    | `.md`, `.md.erb`                                                                                                                                                                                      | [ImmosquareCleaner](https://github.com/immosquare/immosquare-cleaner)                                               |
 | Others      | Any other format                                                                                                                                                                                      | [prettier](https://prettier.io/)                                                                                    |
 
 ## Linter Configurations
 
-You can view the specific configurations for all supported linters in the [linters folder](https://github.com/IMMOSQUARE/immosquare-cleaner/tree/main/linters) of the repository.
+You can view the specific configurations for all supported linters in the [linters folder](https://github.com/immosquare/immosquare-cleaner/tree/main/linters) of the repository.
 
 ## Installation
 
@@ -89,7 +89,7 @@ With the above, every time you save a file in VS Code, it will automatically be 
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request on our [GitHub repository](https://github.com/IMMOSQUARE/immosquare-cleaner).
+Contributions are welcome! Please open an issue or submit a pull request on our [GitHub repository](https://github.com/immosquare/immosquare-cleaner).
 
 ## License
 
