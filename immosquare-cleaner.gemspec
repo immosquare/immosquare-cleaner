@@ -4,7 +4,7 @@ Gem::Specification.new do |spec|
   spec.license        = "MIT"
   spec.name           = "immosquare-cleaner"
   spec.version        = ImmosquareCleaner::VERSION.dup
-  spec.authors        = ["IMMO SQUARE"]
+  spec.authors        = ["immosquare"]
   spec.email          = ["jules@immosquare.com"]
 
   spec.summary        = "A gem to lint and organize files in a Rails application."
