@@ -54,7 +54,7 @@ GEM
     htmlbeautifier (1.4.3)
     i18n (1.14.6)
       concurrent-ruby (~> 1.0)
-    immosquare-extensions (0.1.25)
+    immosquare-extensions (0.1.26)
       unicode_utils (~> 1.4.0)
     immosquare-yaml (0.1.26)
       immosquare-extensions (~> 0, >= 0.1.18)
@@ -116,4 +116,4 @@ DEPENDENCIES
   rake
 
 BUNDLED WITH
-   2.5.11
+   2.5.21
