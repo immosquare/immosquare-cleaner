@@ -62,8 +62,6 @@ Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
 
 #################### Style ###########################
-Style/ConditionalAssignment:
-  EnforcedStyle: "assign_inside_condition" # On ne veut pas que les if/else case s'alligent sur la fin du égale du nom de la variable
 Style/SingleArgumentDig:
   Enabled: false # On ne veut pas transformer les .dig  de 1 argument en array car on a fait un override de dig pour ajouter dig sur les active record dans le gem immosquare-extensions
 Style/RedundantBegin:
