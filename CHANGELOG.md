@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.49] - 2024-10-15
+
+- Revert Rubocop Improve rule for Style/ConditionalAssignment:
+
 ## [0.1.48] - 2024-10-15
 
 - Rubocop Improve rule for Style/ConditionalAssignment:
