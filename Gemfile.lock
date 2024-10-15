@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    immosquare-cleaner (0.1.47)
+    immosquare-cleaner (0.1.48)
       erb_lint (~> 0)
       htmlbeautifier (~> 1)
       immosquare-extensions (~> 0, >= 0.1.18)
