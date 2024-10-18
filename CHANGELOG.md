@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.50] - 2024-10-18
+
+- Update packges + gems
+
 ## [0.1.49] - 2024-10-15
 
 - Revert Rubocop Improve rule for Style/ConditionalAssignment:
