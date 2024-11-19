@@ -61,7 +61,7 @@ GEM
       unicode_utils (~> 1.4.0)
     immosquare-yaml (0.1.26)
       immosquare-extensions (~> 0, >= 0.1.18)
-    json (2.8.1)
+    json (2.8.2)
     language_server-protocol (3.17.0.3)
     logger (1.6.1)
     loofah (2.23.1)
@@ -97,7 +97,7 @@ GEM
       rubocop-ast (>= 1.32.2, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 3.0)
-    rubocop-ast (1.35.0)
+    rubocop-ast (1.36.1)
       parser (>= 3.3.1.0)
     ruby-progressbar (1.13.0)
     securerandom (0.3.2)
@@ -106,7 +106,7 @@ GEM
       concurrent-ruby (~> 1.0)
     unicode-display_width (2.6.0)
     unicode_utils (1.4.0)
-    uri (1.0.1)
+    uri (1.0.2)
 
 PLATFORMS
   arm64-darwin-22
