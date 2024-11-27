@@ -9,7 +9,7 @@
     "eslint-plugin-prefer-arrow":      "^1.2.3",
     "eslint-plugin-sonarjs":           "^2.0.4",
     "jscodeshift":                     "^17.1.1",
-    "prettier":                        "^3.3.3"
+    "prettier":                        "^3.4.1"
   },
   "devDependencies": {"npm-check-updates": "^17.1.11"},
   "scripts": {"bun-ncu": "bun ncu -u && bun install"}
