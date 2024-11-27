@@ -1,3 +1,6 @@
+## [0.1.52] - 2024-11-27
+- Update rubocop version + Prettier (https://prettier.io/blog/2024/11/26/3.4.0.html)
+
 ## [0.1.51] - 2024-10-24
 - Add new rule setting for Style/CombinableLoops
 
