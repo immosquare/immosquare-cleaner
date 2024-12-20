@@ -25,7 +25,7 @@ Naming/VariableNumber:
   Enabled: false # On veut pouvour utiliser administrative_area_level_1 avec cette synthase
 Naming/FileName:
   Enabled: false # on veut pouvoir faire des nom de fichier avec des - immosquare-cleaner.rb
-MethodParameterName:
+Naming/MethodParameterName:
   MinNameLength: 1 # On veut pouvoir utiliser des noms de paramètres de 1 caractère
 
 #################### Layout ###########################
