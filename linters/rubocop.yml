@@ -1,6 +1,6 @@
 require:
   - rubocop/cop/style/method_call_with_args_parentheses_override
-  - rubocop/cop/style/use_credentials_instead_of_env
+  - rubocop/cop/custom_cops/style/use_credentials_instead_of_env
 
 # Pour activer toutes les méthodes de Rubocop et activer le cache pour les gros fichiers
 AllCops:
@@ -101,10 +101,12 @@ Style/WordArray:
 Style/SymbolArray:
   EnforcedStyle: brackets # Pour formater les arrays de la forme [:a, :b, :c] et pas %i[a b c]
 
-#################### CUSTOM ###########################
+#################### OVERWRITE ###########################
 Style/MethodCallWithArgsParentheses:
   Enabled: true # On veut forcer les parenthèses où elles sont utilises pour rendre le code plus propre
-Style/UseCredentialsInsteadOfEnv:
+
+#################### CUSTOMS ###########################
+CustomCops/Style/UseCredentialsInsteadOfEnv:
   Enabled: true # On veut forcer l'utilisation de credentials au lieu de ENV pour les secrets
 
 #################### GEM ###########################
