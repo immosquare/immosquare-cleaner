@@ -1,4 +1,6 @@
-require: rubocop/cop/style/method_call_with_args_parentheses_override
+require:
+  - rubocop/cop/style/method_call_with_args_parentheses_override
+  - rubocop/cop/style/use_credentials_instead_of_env
 
 # Pour activer toutes les méthodes de Rubocop et activer le cache pour les gros fichiers
 AllCops:
@@ -84,11 +86,8 @@ Style/IfUnlessModifierOfIfUnless:
   Enabled: false # On veut pourvoir mettre un if à la fin de end
 Style/NegatedIf:
   Enabled: false # On veut remplacer les if ! par des unless
-Style/MethodCallWithArgsParentheses:
-  Enabled: true # On veut forcer les parenthèses où elles sont utilises pour rendre le code plus propre
 Style/FormatStringToken:
   EnforcedStyle: "template" ## On veut les interpolation avec le format %{my_string} et avec avec %<my_string>s
-
 Style/NumericPredicate:
   EnforcedStyle: comparison # On ne veut pas des .zero? .negative? .positif?
 Style/StringLiterals:
@@ -101,6 +100,12 @@ Style/WordArray:
   EnforcedStyle: brackets # Pour formater les arrays de la forme ["a", "b", "c] et pas %w[a b c]
 Style/SymbolArray:
   EnforcedStyle: brackets # Pour formater les arrays de la forme [:a, :b, :c] et pas %i[a b c]
+
+#################### CUSTOM ###########################
+Style/MethodCallWithArgsParentheses:
+  Enabled: true # On veut forcer les parenthèses où elles sont utilises pour rendre le code plus propre
+Style/UseCredentialsInsteadOfEnv:
+  Enabled: true # On veut forcer l'utilisation de credentials au lieu de ENV pour les secrets
 
 #################### GEM ###########################
 Gemspec/RequireMFA:
