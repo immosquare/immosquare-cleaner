@@ -3,16 +3,28 @@ module RuboCop
     module Style
       class UseCredentialsInsteadOfEnv < Base
 
-
         extend AutoCorrector
 
         MSG = "Use Rails.application.credentials instead of ENV.fetch".freeze
 
-        def on_send(node)
-          return unless node.source == 'ENV.fetch("HELLO_WORLD", nil)'
+        ##============================================================##
+        ## Node Matcher
+        ##============================================================##
+        def_node_matcher :env_fetch?, <<~PATTERN
+          (send (const nil? :ENV) :fetch ...)
+        PATTERN
 
+        def on_send(node)
+          return if !env_fetch?(node)
+
+          ##============================================================##
+          ## ENV.fetch("hello_world", nil)            => Rails.application.credentials.hello_world
+          ## ENV.fetch("hello_world_#{user_id}", nil) => Rails.application.credentials["hello_world_#{user_id}"]
+          ##============================================================##
           add_offense(node) do |corrector|
-            corrector.replace(node, "Rails.application.credentials.hello_world")
+            key   = node.arguments.first
+            value = key.type == :dstr ? "[#{key.source}]" : ".#{key.source.delete('"')}"
+            corrector.replace(node, "Rails.application.credentials#{value}")
           end
         end
 
