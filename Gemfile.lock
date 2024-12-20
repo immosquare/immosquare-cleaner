@@ -53,7 +53,7 @@ GEM
       rainbow
       rubocop (>= 1)
       smart_properties
-    erubi (1.13.0)
+    erubi (1.13.1)
     htmlbeautifier (1.4.3)
     i18n (1.14.6)
       concurrent-ruby (~> 1.0)
@@ -61,9 +61,9 @@ GEM
       unicode_utils (~> 1.4.0)
     immosquare-yaml (0.1.27)
       immosquare-extensions (~> 0, >= 0.1.18)
-    json (2.9.0)
+    json (2.9.1)
     language_server-protocol (3.17.0.3)
-    logger (1.6.3)
+    logger (1.6.4)
     loofah (2.23.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -123,4 +123,4 @@ DEPENDENCIES
   rake
 
 BUNDLED WITH
-   2.5.23
+   2.6.1
