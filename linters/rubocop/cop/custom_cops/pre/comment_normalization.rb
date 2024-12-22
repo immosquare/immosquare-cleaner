@@ -81,14 +81,17 @@ module RuboCop
           ##============================================================##
           def normalize_comment_block(block)
             indent_level = indent_level(block.first)
-            body         = block.map do |comment|
+            body         = block.map.with_index do |comment, index|
               text = comment.text.to_s.strip
-              next if text.start_with?("##=")
+              if text.start_with?("##=")
+                index == 0 || index == block.size - 1 ? nil : "###{SPACE}---------"
+              else
+                text = "###{SPACE}#{text}" if !text.start_with?("###{SPACE}")
+                text = text.chomp("##").strip
+                text
+              end
+            end.compact
 
-              text = "## #{text}" if !text.start_with?("## ")
-              text = text.chomp("##").strip
-              text
-            end
 
             ##============================================================##
             ## Le block va être remis à la place du block original sur
