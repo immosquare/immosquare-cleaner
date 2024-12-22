@@ -8,10 +8,10 @@ The cleaner recognizes and caters to various file formats:
 
 | File Type   | File Extension                                                                                                                                                                                        | Processor                                                                                                           |
 | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| ERB         | `.html.erb`                                                                                                                                                                                           | [htmlbeautifier](https://github.com/threedaymonk/htmlbeautifier) && [erb-lint](https://github.com/Shopify/erb-lint) |
+| ERB         | `.html.erb` , `.html`                                                                                                                                                                                 | [htmlbeautifier](https://github.com/threedaymonk/htmlbeautifier) && [erb-lint](https://github.com/Shopify/erb-lint) |
 | Ruby        | `.rb`, `.rake`, `Gemfile`, `Rakefile`, `.axlsx`, `.gemspec`, `.ru`, `.podspec`, `.jbuilder`, `.rabl`, `.thor`, `config.ru`, `Berksfile`, `Capfile`, `Guardfile`, `Podfile`, `Thorfile`, `Vagrantfile` | [rubocop](https://rubocop.org/)                                                                                     |
 | YAML        | `.yml` (only files in locales folder)                                                                                                                                                                 | [ImmosquareYaml](https://github.com/immosquare/immosquare-yaml)                                                     |
-| JS          | `.js`                                                                                                                                                                                                 | [eslint](https://eslint.org/)                                                                                       |
+| JS          | `.js`, `.mjs`                                                                                                                                                                                         | [eslint](https://eslint.org/)                                                                                       |
 | JSON        | `.json`                                                                                                                                                                                               | [ImmosquareExtensions](https://github.com/immosquare/immosquare-extensions)                                         |
 | Markdown    | `.md`, `.md.erb`                                                                                                                                                                                      | [ImmosquareCleaner](https://github.com/immosquare/immosquare-cleaner)                                               |
 | Others      | Any other format                                                                                                                                                                                      | [prettier](https://prettier.io/)                                                                                    |
@@ -60,7 +60,7 @@ ImmosquareCleaner.clean("path/to/your/file.rb")
 
 To clean rails project files:
 
-```bash
+```ruby
 rake immosquare_cleaner:clean
 ```
 

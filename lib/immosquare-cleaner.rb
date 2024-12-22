@@ -72,7 +72,13 @@ module ImmosquareCleaner
             File.write(rubocop_config_with_version_path, rubocop_config.to_yaml)
           end
 
-          cmds = ["bundle exec rubocop -c #{rubocop_config_with_version_path} \"#{file_path}\" #{ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all"}"]
+          ##============================================================##
+          ## --autocorrect-all : Auto-correct all offenses that RuboCop can correct, and leave all other offenses unchanged.
+          ## --no-parallel : Disable RuboCop's parallel processing for performance reasons because we pass only one file
+          ##============================================================##
+          rubocop_options = ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all --no-parallel"
+
+          cmds = ["bundle exec rubocop -c #{rubocop_config_with_version_path} \"#{file_path}\" #{rubocop_options}"]
           launch_cmds(cmds)
           File.normalize_last_line(file_path)
           return
