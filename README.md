@@ -1,4 +1,4 @@
-# ImmosquareCleaner
+# Immosquare-cleaner
 
 A meticulously crafted Ruby gem to enhance the cleanliness and structure of your project's files. This tool ensures consistency and uniformity across various formats, including Ruby, ERB, YAML, Markdown, JSON, JS, CSS, SASS, LESS, and other formats supported by Prettier.
 
@@ -22,27 +22,31 @@ You can view the specific configurations for all supported linters in the [linte
 
 ## Installation
 
-**Prerequisite**: Please be sure to have [bun](https://bun.sh/) installed. This is necessary to launch eslint & prettier commands.
+**Prerequisite**: Please be sure to have [bun](https://bun.sh/) installed. (This is necessary to launch eslint & prettier commands.)
 
-For the Ruby gem:
+Add the gem in your development group in the Gemfile:
 
 ```ruby
-gem "immosquare-cleaner"
+group :development do
+  ...
+  gem "immosquare-cleaner"
+  ...
+end
 ```
 
-Then execute:
 
-```bash
-$ bundle install
+### Configuration
+
+Tailor the behavior of the gem/module with the provided configuration options:
+
+```ruby
+ImmosquareCleaner.config do |config|
+  config.rubocop_options        = "--your-rubocop-options-here"
+  config.htmlbeautifier_options = "--your-htmlbeautifier-options-here"
+  config.erblint_options        = "--your-erblint-options-here"
+end
 ```
 
-For the npm module:
-
-Add `immosquare-cleaner` to your development dependencies. For instance, using `bun`:
-
-```bash
-$ bun add immosquare-cleaner
-```
 
 ## Usage
 
@@ -52,20 +56,14 @@ To clean a specific file:
 ImmosquareCleaner.clean("path/to/your/file.rb")
 ```
 
-### Configuration
+## Rake Tasks
 
-Tailor the behavior of the gem/module with the provided configuration options:
+To clean rails project files:
 
-```ruby
-ImmosquareCleaner.config do |config|
-  # Set custom rubocop options
-  config.rubocop_options = "--your-rubocop-options-here"
-  # Set custom htmlbeautifier options
-  config.htmlbeautifier_options = "--your-htmlbeautifier-options-here"
-  # Set custom erblint options
-  config.erblint_options = "--your-erblint-options-here"
-end
+```bash
+rake immosquare_cleaner:clean
 ```
+
 
 ## Integration with Visual Studio Code
 
@@ -79,7 +77,8 @@ Automate the cleaning process for all files upon saving in VS Code:
   "commands": [
     {
       "match": ".*",
-      "cmd": "if bundle info immosquare-cleaner &>/dev/null; then bundle exec immosquare-cleaner '${file}'; else echo 'please install the gem immosquare-cleaner'; fi"
+      "cmd": "if bundle info immosquare-cleaner &>/dev/null; then bundle exec immosquare-cleaner '${file}'; else echo 'please install the gem immosquare-cleaner'; fi",
+      "runIn": "backend"
     }
   ]
 }
