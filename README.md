@@ -61,7 +61,7 @@ ImmosquareCleaner.clean("path/to/your/file.rb")
 To clean rails project files:
 
 ```ruby
-rake immosquare_cleaner:clean
+rake immosquare_cleaner:clean_app
 ```
 
 

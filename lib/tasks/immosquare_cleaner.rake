@@ -3,7 +3,7 @@ namespace :immosquare_cleaner do
   ## Function to clean files in rails app
   ##============================================================##
   desc "clean files in rails app"
-  task :clean => :environment do
+  task :clean_app => :environment do
     file_paths = Dir.glob("#{Rails.root}/**/*").reject do |file_path|
       File.directory?(file_path) || file_path.gsub("#{Rails.root}/", "").start_with?("node_modules", "tmp", "public", "log", "app/assets/builds", "app/assets/fonts", "app/assets/images", "vendor") || file_path.end_with?(".lock", ".lockb")
     end
