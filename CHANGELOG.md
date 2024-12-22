@@ -1,5 +1,8 @@
+## [0.1.54] - 2024-12-22
+- Rubocop : Add new custom cop : CommentNormalization to normalize comments in the codebase
+
 ## [0.1.53] - 2024-12-20
-- Add new custom cop : UseCredentialsInsteadOfEnv to replace ENV variables with Rails.credentials
+- Rubocop : Add new custom cop : UseCredentialsInsteadOfEnv to replace ENV variables with Rails.credentials
 
 ## [0.1.52] - 2024-11-27
 - Update rubocop version + Prettier (https://prettier.io/blog/2024/11/26/3.4.0.html)
