@@ -92,10 +92,12 @@ module RuboCop
             normalized_lines << "#{indent}#{BORDER_LINE}"
 
             block.each do |comment|
-              next if comment.text.strip.start_with?("##=")
+              text = comment.text.to_s.strip
+              next if text.start_with?("##=")
 
-              content = comment.text.gsub(/^[\s#]*/, "").strip
-              normalized_lines << "#{indent}## #{content}" unless content.empty?
+              text = "## #{text}" if !text.start_with?("## ")
+              text = text.chomp("##").strip
+              normalized_lines << "#{indent}#{text}"
             end
 
             normalized_lines << "#{indent}#{BORDER_LINE}"

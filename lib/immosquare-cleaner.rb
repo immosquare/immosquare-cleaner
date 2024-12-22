@@ -7,24 +7,24 @@ require_relative "immosquare-cleaner/configuration"
 require_relative "immosquare-cleaner/markdown"
 require_relative "immosquare-cleaner/railtie" if defined?(Rails)
 
-##===========================================================================##
+##============================================================##
 ## Importing the 'English' library allows us to use more human-readable
 ## global variables, such as $INPUT_RECORD_SEPARATOR instead of $/,
 ## which enhances code clarity and makes it easier to understand
 ## the purpose of these variables in our code.
-##===========================================================================##
+##============================================================##
 module ImmosquareCleaner
   class << self
 
-    ##===========================================================================##
+    ##============================================================##
     ## Constants
-    ##===========================================================================##
+    ##============================================================##
     SHEBANG    = "#!/usr/bin/env ruby".freeze
     RUBY_FILES = [".rb", ".rake", "Gemfile", "Rakefile", ".axlsx", ".gemspec", ".ru", ".podspec", ".jbuilder", ".rabl", ".thor", "config.ru", "Berksfile", "Capfile", "Guardfile", "Podfile", "Thorfile", "Vagrantfile"].freeze
 
-    ##===========================================================================##
+    ##============================================================##
     ## Gem configuration
-    ##===========================================================================##
+    ##============================================================##
     attr_writer :configuration
 
     def configuration
@@ -157,10 +157,10 @@ module ImmosquareCleaner
       File.expand_path("..", __dir__)
     end
 
-    ##===========================================================================##
+    ##============================================================##
     ## We change the current directory to the gem root to ensure the gem's paths
     ## are used when executing the commands
-    ##===========================================================================##
+    ##============================================================##
     def launch_cmds(cmds)
       Dir.chdir(gem_root) do
         cmds.each {|cmd| system(cmd) }

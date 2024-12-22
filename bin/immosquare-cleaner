@@ -4,9 +4,9 @@ require "immosquare-cleaner"
 require "optparse"
 
 
-##===========================================================================##
+##============================================================##
 ## We check if bun.sh is installed
-##===========================================================================##
+##============================================================##
 def bun_installed?
   system("which bun > /dev/null 2>&1")
 end
@@ -18,49 +18,49 @@ end
 
 
 options = {}
-##===========================================================================##
-## optparse is a standard library of ruby, it's used to parse command line   ##
-##===========================================================================##
+##============================================================##
+## optparse is a standard library of ruby, it's used to parse command line
+##============================================================##
 OptionParser.new do |opts|
   opts.banner = "Usage: immosquare-cleaner [options] file"
 
-  ##===========================================================================##
-  ## Capture all single-letter options (like '-t', '-a', etc.)                 ##
-  ##===========================================================================##
+  ##============================================================##
+  ## Capture all single-letter options (like '-t', '-a', etc.)
+  ##============================================================##
   ("a".."z").each do |letter|
     opts.on("-#{letter} [OPTION]", "Option -#{letter}") do |value|
       options[letter.to_sym] = value
     end
   end
 
-  ##===========================================================================##
-  ## If you also want to capture longer options, add them here                 ##
-  ## Example:                                                                  ##
-  ## opts.on("--tag TAG", "Tag option") do |t|                                 ##
-  ##   options[:tag] = t                                                       ##
-  ## end                                                                       ##
-  ##===========================================================================##
+  ##============================================================##
+  ## If you also want to capture longer options, add them here
+  ## Example:
+  ## opts.on("--tag TAG", "Tag option") do |t|
+  ##   options[:tag] = t
+  ## end
+  ##============================================================##
 end.parse!
 
-##===========================================================================##
-## Check if the file path is provided                                         ##
-##===========================================================================##
+##============================================================##
+## Check if the file path is provided
+##============================================================##
 file_path = ARGV[0]
 if !file_path
   puts("Error: Please provide a file path.")
   exit 1
 end
 
-##===========================================================================##
-## Check if the file exists                                                   ##
-##===========================================================================##
+##============================================================##
+## Check if the file exists
+##============================================================##
 if !File.exist?(file_path)
   puts("Error: The file '#{file_path}' does not exist.")
   exit 1
 end
 
 
-##===========================================================================##
-## We can now call the clean method, passing the file path and options        ##
-##===========================================================================##
+##============================================================##
+## We can now call the clean method, passing the file path and options
+##============================================================##
 ImmosquareCleaner.clean(file_path, **options)
