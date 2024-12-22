@@ -2,10 +2,12 @@ module RuboCop
   module Cop
     module CustomCops
       ##============================================================##
-      ## Ce cop dépend du module PRE pour être lancer top dans le
-      ## processus de vérification pour que ensuite Layout/CommentIndentation
-      ## intende correctement les commentaires modifiés.
-      ## Department Layout (y compris Layout/CommentIndentation)
+      ## Ce cop dépend du module PRE pour être lancé en amont de
+      ## Layout/CommentIndentation
+      ## Dans l'odre les cops se lancent par Department puis par
+      ## ordre alphabétique
+      ## ---------
+      ## Department Layout
       ## Department Lint
       ## Department Style
       ## Department Metricstoto
@@ -17,6 +19,7 @@ module RuboCop
 
           MSG         = "Comments should be normalized with the standard format if start with ##".freeze
           BORDER_LINE = "###{"=" * 60}##".freeze
+          SPACE       = " ".freeze
 
           ##============================================================##
           ## 1 - var js, fjs = d.getElementsByTagName(s)[0];
@@ -44,7 +47,7 @@ module RuboCop
           def find_comment_blocks(comments)
             blocks            = []
             current_block     = []
-            filtered_comments = comments.select {|comment| current_line(comment).strip.start_with?("##") }
+            filtered_comments = comments.select {|comment| line_content(comment).strip.start_with?("##") }
 
             filtered_comments.each do |comment|
               if current_block.empty? || consecutive_comments?(current_block.last, comment)
@@ -59,13 +62,6 @@ module RuboCop
             blocks
           end
 
-          ##============================================================##
-          ## Pour récupérer le contenu de la ligne courante
-          ##============================================================##
-          def current_line(comment)
-            processed_source.lines[comment.location.line - 1]
-          end
-
           def consecutive_comments?(previous_comment, current_comment)
             return false unless previous_comment && current_comment
 
@@ -75,42 +71,48 @@ module RuboCop
           end
 
           def needs_correction?(block)
-            indent          = indentation(block.first)
-            expected_border = "#{indent}#{BORDER_LINE}"
-
-            return false if block.first.text == expected_border &&
-                            block.last.text == expected_border &&
-                            block.all? {|comment| comment.text.start_with?("#{indent}## ") || comment.text == expected_border }
+            return false if block.first.text == BORDER_LINE && block.last.text == BORDER_LINE && block.all? {|comment| comment.text.start_with?("##") }
 
             true
           end
 
+          ##============================================================##
+          ## Pour formater correctement le block de commentaires
+          ##============================================================##
           def normalize_comment_block(block)
-            indent           = indentation(block.first)
-            normalized_lines = []
-
-            normalized_lines << "#{indent}#{BORDER_LINE}"
-
-            block.each do |comment|
+            indent_level = indent_level(block.first)
+            body         = block.map do |comment|
               text = comment.text.to_s.strip
               next if text.start_with?("##=")
 
               text = "## #{text}" if !text.start_with?("## ")
               text = text.chomp("##").strip
-              normalized_lines << "#{indent}#{text}"
+              text
             end
 
-            normalized_lines << "#{indent}#{BORDER_LINE}"
-            normalized_lines.join("\n")
+            ##============================================================##
+            ## Le block va être remis à la place du block original sur
+            ## la colone du block original. Donc la première ligne du block
+            ## ne doit pas être indentée manuellement. Par contre les autres
+            ## lignes doivent être indentées sur la même colonne que la première
+            ##============================================================##
+            [BORDER_LINE, body, BORDER_LINE].flatten.map.with_index {|line, index| index == 0 ? line : "#{SPACE * indent_level}#{line}" }.join("\n")
           end
 
-          def indentation(comment)
-            comment.text.match(/^\s*/)[0]
+          ##============================================================##
+          ## Pour récupérer le contenu de la ligne courante
+          ##============================================================##
+          def line_content(comment)
+            processed_source.lines[comment.location.line - 1]
+          end
+
+          def indent_level(line)
+            line_content(line)[/\A */].size
           end
 
           def range_for_block(block)
             start_pos = block.first.location.expression.begin_pos
-            end_pos = block.last.location.expression.end_pos
+            end_pos   = block.last.location.expression.end_pos
 
             Parser::Source::Range.new(processed_source.buffer, start_pos, end_pos)
           end
