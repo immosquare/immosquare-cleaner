@@ -1,6 +1,7 @@
 require:
   - rubocop/cop/style/method_call_with_args_parentheses_override
   - rubocop/cop/custom_cops/style/use_credentials_instead_of_env
+  - rubocop/cop/custom_cops/style/comment_normalization
 
 # Pour activer toutes les méthodes de Rubocop et activer le cache pour les gros fichiers
 AllCops:
@@ -108,6 +109,8 @@ Style/MethodCallWithArgsParentheses:
 #################### CUSTOMS ###########################
 CustomCops/Style/UseCredentialsInsteadOfEnv:
   Enabled: true # On veut forcer l'utilisation de credentials au lieu de ENV pour les secrets
+CustomCops/Style/CommentNormalization:
+  Enabled: true # On veut forcer la normalisation des commentaires
 
 #################### GEM ###########################
 Gemspec/RequireMFA:
