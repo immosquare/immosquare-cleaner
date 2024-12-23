@@ -1,18 +1,7 @@
 module RuboCop
   module Cop
     module CustomCops
-      ##============================================================##
-      ## Ce cop dépend du module PRE pour être lancé en amont de
-      ## Layout/CommentIndentation
-      ## Dans l'odre les cops se lancent par Department puis par
-      ## ordre alphabétique
-      ## ---------
-      ## Department Layout
-      ## Department Lint
-      ## Department Style
-      ## Department Metricstoto
-      ##============================================================##
-      module Pre
+      module Style
         class CommentNormalization < Base
 
           extend AutoCorrector
@@ -21,20 +10,27 @@ module RuboCop
           BORDER_LINE = "###{"=" * 60}##".freeze
           SPACE       = " ".freeze
 
-          ##============================================================##
-          ## 1 - var js, fjs = d.getElementsByTagName(s)[0];
-          ## équivaut à var js = null et var fjs(first JS) d.getElementsByTagName(s)[0]
-          ## On compile le fichier avec Terser pour qu'il soit minifié
-          ##============================================================##
           def on_new_investigation
             comment_blocks = find_comment_blocks(processed_source.comments)
             puts("comment_blocks: #{comment_blocks.size}")
 
+
             comment_blocks.each do |block|
               if needs_correction?(block)
-                puts(normalize_comment_block(block))
+                ##============================================================##
+                ## Pour désactiver les cops suivants
+                ##============================================================##
+                buffer    = processed_source.buffer
+                start_pos = buffer.line_range(block.first.location.line).begin_pos
+                end_pos   = buffer.line_range(block.last.location.line).end_pos
+                range     = Parser::Source::Range.new(buffer, start_pos, end_pos)
+                ignore_node(range)
+
+                ##============================================================##
+                ## Puis, on ajoute l'offense
+                ##============================================================##
                 add_offense(block.first) do |corrector|
-                  corrector.replace(range_for_block(block), normalize_comment_block(block))
+                  corrector.replace(range, normalize_comment_block(block))
                 end
               end
             end
@@ -54,7 +50,6 @@ module RuboCop
             filtered_comments = comments.select {|comment| line_content(comment).strip.start_with?("##") }
 
             filtered_comments.each do |comment|
-              puts(comment.text)
               if current_block.empty? || comment.location.line == current_block.last.location.line + 1
                 current_block << comment
               else
@@ -114,12 +109,7 @@ module RuboCop
             line_content(line)[/\A */].size
           end
 
-          def range_for_block(block)
-            start_pos = block.first.location.expression.begin_pos
-            end_pos   = block.last.location.expression.end_pos
 
-            Parser::Source::Range.new(processed_source.buffer, start_pos, end_pos)
-          end
 
         end
       end
