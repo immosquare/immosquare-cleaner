@@ -1,3 +1,6 @@
+## [0.1.55] - 2024-12-23
+- Rubocop : Improve CommentNormalization cop
+
 ## [0.1.54] - 2024-12-22
 - Rubocop : Add new custom cop : CommentNormalization to normalize comments in the codebase
 
