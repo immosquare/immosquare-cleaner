@@ -1,3 +1,6 @@
+## [0.1.56] - 2024-12-23
+- erb_lint : Fix Calling `erblint` is deprecated, please call the renamed executable `erb_lint` instead.
+
 ## [0.1.55] - 2024-12-23
 - Rubocop : Improve CommentNormalization cop
 
