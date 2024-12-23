@@ -48,7 +48,7 @@ module ImmosquareCleaner
         if file_path.end_with?(".html.erb", ".html")
           cmds = []
           cmds << "bundle exec htmlbeautifier #{file_path} #{ImmosquareCleaner.configuration.htmlbeautifier_options || "--keep-blank-lines 4"}"
-          cmds << "bundle exec erblint --config #{gem_root}/linters/erb-lint.yml #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}"
+          cmds << "bundle exec erb_lint --config #{gem_root}/linters/erb-lint.yml #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}"
           launch_cmds(cmds)
           File.normalize_last_line(file_path)
           return
