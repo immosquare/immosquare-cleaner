@@ -12,8 +12,6 @@ module RuboCop
 
           def on_new_investigation
             comment_blocks = find_comment_blocks(processed_source.comments)
-            puts("comment_blocks: #{comment_blocks.size}")
-
 
             comment_blocks.each do |block|
               if needs_correction?(block)
