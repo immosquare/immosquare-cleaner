@@ -67,6 +67,9 @@ module RuboCop
           ## - il n'y a pas de ligne autre que les lignes de bordure qui commence par ##=
           ##============================================================##
           def needs_correction?(block)
+            return false if block.compact.empty?
+
+
             return false if block.first.text == BORDER_LINE &&
                             block.last.text == BORDER_LINE &&
                             block.all? {|comment| comment.text.start_with?("##") } &&

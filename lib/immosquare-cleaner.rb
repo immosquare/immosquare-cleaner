@@ -95,13 +95,15 @@ module ImmosquareCleaner
         ##============================================================##
         ## JS files
         ## 16/05/2024
-        ## Depuis eslint V9 (acutellement en V9.2.0), il y a des
+        ## ---------
+        ## Depuis eslint V9 (acutellement en V9.15.0), il y a des
         ## erreurs/warnings
         ## File ignored because of a matching ignore pattern. Use "--no-ignore" to disable file ignore settings or use "--no-warn-ignored" to suppress this warning
-        ## alors que le fichier ne devrait pas être ignoré...
+        ## ---------
         ## Cela se produit quand le fichier est dans un dossier supérieur
-        ## à celui de la racine du gem. Pour éviter ce problème on
-        ## met le fichier dans un dossier temporaire et on le supprime
+        ## à celui de la racine du gem. (donc quand on lance depuis une application)
+        ## le fichier est ignoré par eslint car il est dans un dossier supérieur
+        ## Pour éviter ce problème on met le fichier dans un dossier temporaire et on le supprime
         ## par la suite.
         ##============================================================##
         begin
