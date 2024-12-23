@@ -28,11 +28,15 @@ module RuboCop
           ##============================================================##
           def on_new_investigation
             comment_blocks = find_comment_blocks(processed_source.comments)
+            puts("comment_blocks: #{comment_blocks.size}")
 
             comment_blocks.each do |block|
-              add_offense(block.first) do |corrector|
-                corrector.replace(range_for_block(block), normalize_comment_block(block))
-              end if needs_correction?(block)
+              if needs_correction?(block)
+                puts(normalize_comment_block(block))
+                add_offense(block.first) do |corrector|
+                  corrector.replace(range_for_block(block), normalize_comment_block(block))
+                end
+              end
             end
           end
 
@@ -40,7 +44,7 @@ module RuboCop
 
 
           ##============================================================##
-          ## On ne veut traiter  que les commentaires qui :
+          ## On ne veut traiter que les commentaires qui :
           ## - commencent par ## (et non #)
           ## - ne sont pas des commentaires de fin de ligne ruby
           ##============================================================##
@@ -50,24 +54,17 @@ module RuboCop
             filtered_comments = comments.select {|comment| line_content(comment).strip.start_with?("##") }
 
             filtered_comments.each do |comment|
-              if current_block.empty? || consecutive_comments?(current_block.last, comment)
+              puts(comment.text)
+              if current_block.empty? || comment.location.line == current_block.last.location.line + 1
                 current_block << comment
               else
-                blocks << current_block unless current_block.empty?
+                blocks << current_block
                 current_block = [comment]
               end
             end
 
-            blocks << current_block unless current_block.empty?
+            blocks << current_block
             blocks
-          end
-
-          def consecutive_comments?(previous_comment, current_comment)
-            return false unless previous_comment && current_comment
-
-            previous_line = previous_comment.location.line
-            current_line  = current_comment.location.line
-            current_line == previous_line + 1
           end
 
           def needs_correction?(block)
@@ -82,7 +79,11 @@ module RuboCop
           def normalize_comment_block(block)
             indent_level = indent_level(block.first)
             body         = block.map.with_index do |comment, index|
+              ##============================================================##
+              ## On met un espace après les ## si le caractère n'est pas un espace
+              ##============================================================##
               text = comment.text.to_s.strip
+              text = text.gsub(/^##(?![=\s])/, "###{SPACE}")
               if text.start_with?("##=")
                 index == 0 || index == block.size - 1 ? nil : "###{SPACE}---------"
               else
