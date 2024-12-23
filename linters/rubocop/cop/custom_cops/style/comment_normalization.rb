@@ -60,8 +60,21 @@ module RuboCop
             blocks
           end
 
+          ##============================================================##
+          ## Nous n'avons pas besoin de corriger les commentaires si :
+          ## - le premier et le dernier commentaire sont des lignes de bordure
+          ## - tous les commentaires commencent par ##
+          ## - il n'y a pas de ligne autre que les lignes de bordure qui commence par ##=
+          ##============================================================##
           def needs_correction?(block)
-            return false if block.first.text == BORDER_LINE && block.last.text == BORDER_LINE && block.all? {|comment| comment.text.start_with?("##") }
+            return false if block.first.text == BORDER_LINE &&
+                            block.last.text == BORDER_LINE &&
+                            block.all? {|comment| comment.text.start_with?("##") } &&
+                            block.each_with_index.none? do |comment, index|
+                              index != 0 &&
+                              index != block.length - 1 &&
+                              comment.text.start_with?("##=")
+                            end
 
             true
           end
