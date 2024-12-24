@@ -26,9 +26,18 @@ module RuboCop
             ## ENV.fetch("hello_world", nil)            => Rails.application.credentials.hello_world
             ## ENV.fetch("hello_world_#{user_id}", nil) => Rails.application.credentials["hello_world_#{user_id}"]
             ##============================================================##
+            key   = node.arguments.first
+            value = key.type == :dstr ? "[#{key.source}]" : ".#{key.source.delete('"')}"
+
+            ##============================================================##
+            ## Skip if key starts with BUNDLER_ or RAILS_ or BUNDLE_
+            ##============================================================##
+            return if key.source.delete('"').start_with?("BUNDLER_", "BUNDLE_", "RAILS_")
+
+            ##============================================================##
+            ## Add offense
+            ##============================================================##
             add_offense(node) do |corrector|
-              key   = node.arguments.first
-              value = key.type == :dstr ? "[#{key.source}]" : ".#{key.source.delete('"')}"
               corrector.replace(node, "Rails.application.credentials#{value}")
             end
           end
