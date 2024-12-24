@@ -1,3 +1,6 @@
+## [0.1.57] - 2024-12-24
+- Improve UseCredentialsInsteadOfEnv
+
 ## [0.1.56] - 2024-12-23
 - erb_lint : Fix Calling `erblint` is deprecated, please call the renamed executable `erb_lint` instead.
 
