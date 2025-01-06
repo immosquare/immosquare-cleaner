@@ -47,7 +47,7 @@ module RuboCop
           def find_comment_blocks(comments)
             blocks            = []
             current_block     = []
-            filtered_comments = comments.select {|comment| line_content(comment).strip.start_with?("##") || comment.text.start_with?("#=") }
+            filtered_comments = comments.select {|comment| line_content(comment).strip.start_with?("##") }
 
             filtered_comments.each do |comment|
               if current_block.empty? || comment.location.line == current_block.last.location.line + 1
