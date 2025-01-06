@@ -1,3 +1,6 @@
+## [0.1.58] - 2025-01-06
+- Improve CommentNormalization
+
 ## [0.1.57] - 2024-12-24
 - Improve UseCredentialsInsteadOfEnv
 
