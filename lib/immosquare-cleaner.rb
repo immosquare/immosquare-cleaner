@@ -3,6 +3,7 @@ require "yaml"
 require "json"
 require "immosquare-yaml"
 require "immosquare-extensions"
+require "fileutils"
 require_relative "immosquare-cleaner/configuration"
 require_relative "immosquare-cleaner/markdown"
 require_relative "immosquare-cleaner/railtie" if defined?(Rails)
