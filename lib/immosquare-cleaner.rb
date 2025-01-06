@@ -96,16 +96,18 @@ module ImmosquareCleaner
         ##============================================================##
         ## JS files
         ## 16/05/2024
+        ## maj 06/01/2025
         ## ---------
-        ## Depuis eslint V9 (acutellement en V9.15.0), il y a des
-        ## erreurs/warnings
-        ## File ignored because of a matching ignore pattern. Use "--no-ignore" to disable file ignore settings or use "--no-warn-ignored" to suppress this warning
+        ## Depuis eslint V9 (acutellement en V9.17.0), il y a une erreur
+        ## "warning  File ignored because outside of base path"
+        ## si le fichier à linté est dans un dossier supérieur à celui du fichier de config.
+        ## ISSUE : https://github.com/eslint/eslint/issues/19118
         ## ---------
-        ## Cela se produit quand le fichier est dans un dossier supérieur
-        ## à celui de la racine du gem. (donc quand on lance depuis une application)
-        ## le fichier est ignoré par eslint car il est dans un dossier supérieur
-        ## Pour éviter ce problème on met le fichier dans un dossier temporaire et on le supprime
-        ## par la suite.
+        ## Dans nos apps nous sommes tjs dans ce cas car le fichier de config est dans le dossier du gem.
+        ## et les fichiers à linté sont dans les apps.
+        ## ---------
+        ## Pour éviter ce problème on met le fichier dans un dossier temporaire dans le dossier du gem
+        ## et on le supprime par la suite.
         ##============================================================##
         begin
           temp_folder_path = "#{gem_root}/tmp"
