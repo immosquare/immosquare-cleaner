@@ -41,6 +41,19 @@ module ImmosquareCleaner
       ##============================================================##
       options = {}.merge(options)
 
+
+      ##============================================================##
+      ## On charge le fichier de configuration s'il existe
+      ##============================================================##
+      config_file = File.join(Dir.pwd, "config/initializers/immosquare-cleaner.rb")
+      load(config_file) if File.exist?(config_file)
+
+      ##============================================================##
+      ## On retourne si le fichier est dans la liste des fichiers à exclure
+      ##============================================================##
+      exclude_files = ImmosquareCleaner.configuration.exclude_files.map {|file| File.join(Dir.pwd, file) }
+      return if exclude_files.include?(file_path)
+
       begin
         ##============================================================##
         ## .html.erb files
