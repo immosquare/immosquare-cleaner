@@ -1,3 +1,6 @@
+## [0.1.60] - 2025-01-06
+- load config from immosquare-cleaner.rb initializer
+
 ## [0.1.59] - 2025-01-06
 - Improve CommentNormalization
 
