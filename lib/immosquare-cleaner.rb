@@ -70,16 +70,28 @@ module ImmosquareCleaner
 
         ##============================================================##
         ## Ruby Files
+        ## ---
+        ## We create a rubocop config file with the ruby version
+        ## if it does not exist with the node TargetRubyVersion
+        ## to avoid the warning "Warning: No Ruby version specified in the configuration file"
         ##============================================================##
         if file_path.end_with?(*RUBY_FILES) || File.open(file_path, &:gets)&.include?(SHEBANG)
+          rubocop_config_with_version_path = "#{gem_root}/linters/rubocop-#{RUBY_VERSION}.yml"
+
+          if !File.exist?(rubocop_config_with_version_path)
+            rubocop_config = YAML.load_file("#{gem_root}/linters/rubocop.yml")
+            rubocop_config["AllCops"] ||= {}
+            rubocop_config["AllCops"]["TargetRubyVersion"] = RUBY_VERSION
+            File.write(rubocop_config_with_version_path, rubocop_config.to_yaml)
+          end
 
           ##============================================================##
           ## --autocorrect-all : Auto-correct all offenses that RuboCop can correct, and leave all other offenses unchanged.
-          ## --no-parallel : Disable RuboCop's parallel processing for performance reasons because we pass only one file
+          ## --no-parallel     : Disable RuboCop's parallel processing for performance reasons because we pass only one file
           ##============================================================##
           rubocop_options = ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all --no-parallel"
 
-          cmds = ["bundle exec rubocop -c #{gem_root}/linters/rubocop.yml \"#{file_path}\" #{rubocop_options}"]
+          cmds = ["bundle exec rubocop -c #{rubocop_config_with_version_path} \"#{file_path}\" #{rubocop_options}"]
           launch_cmds(cmds)
           File.normalize_last_line(file_path)
           return
