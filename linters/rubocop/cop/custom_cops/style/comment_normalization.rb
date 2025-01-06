@@ -119,7 +119,7 @@ module RuboCop
             ##============================================================##
             body = body.map do |line|
               chars = line.chars.uniq.compact.sort
-              [[" ", "#", "="], ["#", "="]].include?(chars) ? nil : line
+              [[" ", "#", "="], ["#", "="]].include?(chars) ? INSIDE_SEPARATOR : line
             end.compact
 
 
