@@ -6,12 +6,14 @@ module RuboCop
 
           extend AutoCorrector
 
-          MSG         = "Comments should be normalized with the standard format if start with ##".freeze
-          BORDER_LINE = "###{"=" * 60}##".freeze
-          SPACE       = " ".freeze
+          MSG              = "Comments should be normalized with the standard format if start with ##".freeze
+          BORDER_LINE      = "###{"=" * 60}##".freeze
+          SPACE            = " ".freeze
+          INSIDE_SEPARATOR = "###{SPACE}---------".freeze
 
           def on_new_investigation
             comment_blocks = find_comment_blocks(processed_source.comments)
+
 
             comment_blocks.each do |block|
               if needs_correction?(block)
@@ -45,7 +47,7 @@ module RuboCop
           def find_comment_blocks(comments)
             blocks            = []
             current_block     = []
-            filtered_comments = comments.select {|comment| line_content(comment).strip.start_with?("##") }
+            filtered_comments = comments.select {|comment| line_content(comment).strip.start_with?("##") || comment.text.start_with?("#=") }
 
             filtered_comments.each do |comment|
               if current_block.empty? || comment.location.line == current_block.last.location.line + 1
@@ -69,6 +71,15 @@ module RuboCop
           def needs_correction?(block)
             return false if block.compact.empty?
 
+            ##============================================================##
+            ## un block de commentaires ne peut pas être composé de moins de 3 lignes (border, body, border)
+            ##============================================================##
+            return true if block.size < 3
+
+            ##============================================================##
+            ## On retourne true si une ligne du block contient que les caractères de bordure sans que cela soit une ligne de bordure
+            ##============================================================##
+            return true if block[1..-2].any? {|comment| comment.text.chars.uniq.compact.sort == [" ", "#", "="] }
 
             return false if block.first.text == BORDER_LINE &&
                             block.last.text == BORDER_LINE &&
@@ -78,6 +89,7 @@ module RuboCop
                               index != block.length - 1 &&
                               comment.text.start_with?("##=")
                             end
+
 
             true
           end
@@ -93,13 +105,21 @@ module RuboCop
               ##============================================================##
               text = comment.text.to_s.strip
               text = text.gsub(/^##(?![=\s])/, "###{SPACE}")
-              if text.start_with?("##=")
-                index == 0 || index == block.size - 1 ? nil : "###{SPACE}---------"
+              if text.start_with?("##=") || text.start_with?("#=")
+                index == 0 || index == block.size - 1 ? nil : INSIDE_SEPARATOR
               else
                 text = "###{SPACE}#{text}" if !text.start_with?("###{SPACE}")
                 text = text.chomp("##").strip
                 text
               end
+            end.compact
+
+            ##============================================================##
+            ## On efface les lignes du body qui serait des lignes de bordure (bien formatée ou non)
+            ##============================================================##
+            body = body.map do |line|
+              chars = line.chars.uniq.compact.sort
+              [[" ", "#", "="], ["#", "="]].include?(chars) ? nil : line
             end.compact
 
 
@@ -122,7 +142,6 @@ module RuboCop
           def indent_level(line)
             line_content(line)[/\A */].size
           end
-
 
 
         end
