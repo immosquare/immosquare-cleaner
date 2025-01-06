@@ -37,13 +37,14 @@ end
 
 ### Configuration
 
-Tailor the behavior of the gem/module with the provided configuration options:
+The config file is optional. If you want to use it, it must be placed in the `config/initializers` folder and must be named `immosquare-cleaner.rb`
 
 ```ruby
 ImmosquareCleaner.config do |config|
   config.rubocop_options        = "--your-rubocop-options-here"
   config.htmlbeautifier_options = "--your-htmlbeautifier-options-here"
   config.erblint_options        = "--your-erblint-options-here"
+  config.exclude_files          = ["db/schema.rb", "db/seeds.rb", "..."]
 end
 ```
 
