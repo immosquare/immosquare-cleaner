@@ -2,29 +2,33 @@ module ImmosquareCleaner
   module Markdown
     class << self
 
-
-      ##============================================================##
-      ## we want to clean the markdown files to have a uniform style
-      ## for the tables.
-      ##============================================================##
       def clean(file_path)
-        results           = []
-        array_to_parse    = []
-        prev_line_special = false
+        results        = []
+        array_to_parse = []
+        lines          = []
 
         ##============================================================##
         ## We parse each line of the file
         ##============================================================##
-        File.foreach(file_path) do |line|
-          if line.lstrip.start_with?("|")
-            array_to_parse << line
+        File.foreach(file_path) do |current_line|
+          ##============================================================##
+          ## We save the last line to know if we need to add a newline
+          ##============================================================##
+          previous_line = lines.last
+          lines << current_line
+
+          ##============================================================##
+          ## We add the line to the array if it starts with a pipe
+          ##============================================================##
+          if current_line.lstrip.start_with?("|")
+            array_to_parse << current_line
           else
             if !array_to_parse.empty?
               results << cleaned_array(array_to_parse)
               array_to_parse = []
             end
-            new_line, prev_line_special = cleaned_line(line, prev_line_special)
-            results << new_line
+            new_lines = cleaned_line(previous_line, current_line)
+            results += new_lines
           end
         end
 
@@ -39,6 +43,10 @@ module ImmosquareCleaner
 
       private
 
+      ##============================================================##
+      ## we want to clean the markdown files to have a uniform style
+      ## for the tables.
+      ##============================================================##
       def cleaned_array(array_to_clean)
         ##============================================================##
         ## We split each line of the array and remove the empty cells
@@ -85,16 +93,16 @@ module ImmosquareCleaner
         "#{formatted_rows.join("\n")}\n"
       end
 
-      ##============================================================##
-      ## We simply add a newline at the end of the line if needed
-      ##============================================================##
-      def cleaned_line(line, prev_line_special)
-        cleaned           = line.rstrip
-        blank_line        = line.gsub("\n", "").empty?
-        special           = cleaned.lstrip.start_with?("*", "-", "+")
-        new_line          = "#{"\n" if prev_line_special && !blank_line}#{cleaned}\n"
-        prev_line_special = special
-        [new_line, prev_line_special]
+      def cleaned_line(previous_line, current_line)
+        return [current_line] if !previous_line
+
+        cleaned_current  = current_line.rstrip
+        cleaned_previous = previous_line.rstrip
+        blank_line       = current_line.gsub("\n", "").empty?
+        previous_is_list = cleaned_previous.lstrip.start_with?("*", "-", "+")
+        current_is_list  = cleaned_current.lstrip.start_with?("*", "-", "+")
+        final            = previous_is_list && !current_is_list && !blank_line ? ["\n"] : []
+        final << ["#{cleaned_current}\n"]
       end
 
     end
