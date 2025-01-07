@@ -70,7 +70,7 @@ module ImmosquareCleaner
 
         ##============================================================##
         ## Ruby Files
-        ## ---
+        ## ---------
         ## We create a rubocop config file with the ruby version
         ## if it does not exist with the node TargetRubyVersion
         ## to avoid the warning "Warning: No Ruby version specified in the configuration file"

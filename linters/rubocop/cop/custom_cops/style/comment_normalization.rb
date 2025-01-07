@@ -12,13 +12,30 @@ module RuboCop
           INSIDE_SEPARATOR = "###{SPACE}---------".freeze
 
           def on_new_investigation
+            return if @investigation_in_progress
+
+            @investigation_in_progress = true
+
             comment_blocks = find_comment_blocks(processed_source.comments)
 
 
+            ##============================================================##
+            ## On ne veut traiter que les blocs de commentaires où la première ligne
+            ## du bloc commence par ##
+            ##============================================================##
+            comment_blocks = comment_blocks.select do |block|
+              block.first.text.strip.start_with?("##")
+            end
+
+
             comment_blocks.each do |block|
-              if needs_correction?(block)
+              correct_block = normalize_comment_block(block)
+
+
+              if needs_correction?(block, correct_block)
                 ##============================================================##
-                ## Pour désactiver les cops suivants
+                ## Pour désactiver les cops autres cops qui pourraient être
+                ## déclenchés par les commentaires
                 ##============================================================##
                 buffer    = processed_source.buffer
                 start_pos = buffer.line_range(block.first.location.line).begin_pos
@@ -36,92 +53,62 @@ module RuboCop
             end
           end
 
+
+
           private
 
 
           ##============================================================##
-          ## On ne veut traiter que les commentaires qui :
-          ## - commencent par ## (et non #)
-          ## - ne sont pas des commentaires de fin de ligne ruby
+          ## On ne veut traiter que les commentaires qui ne sont pas
+          ## des commentaires de fin de ligne ruby
           ##============================================================##
           def find_comment_blocks(comments)
-            blocks            = []
-            current_block     = []
-            filtered_comments = comments.select {|comment| line_content(comment).strip.start_with?("##") }
-
-            filtered_comments.each do |comment|
-              if current_block.empty? || comment.location.line == current_block.last.location.line + 1
-                current_block << comment
-              else
-                blocks << current_block
-                current_block = [comment]
-              end
+            blocks              = []
+            current_block       = []
+            standalone_comments = comments.select do |comment|
+              line = processed_source.lines[comment.location.line - 1]
+              line.strip.start_with?("#")
             end
 
-            blocks << current_block
+            standalone_comments.each_with_index do |comment, index|
+              next_comment = standalone_comments[index + 1]
+
+              if next_comment && next_comment.location.line == comment.location.line + 1
+                current_block << comment
+              else
+                current_block << comment
+                blocks << current_block.dup if !current_block.empty?
+                current_block.clear
+              end
+            end
             blocks
-          end
-
-          ##============================================================##
-          ## Nous n'avons pas besoin de corriger les commentaires si :
-          ## - le premier et le dernier commentaire sont des lignes de bordure
-          ## - tous les commentaires commencent par ##
-          ## - il n'y a pas de ligne autre que les lignes de bordure qui commence par ##=
-          ##============================================================##
-          def needs_correction?(block)
-            return false if block.compact.empty?
-
-            ##============================================================##
-            ## un block de commentaires ne peut pas être composé de moins de 3 lignes (border, body, border)
-            ##============================================================##
-            return true if block.size < 3
-
-            ##============================================================##
-            ## On retourne true si une ligne du block contient que les caractères de bordure sans que cela soit une ligne de bordure
-            ##============================================================##
-            return true if block[1..-2].any? {|comment| comment.text.chars.uniq.compact.sort == [" ", "#", "="] }
-
-            return false if block.first.text == BORDER_LINE &&
-                            block.last.text == BORDER_LINE &&
-                            block.all? {|comment| comment.text.start_with?("##") } &&
-                            block.each_with_index.none? do |comment, index|
-                              index != 0 &&
-                              index != block.length - 1 &&
-                              comment.text.start_with?("##=")
-                            end
-
-
-            true
           end
 
           ##============================================================##
           ## Pour formater correctement le block de commentaires
           ##============================================================##
           def normalize_comment_block(block)
-            indent_level = indent_level(block.first)
-            body         = block.map.with_index do |comment, index|
-              ##============================================================##
-              ## On met un espace après les ## si le caractère n'est pas un espace
-              ##============================================================##
-              text = comment.text.to_s.strip
-              text = text.gsub(/^##(?![=\s])/, "###{SPACE}")
-              if text.start_with?("##=") || text.start_with?("#=")
-                index == 0 || index == block.size - 1 ? nil : INSIDE_SEPARATOR
+            indent_level               = indent_level(block.first)
+            first_line_with_text_found = false
+
+            body = block.map do |comment|
+              text                       = comment.text.to_s.strip
+              chars                      = text.chars.uniq
+              alphanumercic              = text.match?(/[\p{L}0-9]/)
+              first_line_with_text_found = true if alphanumercic && !first_line_with_text_found
+              if text == BORDER_LINE
+                nil
+              elsif alphanumercic
+                cleaned_line(text)
+              elsif !first_line_with_text_found
+                nil
               else
-                text = "###{SPACE}#{text}" if !text.start_with?("###{SPACE}")
-                text = text.chomp("##").strip
-                text
+                text == "##" ? "##" : INSIDE_SEPARATOR
               end
             end.compact
 
-            ##============================================================##
-            ## On efface les lignes du body qui serait des lignes de bordure (bien formatée ou non)
-            ##============================================================##
-            body = body.map do |line|
-              chars = line.chars.uniq.compact.sort
-              [[" ", "#", "="], ["#", "="]].include?(chars) ? INSIDE_SEPARATOR : line
-            end.compact
 
+            body = ["## ..."] if body.empty?
 
             ##============================================================##
             ## Le block va être remis à la place du block original sur
@@ -132,6 +119,10 @@ module RuboCop
             [BORDER_LINE, body, BORDER_LINE].flatten.map.with_index {|line, index| index == 0 ? line : "#{SPACE * indent_level}#{line}" }.join("\n")
           end
 
+          def indent_level(line)
+            line_content(line)[/\A */].size
+          end
+
           ##============================================================##
           ## Pour récupérer le contenu de la ligne courante
           ##============================================================##
@@ -139,10 +130,25 @@ module RuboCop
             processed_source.lines[comment.location.line - 1]
           end
 
-          def indent_level(line)
-            line_content(line)[/\A */].size
+          ##============================================================##
+          ## Expliquons la regex :
+          ## ## : match littéralement "##"
+          ## | \s* : match 0 ou plusieurs espaces
+          ## | #* : match 0 ou plusieurs #
+          ## | \s* : match encore 0 ou plusieurs espaces
+          ## | (?=[[:alnum:]]) : lookahead positif qui vérifie qu'on a un caractère alphanumérique après
+          ##============================================================##
+          def cleaned_line(line)
+            if line.start_with?("## |")
+              line
+            else
+              line.gsub(/##\s*#*\s*(?=[[:alnum:]])/, "## ")
+            end
           end
 
+          def needs_correction?(block, correct_block)
+            block.map(&:text).map(&:strip).join("|") != correct_block.split("\n").map(&:strip).join("|")
+          end
 
         end
       end

@@ -37,7 +37,7 @@ OptionParser.new do |opts|
   ## If you also want to capture longer options, add them here
   ## Example:
   ## opts.on("--tag TAG", "Tag option") do |t|
-  ##   options[:tag] = t
+  ## options[:tag] = t
   ## end
   ##============================================================##
 end.parse!
