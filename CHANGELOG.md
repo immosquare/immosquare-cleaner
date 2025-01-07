@@ -1,3 +1,6 @@
+## [0.1.62] - 2025-01-07
+- Rewrite MarkdownLinting
+
 ## [0.1.61] - 2025-01-06
 - Improve CommentNormalization + Update Eslint setting
 
