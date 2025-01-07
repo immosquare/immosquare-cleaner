@@ -141,8 +141,15 @@ module RuboCop
           def cleaned_line(line)
             if line.start_with?("## |")
               line
-            else
+            elsif line.start_with?("##")
               line.gsub(/##\s*#*\s*(?=[[:alnum:]])/, "## ")
+            else
+              ##============================================================##
+              ## Pour une ligne commençant par # simple, on la convertit en ##
+              ## On enlève d'abord le # initial et tous les espaces qui suivent
+              ##============================================================##
+              cleaned = line.gsub(/^#\s*/, "")
+              "## #{cleaned}"
             end
           end
 
