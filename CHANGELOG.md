@@ -1,3 +1,6 @@
+## [0.1.61] - 2025-01-06
+- Improve CommentNormalization + Update Eslint setting
+
 ## [0.1.60] - 2025-01-06
 - load config from immosquare-cleaner.rb initializer
 
