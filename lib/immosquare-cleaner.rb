@@ -21,7 +21,26 @@ module ImmosquareCleaner
     ## Constants
     ##============================================================##
     SHEBANG    = "#!/usr/bin/env ruby".freeze
-    RUBY_FILES = [".rb", ".rake", "Gemfile", "Rakefile", ".axlsx", ".gemspec", ".ru", ".podspec", ".jbuilder", ".rabl", ".thor", "config.ru", "Berksfile", "Capfile", "Guardfile", "Podfile", "Thorfile", "Vagrantfile"].freeze
+    RUBY_FILES = [
+      ".rb",
+      ".rake",
+      "Gemfile",
+      "Rakefile",
+      "Capfile",
+      ".axlsx",
+      ".gemspec",
+      ".cap",
+      ".ru",
+      ".podspec",
+      ".jbuilder",
+      ".rabl",
+      ".thor",
+      "Berksfile",
+      "Guardfile",
+      "Podfile",
+      "Thorfile",
+      "Vagrantfile"
+    ].freeze
 
     ##============================================================##
     ## Gem configuration
