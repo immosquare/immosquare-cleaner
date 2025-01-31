@@ -11,5 +11,5 @@
     "jscodeshift":                     "^17.1.2",
     "prettier":                        "^3.4.2"
   },
-  "scripts": {"morning": "bun update && bundle exec immosquare-cleaner 'package.json'"}
+  "scripts": {"morning": "bundle update && bundle clean --force && bun update && bundle exec immosquare-cleaner 'package.json'"}
 }
