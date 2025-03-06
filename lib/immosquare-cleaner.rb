@@ -74,6 +74,32 @@ module ImmosquareCleaner
       exclude_files = ImmosquareCleaner.configuration.exclude_files.map {|file| File.join(Dir.pwd, file) }
       return if exclude_files.include?(file_path)
 
+      ##============================================================##
+      ## Setup linter with the correct ruby version
+      ## Ruby Files
+      ## ---------
+      ## We create a rubocop config file with the ruby version
+      ## if it does not exist with the node TargetRubyVersion
+      ## to avoid the warning "Warning: No Ruby version specified in the configuration file"
+      ## ---------
+      ## Parser : https://docs.rubocop.org/rubocop/configuration.html#setting-the-parser-engine
+      ##============================================================##
+      rubocop_config_with_version_path = "#{gem_root}/linters/rubocop-#{RUBY_VERSION}.yml"
+      erblint_config_with_version_path = "#{gem_root}/linters/erb-lint-#{RUBY_VERSION}.yml"
+
+      if !File.exist?(rubocop_config_with_version_path)
+        rubocop_config                                  = YAML.load_file("#{gem_root}/linters/rubocop.yml")
+        rubocop_config["AllCops"]["TargetRubyVersion"]  = RUBY_VERSION
+        rubocop_config["AllCops"]["ParserEngine"]       = RUBY_VERSION >= "3.3" ? "parser_prism" : "parser_whitequark"
+        File.write(rubocop_config_with_version_path, rubocop_config.to_yaml)
+      end
+
+      if !File.exist?(erblint_config_with_version_path)
+        erblint_config                                                         = YAML.load_file("#{gem_root}/linters/erb-lint.yml")
+        erblint_config["linters"]["Rubocop"]["rubocop_config"]["inherit_from"] = ["linters/rubocop-#{RUBY_VERSION}.yml"]
+        File.write(erblint_config_with_version_path, erblint_config.to_yaml)
+      end
+
       begin
         ##============================================================##
         ## .html.erb files
@@ -81,29 +107,14 @@ module ImmosquareCleaner
         if file_path.end_with?(".html.erb", ".html")
           cmds = []
           cmds << "bundle exec htmlbeautifier #{file_path} #{ImmosquareCleaner.configuration.htmlbeautifier_options || "--keep-blank-lines 4"}"
-          cmds << "bundle exec erb_lint --config #{gem_root}/linters/erb-lint.yml #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}"
+          cmds << "bundle exec erb_lint --config #{erblint_config_with_version_path} #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}"
           launch_cmds(cmds)
           File.normalize_last_line(file_path)
           return
         end
 
-        ##============================================================##
-        ## Ruby Files
-        ## ---------
-        ## We create a rubocop config file with the ruby version
-        ## if it does not exist with the node TargetRubyVersion
-        ## to avoid the warning "Warning: No Ruby version specified in the configuration file"
-        ##============================================================##
+
         if file_path.end_with?(*RUBY_FILES) || File.open(file_path, &:gets)&.include?(SHEBANG)
-          rubocop_config_with_version_path = "#{gem_root}/linters/rubocop-#{RUBY_VERSION}.yml"
-
-          if !File.exist?(rubocop_config_with_version_path)
-            rubocop_config = YAML.load_file("#{gem_root}/linters/rubocop.yml")
-            rubocop_config["AllCops"] ||= {}
-            rubocop_config["AllCops"]["TargetRubyVersion"] = RUBY_VERSION
-            File.write(rubocop_config_with_version_path, rubocop_config.to_yaml)
-          end
-
           ##============================================================##
           ## --autocorrect-all : Auto-correct all offenses that RuboCop can correct, and leave all other offenses unchanged.
           ## --no-parallel     : Disable RuboCop's parallel processing for performance reasons because we pass only one file

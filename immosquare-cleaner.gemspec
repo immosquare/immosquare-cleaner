@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency("htmlbeautifier",        ">= 1.4",  "<=1000.0")
   spec.add_dependency("immosquare-extensions", ">= 0.1",  "<=1000.0")
   spec.add_dependency("immosquare-yaml",       ">= 0.1",  "<=1000.0")
+  spec.add_dependency("prism",                 ">= 1.3", "<=1000.0")
   spec.add_dependency("rubocop",               ">= 1.68", "<=1000.0")
 
   spec.required_ruby_version = Gem::Requirement.new(">= 3.2.6")
