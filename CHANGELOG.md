@@ -1,3 +1,7 @@
+## [0.1.63] - 2025-03-06
+- update gems + bundler + packages
+- dynamic erb-lint.yml with ruby version
+
 ## [0.1.62] - 2025-01-07
 - Rewrite MarkdownLinting
 
