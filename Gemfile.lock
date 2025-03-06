@@ -112,7 +112,7 @@ GEM
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
     smart_properties (1.17.0)
-    sorbet-runtime (0.5.11882)
+    sorbet-runtime (0.5.11899)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (3.1.4)
