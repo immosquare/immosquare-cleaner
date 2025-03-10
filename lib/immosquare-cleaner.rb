@@ -110,6 +110,7 @@ module ImmosquareCleaner
           cmds << "bundle exec erb_lint --config #{erblint_config_with_version_path} #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}"
           launch_cmds(cmds)
           File.normalize_last_line(file_path)
+          FileUtils.rm_f("#{file_path}.tmp")
           return
         end
 
