@@ -1,3 +1,6 @@
+## [0.1.65] - 2025-03-13
+- we use the eslint-plugin-prefer-arrow plugin instead of jscodeshift
+
 ## [0.1.64] - 2025-03-13
 - Remove some remaining tmp files (bug with htmlbeautifier or erb_lint)
 - add new custom cop : font_awesome_normalization
