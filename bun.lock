@@ -8,6 +8,7 @@
         "eslint": "^9.22.0",
         "eslint-plugin-align-assignments": "^1.1.2",
         "eslint-plugin-align-import": "^1.0.0",
+        "eslint-plugin-erb": "^2.1.1",
         "eslint-plugin-prefer-arrow": "^1.2.3",
         "eslint-plugin-sonarjs": "^3.0.2",
         "prettier": "^3.5.3",
@@ -130,6 +131,8 @@
     "eslint-plugin-align-assignments": ["eslint-plugin-align-assignments@1.1.2", "", { "peerDependencies": { "eslint": ">=0.8.0" } }, "sha512-I1ZJgk9EjHfGVU9M2Ex8UkVkkjLL5Y9BS6VNnQHq79eHj2H4/Cgxf36lQSUTLgm2ntB03A2NtF+zg9fyi5vChg=="],
 
     "eslint-plugin-align-import": ["eslint-plugin-align-import@1.0.0", "", {}, "sha512-bUUcAssxWgsmIvDnREgBrIOtNkLcr2QfZf/zjZDtq8LqxKm9krFt2eSRKNTqIoEnEy8EQ4k8qBkm8azQxyC98Q=="],
+
+    "eslint-plugin-erb": ["eslint-plugin-erb@2.1.1", "", {}, "sha512-AhznaVwRpQqR8NADjN4SZnKNbaIdAbGxTjCg6cj3UhwGyQOUJ6kXwhYrl1LYrGDNx7Ouyd8xuEG7wepFZyPgFw=="],
 
     "eslint-plugin-prefer-arrow": ["eslint-plugin-prefer-arrow@1.2.3", "", { "peerDependencies": { "eslint": ">=2.0.0" } }, "sha512-J9I5PKCOJretVuiZRGvPQxCbllxGAV/viI20JO3LYblAodofBxyMnZAJ+WGeClHgANnSJberTNoFWWjrWKBuXQ=="],
 

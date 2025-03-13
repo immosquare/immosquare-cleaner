@@ -3,6 +3,7 @@ import preferArrow      from "eslint-plugin-prefer-arrow"
 import sonarjs          from "eslint-plugin-sonarjs"
 import alignAssignments from "eslint-plugin-align-assignments"
 import alignImport      from "eslint-plugin-align-import"
+import erb              from "eslint-plugin-erb"
 
 export default [
   js.configs.recommended,
@@ -112,5 +113,18 @@ export default [
       // ==============================================================================================##
       "no-magic-numbers": ["off", { ignore: [], ignoreArrayIndexes: true, enforceConst: true, detectObjects: false }]
     }
+  },
+  erb.configs.recommended,
+  {
+    linterOptions: {
+      // The "unused disable directive" is set to "warn" by default.
+      // For the ERB plugin to work correctly, you must disable
+      // this directive to avoid issues described here
+      // https://github.com/eslint/eslint/discussions/18114
+      // If you're using the CLI, you might also use the following flag:
+      // --report-unused-disable-directives-severity=off
+      reportUnusedDisableDirectives: "off"
+    }
+    // your other configuration options
   }
 ]

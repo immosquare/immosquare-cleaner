@@ -136,34 +136,35 @@ module ImmosquareCleaner
         elsif file_path =~ %r{locales/.*\.yml$}
           ImmosquareYaml.clean(file_path)
 
-
-        ##============================================================##
-        ## JS files
-        ## 16/05/2024
-        ## maj 06/01/2025
-        ## ---------
-        ## Depuis eslint V9 (acutellement en V9.17.0), il y a une erreur
-        ## "warning  File ignored because outside of base path"
-        ## si le fichier à linté est dans un dossier supérieur à celui du fichier de config.
-        ## ISSUE : https://github.com/eslint/eslint/issues/19118
-        ## ---------
-        ## Dans nos apps nous sommes tjs dans ce cas car le fichier de config est dans le dossier du gem.
-        ## et les fichiers à linté sont dans les apps.
-        ## ---------
-        ## Pour éviter ce problème on met le fichier dans un dossier temporaire dans le dossier du gem
-        ## et on le supprime par la suite.
-        ##============================================================##
-        elsif file_path.end_with?(".js") || file_path.end_with?(".mjs")
+          ##============================================================##
+          ## JS files
+          ## 16/05/2024
+          ## maj 06/01/2025
+          ## ---------
+          ## Depuis eslint V9 (acutellement en V9.17.0), il y a une erreur
+          ## "warning  File ignored because outside of base path"
+          ## si le fichier à linté est dans un dossier supérieur à celui du fichier de config.
+          ## ISSUE : https://github.com/eslint/eslint/issues/19118
+          ## ---------
+          ## Dans nos apps nous sommes tjs dans ce cas car le fichier de config est dans le dossier du gem.
+          ## et les fichiers à linté sont dans les apps.
+          ## ---------
+          ## Pour éviter ce problème on met le fichier dans un dossier temporaire dans le dossier du gem
+          ## et on le supprime par la suite.
+          ##============================================================##
+        elsif file_path.end_with?(".js", ".mjs", "js.erb")
           begin
             temp_folder_path = "#{gem_root}/tmp"
             temp_file_path = "#{temp_folder_path}/#{File.basename(file_path)}"
             FileUtils.mkdir_p(temp_folder_path)
             File.write(temp_file_path, File.read(file_path))
-            cmds = ["bun eslint --config #{gem_root}/linters/eslint.config.mjs  #{temp_file_path} --fix"]
+            cmds = []
+            cmds << "bundle exec erb_lint --config #{erblint_config_with_version_path} #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}" if file_path.end_with?("js.erb")
+            cmds << "bun eslint --config #{gem_root}/linters/eslint.config.mjs  #{temp_file_path} --fix"
+
             launch_cmds(cmds)
             File.normalize_last_line(temp_file_path)
             File.write(file_path, File.read(temp_file_path))
-          rescue StandardError => e
           ensure
             FileUtils.rm_f(temp_file_path)
           end
