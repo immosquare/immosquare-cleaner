@@ -1,3 +1,7 @@
+## [0.1.64] - 2025-03-13
+- Remove some remaining tmp files (bug with htmlbeautifier or erb_lint)
+- add new custom cop : font_awesome_normalization
+
 ## [0.1.63] - 2025-03-06
 - update gems + bundler + packages
 - dynamic erb-lint.yml with ruby version
