@@ -1,3 +1,6 @@
+## [0.1.66] - 2025-03-13
+- add strategy for .js.erb files (erb_lint + eslint)
+
 ## [0.1.65] - 2025-03-13
 - we use the eslint-plugin-prefer-arrow plugin instead of jscodeshift
 
