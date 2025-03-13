@@ -5,6 +5,8 @@ module RuboCop
         # This cop identifies usage of short Font Awesome prefix styles (e.g., 'fas', 'far', 'fal')
         # and suggests replacing them with the long version style (which is the standard since v6).
         #
+        # Doc : https://docs.fontawesome.com/web/setup/upgrade/whats-changed#full-style-names
+        #
         # @example
         #   # bad
         #   font_awesome_icon("fas fa-user")
