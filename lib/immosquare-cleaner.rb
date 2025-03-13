@@ -164,10 +164,9 @@ module ImmosquareCleaner
           launch_cmds(cmds)
           File.normalize_last_line(temp_file_path)
           File.write(file_path, File.read(temp_file_path))
-        rescue StandardError => e
+        rescue StandardError
         ensure
           FileUtils.rm_f(temp_file_path)
-          return
         end if file_path.end_with?(".js") || file_path.end_with?(".mjs")
 
         ##============================================================##

@@ -1,6 +1,7 @@
 require:
   - rubocop/cop/style/method_call_with_args_parentheses_override
   - rubocop/cop/custom_cops/style/comment_normalization
+  - rubocop/cop/custom_cops/style/font_awesome_normalization
 
 # Pour activer toutes les méthodes de Rubocop et activer le cache pour les gros fichiers
 AllCops:
@@ -108,6 +109,9 @@ Style/MethodCallWithArgsParentheses:
 #################### CUSTOMS ###########################
 CustomCops/Style/CommentNormalization:
   Enabled: true # On veut forcer la normalisation des commentaires
+
+CustomCops/Style/FontAwesomeNormalization:
+  Enabled: true # On veut forcer l'utilisation du nom complet de la font awesome
 
 #################### GEM ###########################
 Gemspec/RequireMFA:
