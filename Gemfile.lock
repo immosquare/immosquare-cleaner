@@ -12,13 +12,13 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    actionview (8.0.1)
-      activesupport (= 8.0.1)
+    actionview (8.0.2)
+      activesupport (= 8.0.2)
       builder (~> 3.1)
       erubi (~> 1.11)
       rails-dom-testing (~> 2.2)
       rails-html-sanitizer (~> 1.6)
-    activesupport (8.0.1)
+    activesupport (8.0.2)
       base64
       benchmark (>= 0.3)
       bigdecimal
@@ -62,14 +62,14 @@ GEM
       unicode_utils (~> 1.4.0)
     immosquare-yaml (0.1.27)
       immosquare-extensions (~> 0, >= 0.1.18)
-    json (2.10.1)
+    json (2.10.2)
     language_server-protocol (3.17.0.4)
     lint_roller (1.1.0)
     logger (1.6.6)
     loofah (2.24.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
-    minitest (5.25.4)
+    minitest (5.25.5)
     nokogiri (1.18.3-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.18.3-x86_64-darwin)
@@ -92,7 +92,7 @@ GEM
     rbs (3.8.1)
       logger
     regexp_parser (2.10.0)
-    rubocop (1.73.2)
+    rubocop (1.74.0)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -113,7 +113,7 @@ GEM
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
     smart_properties (1.17.0)
-    sorbet-runtime (0.5.11899)
+    sorbet-runtime (0.5.11930)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (3.1.4)
