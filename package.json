@@ -8,7 +8,6 @@
     "eslint-plugin-align-import":      "^1.0.0",
     "eslint-plugin-prefer-arrow":      "^1.2.3",
     "eslint-plugin-sonarjs":           "^3.0.2",
-    "jscodeshift":                     "^17.1.2",
     "prettier":                        "^3.5.3"
   },
   "scripts": {"morning": "bundle update && bundle clean --force && bun update && bundle exec immosquare-cleaner 'package.json'"}
