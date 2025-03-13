@@ -1,0 +1,30 @@
+{
+  "search.exclude": {"**/node_modules": true},
+  "files.associations": {
+    "*.html.erb": "erb",
+    "*.axlsx":    "ruby",
+    "*.js.erb":   "javascript",
+    "*.md.erb":   "markdown"
+  },
+  "[erb]": {},
+  "rubyLsp.enabledFeatures": {
+    "codeActions":          false,
+    "diagnostics":          true,
+    "documentHighlights":   true,
+    "documentLink":         true,
+    "documentSymbols":      true,
+    "foldingRanges":        true,
+    "formatting":           true,
+    "hover":                true,
+    "inlayHint":            true,
+    "onTypeFormatting":     true,
+    "selectionRanges":      true,
+    "semanticHighlighting": true,
+    "completion":           true,
+    "codeLens":             true,
+    "definition":           true,
+    "workspaceSymbol":      true,
+    "signatureHelp":        true,
+    "typeHierarchy":        true
+  }
+}
