@@ -111,11 +111,13 @@ module ImmosquareCleaner
           launch_cmds(cmds)
           File.normalize_last_line(file_path)
           FileUtils.rm_f("#{file_path}.tmp")
-          return
-        end
 
 
-        if file_path.end_with?(*RUBY_FILES) || File.open(file_path, &:gets)&.include?(SHEBANG)
+
+        ##============================================================##
+        ## ruby files
+        ##============================================================##
+        elsif file_path.end_with?(*RUBY_FILES) || File.open(file_path, &:gets)&.include?(SHEBANG)
           ##============================================================##
           ## --autocorrect-all : Auto-correct all offenses that RuboCop can correct, and leave all other offenses unchanged.
           ## --no-parallel     : Disable RuboCop's parallel processing for performance reasons because we pass only one file
@@ -125,16 +127,15 @@ module ImmosquareCleaner
           cmds = ["bundle exec rubocop -c #{rubocop_config_with_version_path} \"#{file_path}\" #{rubocop_options}"]
           launch_cmds(cmds)
           File.normalize_last_line(file_path)
-          return
-        end
+
+
 
         ##============================================================##
-        ## Yml translations files
+        ## locles.yml
         ##============================================================##
-        if file_path =~ %r{locales/.*\.yml$}
+        elsif file_path =~ %r{locales/.*\.yml$}
           ImmosquareYaml.clean(file_path)
-          return
-        end
+
 
         ##============================================================##
         ## JS files
@@ -152,52 +153,54 @@ module ImmosquareCleaner
         ## Pour éviter ce problème on met le fichier dans un dossier temporaire dans le dossier du gem
         ## et on le supprime par la suite.
         ##============================================================##
-        begin
-          temp_folder_path = "#{gem_root}/tmp"
-          temp_file_path   = "#{temp_folder_path}/#{File.basename(file_path)}"
-          FileUtils.mkdir_p(temp_folder_path)
-          File.write(temp_file_path, File.read(file_path))
-          cmds = [
-            "bun eslint --config #{gem_root}/linters/eslint.config.mjs  #{temp_file_path} --fix",
-            "bun jscodeshift --silent --transform #{gem_root}/linters/jscodeshift/arrow-function-transform.js #{temp_file_path}"
-          ]
-          launch_cmds(cmds)
-          File.normalize_last_line(temp_file_path)
-          File.write(file_path, File.read(temp_file_path))
-        rescue StandardError
-        ensure
-          FileUtils.rm_f(temp_file_path)
-        end if file_path.end_with?(".js") || file_path.end_with?(".mjs")
+        elsif file_path.end_with?(".js") || file_path.end_with?(".mjs")
+          begin
+            temp_folder_path = "#{gem_root}/tmp"
+            temp_file_path = "#{temp_folder_path}/#{File.basename(file_path)}"
+            FileUtils.mkdir_p(temp_folder_path)
+            File.write(temp_file_path, File.read(file_path))
+            cmds = [
+              "bun eslint --config #{gem_root}/linters/eslint.config.mjs  #{temp_file_path} --fix",
+              "bun jscodeshift --silent --transform #{gem_root}/linters/jscodeshift/arrow-function-transform.js #{temp_file_path}"
+            ]
+            launch_cmds(cmds)
+            File.normalize_last_line(temp_file_path)
+            File.write(file_path, File.read(temp_file_path))
+          rescue StandardError => e
+          ensure
+            FileUtils.rm_f(temp_file_path)
+          end
+
+
 
         ##============================================================##
         ## JSON files
         ##============================================================##
-        if file_path.end_with?(".json")
-          json_str    = File.read(file_path)
+        elsif file_path.end_with?(".json")
+          json_str = File.read(file_path)
           parsed_data = JSON.parse(json_str)
           formated    = parsed_data.to_beautiful_json
           File.write(file_path, formated)
           File.normalize_last_line(file_path)
-          return
-        end
+
 
         ##============================================================##
         ## Markdown files
         ##============================================================##
-        if file_path.end_with?(".md", ".md.erb")
+        elsif file_path.end_with?(".md", ".md.erb")
           formatted_md = ImmosquareCleaner::Markdown.clean(file_path)
           File.write(file_path, formatted_md)
           File.normalize_last_line(file_path)
-          return
-        end
 
         ##============================================================##
         ## Autres formats
         ##============================================================##
-        prettier_parser = nil
-        prettier_parser = "--parser markdown" if file_path.end_with?(".md.erb")
-        cmds = ["bun prettier --write #{file_path} #{prettier_parser} --config #{gem_root}/linters/prettier.yml"]
-        launch_cmds(cmds)
+        else
+          prettier_parser = nil
+          prettier_parser = "--parser markdown" if file_path.end_with?(".md.erb")
+          cmds = ["bun prettier --write #{file_path} #{prettier_parser} --config #{gem_root}/linters/prettier.yml"]
+          launch_cmds(cmds)
+        end
       rescue StandardError => e
         puts(e.message)
         puts(e.backtrace)
