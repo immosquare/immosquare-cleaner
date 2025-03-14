@@ -1,3 +1,6 @@
+## [0.1.68] - 2025-03-14
+- missing eslint-plugin-erb in compiled node_modules folder
+
 ## [0.1.67] - 2025-03-14
 - prevent occasional "invalid byte sequence in US-ASCII" error
 
