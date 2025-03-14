@@ -16,7 +16,7 @@ def bun_installed?
 end
 
 if !bun_installed?
-  puts "Error: 'bun' is not installed. Please install it first.(https://bun.sh/)"
+  puts("Error: 'bun' is not installed. Please install it first.(https://bun.sh/)")
   exit(1)
 end
 
@@ -52,7 +52,7 @@ end.parse!
 file_path = ARGV[0]
 if !file_path
   puts("Error: Please provide a file path.")
-  exit 1
+  exit(1)
 end
 
 ##============================================================##
@@ -60,8 +60,24 @@ end
 ##============================================================##
 if !File.exist?(file_path)
   puts("Error: The file '#{file_path}' does not exist.")
-  exit 1
+  exit(1)
 end
+
+##============================================================##
+## Check if node_modules exists, if not we launch bun install
+##============================================================##
+gem_root            = File.expand_path("..", __dir__)
+node_modules_folder = File.join(gem_root, "node_modules")
+if !File.directory?(node_modules_folder)
+  puts("node_modules folder not found, running 'bun install'")
+  output = `cd #{gem_root} && bun install`
+  if $CHILD_STATUS.exitstatus != 0
+    puts("Error: 'bun install' failed.")
+    puts(output)
+    exit(1)
+  end
+end
+
 
 
 ##============================================================##

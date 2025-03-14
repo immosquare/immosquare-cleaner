@@ -12,10 +12,10 @@ Gem::Specification.new do |spec|
   spec.description    = "Immosquare-cleaner streamlines Rails applications by running tools like RuboCop, ERBLint, Stylelint and more. It ensures code quality, readability, and consistency across the application."
 
   ##============================================================##
-  ## we add package.json so that the gems is autonomous to launch prettier
-  ## & eslint (all the necessary libs are in the node_modules folder)
+  ## we add package.json so that the gems is autonomous to launch
+  ## js lib prettier, eslint
   ##============================================================##
-  spec.files          = Dir["lib/**/*", "bin/*", "linters/**/*"] + ["package.json"] + Dir["node_modules/**/*", "node_modules/.bin/**/*"]
+  spec.files          = Dir["lib/**/*", "bin/*", "linters/**/*"] + ["package.json"]
   spec.executables    = ["immosquare-cleaner"]
   spec.require_paths  = ["lib", "linters"]
 
