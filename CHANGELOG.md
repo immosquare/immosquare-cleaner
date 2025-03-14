@@ -1,3 +1,6 @@
+## [0.1.69] - 2025-03-14
+- node-modules folder is dynamically created if it does not exist
+
 ## [0.1.68] - 2025-03-14
 - missing eslint-plugin-erb in compiled node_modules folder
 
