@@ -1,3 +1,6 @@
+## [0.1.67] - 2025-03-14
+- prevent occasional "invalid byte sequence in US-ASCII" error
+
 ## [0.1.66] - 2025-03-13
 - add strategy for .js.erb files (erb_lint + eslint)
 
