@@ -3,6 +3,10 @@
 require "immosquare-cleaner"
 require "optparse"
 
+##============================================================##
+## Prevent "invalid byte sequence in US-ASCII" error on some files (eg: yaml)
+##============================================================##
+Encoding.default_external = Encoding::UTF_8
 
 ##============================================================##
 ## We check if bun.sh is installed
