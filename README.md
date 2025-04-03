@@ -69,6 +69,7 @@ rake immosquare_cleaner:clean_app
 ## Integration with Visual Studio Code & Cursor
 
 Simply install the [immosquare-vscode](https://marketplace.visualstudio.com/items?itemName=immosquare.immosquare-vscode) extension from the VS Code marketplace.
+
 That's it!
 
 ## Contributing
