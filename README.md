@@ -66,26 +66,10 @@ rake immosquare_cleaner:clean_app
 ```
 
 
-## Integration with Visual Studio Code
+## Integration with Visual Studio Code & Cursor
 
-Automate the cleaning process for all files upon saving in VS Code:
-
-1. Install the [Run on Save](https://github.com/emeraldwalk/vscode-runonsave) extension from the VS Code marketplace.
-2. Add the following configuration to your `settings.json` in VS Code:
-
-```json
-"emeraldwalk.runonsave": {
-  "commands": [
-    {
-      "match": ".*",
-      "cmd": "if bundle info immosquare-cleaner &>/dev/null; then bundle exec immosquare-cleaner '${file}'; else echo 'please install the gem immosquare-cleaner'; fi",
-      "runIn": "backend"
-    }
-  ]
-}
-```
-
-With the above, every time you save a file in VS Code, it will automatically be cleaned using `immosquare-cleaner`.
+Simply install the [immosquare-vscode](https://marketplace.visualstudio.com/items?itemName=immosquare.immosquare-vscode) extension from the VS Code marketplace.
+That's it!
 
 ## Contributing
 
