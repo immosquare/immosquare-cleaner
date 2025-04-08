@@ -25,25 +25,13 @@ options = {}
 ##============================================================##
 ## optparse is a standard library of ruby, it's used to parse command line
 ##============================================================##
-OptionParser.new do |opts|
-  opts.banner = "Usage: immosquare-cleaner [options] file"
+OptionParser.new do |parser|
+  parser.banner = "Usage: immosquare-cleaner [options] file"
 
-  ##============================================================##
-  ## Capture all single-letter options (like '-t', '-a', etc.)
-  ##============================================================##
-  ("a".."z").each do |letter|
-    opts.on("-#{letter} [OPTION]", "Option -#{letter}") do |value|
-      options[letter.to_sym] = value
-    end
+  parser.on("-h", "--help", "Prints this help") do
+    puts parser
+    exit
   end
-
-  ##============================================================##
-  ## If you also want to capture longer options, add them here
-  ## Example:
-  ## opts.on("--tag TAG", "Tag option") do |t|
-  ## options[:tag] = t
-  ## end
-  ##============================================================##
 end.parse!
 
 ##============================================================##
@@ -78,9 +66,8 @@ if !File.directory?(node_modules_folder)
   end
 end
 
-
-
 ##============================================================##
-## We can now call the clean method, passing the file path and options
+## We can now call the clean method, passing the file absolute path and options
 ##============================================================##
+file_path = File.expand_path(file_path)
 ImmosquareCleaner.clean(file_path, **options)
