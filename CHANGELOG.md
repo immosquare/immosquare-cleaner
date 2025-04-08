@@ -1,3 +1,9 @@
+## [0.1.70] - 2025-04-08
+- improve immosquare-cleaner bin script :
+  - add -h option to show help
+  - allow relative & absolute paths
+
+
 ## [0.1.69] - 2025-03-14
 - node-modules folder is dynamically created if it does not exist
 
