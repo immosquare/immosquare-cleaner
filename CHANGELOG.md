@@ -1,8 +1,11 @@
+## [0.1.71] - 2025-07-20
+- Add new custom cop : AlignAssignments
+- Update gems + packages
+
 ## [0.1.70] - 2025-04-08
 - improve immosquare-cleaner bin script :
   - add -h option to show help
   - allow relative & absolute paths
-
 
 ## [0.1.69] - 2025-03-14
 - node-modules folder is dynamically created if it does not exist
@@ -173,7 +176,6 @@
 
 ## [0.1.14] - 2023-10-04
 - Update dependencies
-
 
 ## [0.1.13] - 2023-10-01
 - Style/FormatStringToken : template
