@@ -102,12 +102,12 @@ module RuboCop
             @last_assignment_line = current_line
           end
 
+          ##============================================================##
+          ## Vérifier que les deux lignes sont consécutives
+          ## Si il y a une ligne vide ou plus entre elles, c'est un nouveau bloc
+          ##============================================================##
           def consecutive_lines?(line1, line2)
-            # Vérifier que les deux lignes sont consécutives
-            # Si il y a une ligne vide ou plus entre elles, c'est un nouveau bloc
             gap = line2 - line1 - 1
-
-            # Lignes consécutives seulement si pas de ligne vide entre elles
             gap == 0
           end
 
@@ -123,19 +123,20 @@ module RuboCop
           def log_assignment_block(group)
             start_line = group.first.location.line
             end_line = group.last.location.line
-
-            puts("🔍 Bloc d'assignments détecté de la ligne #{start_line} à #{end_line}:")
-            group.each do |node|
-              puts("   Ligne #{node.location.line}: #{node.source}")
-            end
-            puts("")
           end
 
           def process_groups
-            puts("🔧 Traitement de #{@assignment_groups.length} groupes d'assignments...")
             @assignment_groups.each do |group|
-              # TODO: Implémenter la logique d'alignement
-              puts("   Groupe avec #{group.length} assignments")
+              puts("---")
+              lefts = group.map {|node| node.source.split("=")[0].to_s.strip.gsub(/\s+/, "").gsub(",", ", ") }
+              required_size = lefts.map(&:length).max + 1
+              group.each.with_index do |node, index|
+                new_left = lefts[index]
+                new_left += " " * (required_size - new_left.length)
+                split = node.source.split("=")
+                split[0] = new_left
+                puts(split.join("="))
+              end
             end
           end
 
