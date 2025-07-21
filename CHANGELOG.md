@@ -1,3 +1,6 @@
+## [0.1.72] - 2025-07-21
+- Improve AlignAssignments cop
+
 ## [0.1.71] - 2025-07-20
 - Add new custom cop : AlignAssignments
 - Update gems + packages
