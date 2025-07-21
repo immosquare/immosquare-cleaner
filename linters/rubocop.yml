@@ -2,6 +2,7 @@ require:
   - rubocop/cop/style/method_call_with_args_parentheses_override
   - rubocop/cop/custom_cops/style/comment_normalization
   - rubocop/cop/custom_cops/style/font_awesome_normalization
+  - rubocop/cop/custom_cops/style/align_assignments
 
 # Pour activer toutes les méthodes de Rubocop et activer le cache pour les gros fichiers
 AllCops:
@@ -112,6 +113,9 @@ CustomCops/Style/CommentNormalization:
 
 CustomCops/Style/FontAwesomeNormalization:
   Enabled: true # On veut forcer l'utilisation du nom complet de la font awesome
+
+CustomCops/Style/AlignAssignments:
+  Enabled: true # On veut forcer l'alignement des assignations consécutives
 
 #################### GEM ###########################
 Gemspec/RequireMFA:
