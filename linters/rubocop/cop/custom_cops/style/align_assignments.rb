@@ -52,6 +52,15 @@ module RuboCop
             check_assignment(node)
           end
 
+          ##============================================================##
+          ## Pour les assignments d'index (listing["key"] = ...)
+          ##============================================================##
+          def on_send(node)
+            return unless node.method_name == :[]= && node.arguments.length == 2
+
+            check_assignment(node)
+          end
+
           def on_investigation_end
             finalize_current_group
             process_groups
@@ -72,14 +81,19 @@ module RuboCop
           ## Vérifier si l'opérateur est un simple "=" (pas >=, <=, =>, etc.)
           ##============================================================##
           def assignment_operator?(node)
-            source = node.source.strip
+            ##============================================================##
+            ## Pour les send nodes (index assignment)
+            ##============================================================##
+            return true if node.respond_to?(:method_name) && node.method_name == :[]=
 
+            ##============================================================##
+            ## Pour les assignments classiques
+            ##============================================================##
+            source = node.source.strip
             return false unless source.include?("=")
 
             equals_pos = source.index("=")
-
             return false if equals_pos > 0 && [">", "<"].include?(source[equals_pos - 1])
-
             return false if equals_pos < source.length - 1 && source[equals_pos + 1] == ">"
 
             true
@@ -90,7 +104,6 @@ module RuboCop
           ##============================================================##
           def add_to_group(node)
             current_line = node.location.line
-
             if @current_group.empty?
               @current_group = [node]
             elsif consecutive_lines?(@last_assignment_line, current_line)
@@ -103,7 +116,7 @@ module RuboCop
           end
 
           ##============================================================##
-          ## Vérifier si deux lignes sont consécutives (pas de ligne vide entre elles)
+          ## Retourne true si les deux lignes sont consécutives (pas de ligne vide entre elles)
           ##============================================================##
           def consecutive_lines?(line1, line2)
             gap = line2 - line1 - 1
@@ -139,8 +152,8 @@ module RuboCop
               current_source = node.source
               new_left       = lefts[index]
               new_left += " " * (required_size - new_left.length)
-              split = current_source.split("=")
-              split[0] = new_left
+              split           = current_source.split("=")
+              split[0]        = new_left
               expected_source = split.join("=")
 
               if current_source != expected_source
