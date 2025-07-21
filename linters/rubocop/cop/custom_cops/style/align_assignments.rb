@@ -23,8 +23,8 @@ module RuboCop
           MSG = "Align the assignment operators of consecutive assignments.".freeze
 
           def on_new_investigation
-            @assignment_groups = []
-            @current_group = []
+            @assignment_groups    = []
+            @current_group        = []
             @last_assignment_line = nil
           end
 
@@ -53,40 +53,41 @@ module RuboCop
           end
 
           def on_investigation_end
-            # Finaliser le dernier groupe s'il y en a un
             finalize_current_group
             process_groups
           end
 
           private
 
+          ##============================================================##
+          ## Vérifier que c'est bien un assignment simple (=) et pas (>=, <=, =>, etc.)
+          ##============================================================##
           def check_assignment(node)
-            # Vérifier que c'est bien un assignment simple (=) et pas (>=, <=, =>, etc.)
             return unless assignment_operator?(node)
 
             add_to_group(node)
           end
 
+          ##============================================================##
+          ## Vérifier si l'opérateur est un simple "=" (pas >=, <=, =>, etc.)
+          ##============================================================##
           def assignment_operator?(node)
-            # Pour les assignments simples, on vérifie que le source contient un "="
-            # mais pas ">=", "<=", "=>", etc.
             source = node.source.strip
 
-            # Vérifier qu'il y a un "=" et qu'il n'est pas précédé ou suivi de caractères spéciaux
             return false unless source.include?("=")
 
-            # Trouver la position du "="
             equals_pos = source.index("=")
 
-            # Vérifier que le caractère avant "=" n'est pas ">" ou "<"
             return false if equals_pos > 0 && [">", "<"].include?(source[equals_pos - 1])
 
-            # Vérifier que le caractère après "=" n'est pas ">"
             return false if equals_pos < source.length - 1 && source[equals_pos + 1] == ">"
 
             true
           end
 
+          ##============================================================##
+          ## Ajouter un assignment au groupe courant ou créer un nouveau groupe
+          ##============================================================##
           def add_to_group(node)
             current_line = node.location.line
 
@@ -95,7 +96,6 @@ module RuboCop
             elsif consecutive_lines?(@last_assignment_line, current_line)
               @current_group << node
             else
-              # Nouveau groupe détecté, finaliser l'ancien
               finalize_current_group
               @current_group = [node]
             end
@@ -103,39 +103,50 @@ module RuboCop
           end
 
           ##============================================================##
-          ## Vérifier que les deux lignes sont consécutives
-          ## Si il y a une ligne vide ou plus entre elles, c'est un nouveau bloc
+          ## Vérifier si deux lignes sont consécutives (pas de ligne vide entre elles)
           ##============================================================##
           def consecutive_lines?(line1, line2)
             gap = line2 - line1 - 1
             gap == 0
           end
 
+          ##============================================================##
+          ## Finaliser le groupe courant s'il contient plus d'un assignment
+          ##============================================================##
           def finalize_current_group
-            if @current_group.length > 1
-              @assignment_groups << @current_group.dup
-              log_assignment_block(@current_group)
-            end
-            @current_group = []
+            @assignment_groups << @current_group.dup if @current_group.length > 1
+            @current_group        = []
             @last_assignment_line = nil
           end
 
-          def log_assignment_block(group)
-            start_line = group.first.location.line
-            end_line = group.last.location.line
-          end
-
+          ##============================================================##
+          ## Traiter tous les groupes d'assignments pour vérifier l'alignement
+          ##============================================================##
           def process_groups
             @assignment_groups.each do |group|
-              puts("---")
-              lefts = group.map {|node| node.source.split("=")[0].to_s.strip.gsub(/\s+/, "").gsub(",", ", ") }
-              required_size = lefts.map(&:length).max + 1
-              group.each.with_index do |node, index|
-                new_left = lefts[index]
-                new_left += " " * (required_size - new_left.length)
-                split = node.source.split("=")
-                split[0] = new_left
-                puts(split.join("="))
+              check_and_correct_alignment(group)
+            end
+          end
+
+          ##============================================================##
+          ## Vérifier l'alignement d'un groupe et corriger si nécessaire
+          ##============================================================##
+          def check_and_correct_alignment(group)
+            lefts         = group.map {|node| node.source.split("=")[0].to_s.strip.gsub(/\s+/, "").gsub(",", ", ") }
+            required_size = lefts.map(&:length).max + 1
+
+            group.each.with_index do |node, index|
+              current_source = node.source
+              new_left       = lefts[index]
+              new_left += " " * (required_size - new_left.length)
+              split = current_source.split("=")
+              split[0] = new_left
+              expected_source = split.join("=")
+
+              if current_source != expected_source
+                add_offense(node, :message => MSG) do |corrector|
+                  corrector.replace(node, expected_source)
+                end
               end
             end
           end
