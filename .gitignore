@@ -5,3 +5,4 @@ linters/rubocop-*
 linters/erb-lint-*
 test/*
 /tmp/*
+.claude/*.local.*
