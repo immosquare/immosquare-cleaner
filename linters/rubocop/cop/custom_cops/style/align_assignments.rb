@@ -20,121 +20,74 @@ module RuboCop
 
           extend AutoCorrector
 
-          MSG = "Align the assignment operators of consecutive assignments.".freeze
+          MSG              = "Align the assignment operators of consecutive assignments.".freeze
+          ASSIGNMENT_TYPES = [:lvasgn, :casgn, :ivasgn, :cvasgn, :gvasgn].freeze
 
           def on_new_investigation
-            @assignment_groups = []
-            find_assignment_groups
+            @assignment_groups = find_assignment_groups
           end
 
-          def on_lvasgn(node)
-            check_alignment(node)
-          end
-
-          def on_casgn(node)
-            check_alignment(node)
-          end
-
-          def on_ivasgn(node)
-            check_alignment(node)
-          end
-
-          def on_cvasgn(node)
-            check_alignment(node)
-          end
-
-          def on_gvasgn(node)
-            check_alignment(node)
+          ASSIGNMENT_TYPES.each do |type|
+            define_method(:"on_#{type}") do |node|
+              check_alignment(node)
+            end
           end
 
           private
 
           def find_assignment_groups
-            assignment_lines = {}
+            assignments_by_line = {}
 
             processed_source.ast.each_node do |node|
-              next unless assignment_node?(node)
+              next unless ASSIGNMENT_TYPES.include?(node.type)
 
-              line = node.source_range.line
-              assignment_lines[line] = node
+              assignments_by_line[node.source_range.line] = node
             end
 
+            group_consecutive_assignments(assignments_by_line)
+          end
+
+          def group_consecutive_assignments(assignments_by_line)
+            groups        = []
             current_group = []
             previous_line = nil
 
-            assignment_lines.keys.sort.each do |line|
-              if previous_line && consecutive_lines?(previous_line, line)
-                ##============================================================##
-                ## Consecutive line (no empty line between the two)
-                ##============================================================##
-                current_group << assignment_lines[line] if current_group.empty?
-                current_group << assignment_lines[line] unless current_group.include?(assignment_lines[line])
+            assignments_by_line.keys.sort.each do |line|
+              if previous_line&.+(1) == line
+                current_group << assignments_by_line[previous_line] if current_group.empty?
+                current_group << assignments_by_line[line]
               else
-                ##============================================================##
-                ## New sequence (empty line or gap)
-                ##============================================================##
-                @assignment_groups << current_group if current_group.size > 1
-                current_group = [assignment_lines[line]]
+                groups << current_group if current_group.size > 1
+                current_group = [assignments_by_line[line]]
               end
               previous_line = line
             end
 
-            @assignment_groups << current_group if current_group.size > 1
-          end
-
-          def consecutive_lines?(line1, line2)
-            ##============================================================##
-            ## If line2 is just after line1, they are consecutive
-            ##============================================================##
-            return true if line2 == line1 + 1
-
-            ##============================================================##
-            ## If there are lines between line1 and line2, they are not consecutive
-            ## (even if these lines are empty)
-            ##============================================================##
-            false
+            groups << current_group if current_group.size > 1
+            groups
           end
 
           def check_alignment(node)
             group = @assignment_groups.find {|g| g.include?(node) }
             return unless group
 
-            ##============================================================##
-            ## Calculate the minimum column needed to align all assignments
-            ##============================================================##
-            min_alignment_column = calculate_min_alignment_column(group)
-
+            target_column  = calculate_target_column(group)
             current_column = assignment_operator_column(node)
-            return if current_column == min_alignment_column
 
-            ##============================================================##
-            ## Ensure that spaces_needed is not negative
-            ##============================================================##
-            spaces_needed = [min_alignment_column - current_column, 0].max
+            return if current_column == target_column
 
-            add_offense(
-              node.source_range,
-              :message => MSG
-            ) do |corrector|
-              assignment_range = assignment_operator_range(node)
-              corrector.insert_before(assignment_range, " " * spaces_needed)
+            spaces_needed = target_column - current_column
+            return if spaces_needed <= 0
+
+            add_offense(node.source_range, :message => MSG) do |corrector|
+              corrector.insert_before(assignment_operator_range(node), " " * spaces_needed)
             end
           end
 
-          def calculate_min_alignment_column(group)
-            ##============================================================##
-            ## For each assignment, calculate the minimum column needed
-            ## based on the variable name length + 1 space
-            ##============================================================##
-            max_variable_length = group.map do |node|
-              variable_name_length(node)
-            end.max
-
-            ##============================================================##
-            ## The minimum column is the max length + 1 space + the base indentation
-            ##============================================================##
-            base_indentation = group.first.source_range.column
-            base_indentation + max_variable_length + 1
+          def calculate_target_column(group)
+            base_column    = group.first.source_range.column
+            max_var_length = group.map {|node| variable_name_length(node) }.max
+            base_column + max_var_length + 1
           end
 
           def variable_name_length(node)
@@ -142,16 +95,12 @@ module RuboCop
             when :lvasgn, :ivasgn, :cvasgn, :gvasgn
               node.children[0].to_s.length
             when :casgn
-              if node.children[0] # namespace
-                node.children[0].source.length + 2 + node.children[1].to_s.length # + '::'
+              if node.children[0]
+                "#{node.children[0].source}::#{node.children[1]}".length
               else
                 node.children[1].to_s.length
               end
             end
-          end
-
-          def assignment_node?(node)
-            [:lvasgn, :casgn, :ivasgn, :cvasgn, :gvasgn].include?(node.type)
           end
 
           def assignment_operator_column(node)
@@ -159,25 +108,17 @@ module RuboCop
           end
 
           def assignment_operator_range(node)
-            source    = processed_source.buffer.source
-            start_pos = node.source_range.begin_pos
-            end_pos   = node.source_range.end_pos
+            source     = node.source
+            equals_pos = source.index("=")
+            return node.source_range if equals_pos.nil?
 
-            # Chercher le premier = dans la ligne
-            (start_pos...end_pos).each do |pos|
-              return range(processed_source.buffer, pos, pos + 1) if source[pos] == "="
-            end
-
-            ##============================================================##
-            ## Fallback if no = is found
-            ##============================================================##
+            start_pos = node.source_range.begin_pos + equals_pos
             range(processed_source.buffer, start_pos, start_pos + 1)
           end
 
           def range(buffer, start_pos, end_pos)
             Parser::Source::Range.new(buffer, start_pos, end_pos)
           end
-
 
         end
       end
