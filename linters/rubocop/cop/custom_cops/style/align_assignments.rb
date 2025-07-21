@@ -53,31 +53,12 @@ module RuboCop
           end
 
           ##============================================================##
-          ## Pour les op-assignments (+=, -=, etc.)
-          ##============================================================##
-          def on_or_asgn(node)
-            check_assignment(node)
-          end
-
-          def on_and_asgn(node)
-            check_assignment(node)
-          end
-
-          ##============================================================##
-          ## Pour les op-assignments (+=, -=, etc.)
-          ##============================================================##
-          def on_op_asgn(node)
-            check_assignment(node)
-          end
-
-          ##============================================================##
-          ## Pour les assignments d'index (listing["key"] = ...) et opérateurs (+=, -=)
+          ## Pour les assignments d'index (listing["key"] = ...)
           ##============================================================##
           def on_send(node)
-            # Pour les index assignments
-            if node.method_name == :[]= && node.arguments.length == 2
-              check_assignment(node)
-            end
+            return unless node.method_name == :[]= && node.arguments.length == 2
+
+            check_assignment(node)
           end
 
           def on_investigation_end
@@ -104,11 +85,6 @@ module RuboCop
             ## Pour les send nodes (index assignment)
             ##============================================================##
             return true if node.respond_to?(:method_name) && node.method_name == :[]=
-
-            ##============================================================##
-            ## Pour les op-assignments (+=, -=, etc.)
-            ##============================================================##
-            return true if node.type == :op_asgn
 
             ##============================================================##
             ## Pour les assignments classiques
@@ -169,52 +145,23 @@ module RuboCop
           ## Vérifier l'alignement d'un groupe et corriger si nécessaire
           ##============================================================##
           def check_and_correct_alignment(group)
-            lefts = group.map do |node|
-              source = node.source
-              # Trouver l'opérateur d'assignment (=, +=, -=)
-              operator = get_assignment_operator(source)
-              parts = source.split(operator)
-              parts[0].to_s.strip.gsub(/\s+/, "").gsub(",", ", ")
-            end
+            lefts         = group.map {|node| node.source.split("=")[0].to_s.strip.gsub(/\s+/, "").gsub(",", ", ") }
             required_size = lefts.map(&:length).max + 1
 
             group.each.with_index do |node, index|
               current_source = node.source
-              new_left = lefts[index]
+              new_left       = lefts[index]
               new_left += " " * (required_size - new_left.length)
-
-              # Reconstruire la ligne avec le bon opérateur
-              operator = get_assignment_operator(current_source)
-              expected_source = reconstruct_assignment_line(current_source, new_left, operator)
+              split           = current_source.split("=")
+              split[0]        = new_left
+              expected_source = split.join("=")
 
               if current_source != expected_source
-                add_offense(node, message: MSG) do |corrector|
+                add_offense(node, :message => MSG) do |corrector|
                   corrector.replace(node, expected_source)
                 end
               end
             end
-          end
-
-          ##============================================================##
-          ## Déterminer l'opérateur d'assignment dans une ligne
-          ##============================================================##
-          def get_assignment_operator(source)
-            if source.include?("+=")
-              "+="
-            elsif source.include?("-=")
-              "-="
-            else
-              "="
-            end
-          end
-
-          ##============================================================##
-          ## Reconstruire une ligne d'assignment avec le bon alignement
-          ##============================================================##
-          def reconstruct_assignment_line(source, new_left, operator)
-            split = source.split(operator)
-            split[0] = new_left
-            split.join(operator)
           end
 
         end
