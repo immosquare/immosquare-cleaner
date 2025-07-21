@@ -102,6 +102,8 @@ Style/WordArray:
   EnforcedStyle: brackets # Pour formater les arrays de la forme ["a", "b", "c] et pas %w[a b c]
 Style/SymbolArray:
   EnforcedStyle: brackets # Pour formater les arrays de la forme [:a, :b, :c] et pas %i[a b c]
+Style/RescueModifier:
+  Enabled: false # On veut pouvoir utiliser rescue modifier inline (some_method rescue SomeException)
 
 #################### OVERWRITE ###########################
 Style/MethodCallWithArgsParentheses:
