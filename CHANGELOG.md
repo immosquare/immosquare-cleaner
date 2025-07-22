@@ -1,3 +1,6 @@
+## [0.1.74] - 2025-07-21
+- Disable AlignAssignments cop : not ready yet
+
 ## [0.1.73] - 2025-07-21
 - Add new rubocop rule setting : RescueModifier
 
