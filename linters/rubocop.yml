@@ -117,7 +117,7 @@ CustomCops/Style/FontAwesomeNormalization:
   Enabled: true # On veut forcer l'utilisation du nom complet de la font awesome
 
 CustomCops/Style/AlignAssignments:
-  Enabled: true # On veut forcer l'alignement des assignations consécutives
+  Enabled: false # On veut forcer l'alignement des assignations consécutives
 
 #################### GEM ###########################
 Gemspec/RequireMFA:
