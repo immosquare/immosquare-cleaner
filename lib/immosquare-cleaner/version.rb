@@ -1,3 +1,3 @@
 module ImmosquareCleaner
-  VERSION = "0.1.74".freeze
+  VERSION = "0.1.75".freeze
 end

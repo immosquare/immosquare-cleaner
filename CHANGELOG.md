@@ -1,3 +1,6 @@
+## [0.1.75] - 2025-08-07
+- add shell script formatting support with shfmt
+
 ## [0.1.74] - 2025-07-21
 - Disable AlignAssignments cop : not ready yet
 
