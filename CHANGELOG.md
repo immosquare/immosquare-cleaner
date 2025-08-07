@@ -1,3 +1,6 @@
+## [0.1.76] - 2025-08-07
+- add new supported formats for shfmt
+
 ## [0.1.75] - 2025-08-07
 - add shell script formatting support with shfmt
 
