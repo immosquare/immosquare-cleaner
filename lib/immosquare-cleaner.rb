@@ -191,6 +191,21 @@ module ImmosquareCleaner
           File.normalize_last_line(file_path)
 
         ##============================================================##
+        ## Shell files (.sh)
+        ## ---------
+        ## Uses shfmt to format shell scripts with 2-space indentation
+        ## Checks if shfmt is available before processing
+        ##============================================================##
+        elsif file_path.end_with?(".sh")
+          if system("which shfmt > /dev/null 2>&1")
+            cmds = ["shfmt -i 2 -w \"#{file_path}\""]
+            launch_cmds(cmds)
+            File.normalize_last_line(file_path)
+          else
+            puts "ERROR: shfmt is not installed. Please install it with: brew install shfmt"
+          end
+
+        ##============================================================##
         ## Autres formats
         ##============================================================##
         else

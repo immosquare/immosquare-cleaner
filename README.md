@@ -14,6 +14,7 @@ The cleaner recognizes and caters to various file formats:
 | JS          | `.js`, `.mjs`                                                                                                                                                                                         | [eslint](https://eslint.org/)                                                                                       |
 | JSON        | `.json`                                                                                                                                                                                               | [ImmosquareExtensions](https://github.com/immosquare/immosquare-extensions)                                         |
 | Markdown    | `.md`, `.md.erb`                                                                                                                                                                                      | [ImmosquareCleaner](https://github.com/immosquare/immosquare-cleaner)                                               |
+| Shell       | `.sh`                                                                                                                                                                                                 | [shfmt](https://github.com/mvdan/sh)                                                                                |
 | Others      | Any other format                                                                                                                                                                                      | [prettier](https://prettier.io/)                                                                                    |
 
 ## Linter Configurations
@@ -22,7 +23,9 @@ You can view the specific configurations for all supported linters in the [linte
 
 ## Installation
 
-**Prerequisite**: Please be sure to have [bun](https://bun.sh/) installed. (This is necessary to launch eslint & prettier commands.)
+**Prerequisites**: 
+- Please be sure to have [bun](https://bun.sh/) installed. (This is necessary to launch eslint & prettier commands.)
+- For shell script formatting, install [shfmt](https://github.com/mvdan/sh): `brew install shfmt`
 
 Add the gem in your development group in the Gemfile:
 
