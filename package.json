@@ -11,5 +11,5 @@
     "eslint-plugin-sonarjs":           "^3.0.5",
     "prettier":                        "^3.6.2"
   },
-  "scripts": {"morning": "bundle update && bundle clean --force && bun update && bundle exec immosquare-cleaner 'package.json'"}
+  "scripts": {"morning": "bundle update && bundle clean --force && bun update --latest && bun install && bundle exec immosquare-cleaner 'package.json'"}
 }
