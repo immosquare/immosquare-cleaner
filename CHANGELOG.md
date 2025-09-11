@@ -1,3 +1,6 @@
+## [0.1.78] - 2025-09-11
+- config ts support in eslint.config
+
 ## [0.1.77] - 2025-09-11
 - add typescript support
 - update morning script
