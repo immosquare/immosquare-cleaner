@@ -152,7 +152,7 @@ module ImmosquareCleaner
           ## Pour éviter ce problème on met le fichier dans un dossier temporaire dans le dossier du gem
           ## et on le supprime par la suite.
           ##============================================================##
-        elsif file_path.end_with?(".js", ".mjs", "js.erb")
+        elsif file_path.end_with?(".js", ".mjs", "js.erb", ".jsx", ".ts", ".ts.erb", ".tsx")
           begin
             temp_folder_path = "#{gem_root}/tmp"
             temp_file_path = "#{temp_folder_path}/#{File.basename(file_path)}"
