@@ -1,3 +1,7 @@
+## [0.1.77] - 2025-09-11
+- add typescript support
+- update morning script
+
 ## [0.1.76] - 2025-08-07
 - add new supported formats for shfmt
 
