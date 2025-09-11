@@ -155,11 +155,11 @@ module ImmosquareCleaner
         elsif file_path.end_with?(".js", ".mjs", "js.erb", ".jsx", ".ts", ".ts.erb", ".tsx")
           begin
             temp_folder_path = "#{gem_root}/tmp"
-            temp_file_path = "#{temp_folder_path}/#{File.basename(file_path)}"
+            temp_file_path   = "#{temp_folder_path}/#{File.basename(file_path)}"
             FileUtils.mkdir_p(temp_folder_path)
             File.write(temp_file_path, File.read(file_path))
             cmds = []
-            cmds << "bundle exec erb_lint --config #{erblint_config_with_version_path} #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}" if file_path.end_with?("js.erb")
+            cmds << "bundle exec erb_lint --config #{erblint_config_with_version_path} #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}" if file_path.end_with?(".erb")
             cmds << "bun eslint --config #{gem_root}/linters/eslint.config.mjs  #{temp_file_path} --fix"
 
             launch_cmds(cmds)
