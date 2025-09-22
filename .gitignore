@@ -6,5 +6,3 @@ linters/erb-lint-*
 test/*
 /tmp/*
 .claude/*.local.*
-.vscode/extensions.json
-.vscode/settings.json
