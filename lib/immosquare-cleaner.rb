@@ -24,6 +24,7 @@ module ImmosquareCleaner
     RUBY_FILES = [
       ".rb",
       ".rake",
+      "Brewfile",
       "Gemfile",
       "Rakefile",
       "Capfile",
