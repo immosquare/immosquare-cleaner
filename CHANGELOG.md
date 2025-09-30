@@ -1,3 +1,7 @@
+## [0.1.79] - 2025-09-30
+- add Brewfile to the list of supported files
+- update packages + gems
+
 ## [0.1.78] - 2025-09-11
 - config ts support in eslint.config
 
