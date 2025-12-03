@@ -1,3 +1,7 @@
+## [0.1.80] - 2025-12-03
+- enforce parentheses for method calls with arguments (link_to, content_tag, render, redirect_to, etc.)
+- add custom erb_lint linter CustomSingleLineIfModifier to convert if/unless blocks to inline modifiers
+
 ## [0.1.79] - 2025-09-30
 - add Brewfile to the list of supported files
 - update packages + gems

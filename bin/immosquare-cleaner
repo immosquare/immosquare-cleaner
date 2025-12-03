@@ -29,7 +29,7 @@ OptionParser.new do |parser|
   parser.banner = "Usage: immosquare-cleaner [options] file"
 
   parser.on("-h", "--help", "Prints this help") do
-    puts parser
+    puts(parser)
     exit
   end
 end.parse!
