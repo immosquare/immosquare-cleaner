@@ -108,6 +108,23 @@ Style/RescueModifier:
 #################### OVERWRITE ###########################
 Style/MethodCallWithArgsParentheses:
   Enabled: true # On veut forcer les parenthèses où elles sont utilises pour rendre le code plus propre
+  EnforcedStyle: require_parentheses
+  IgnoreMacros: false
+  AllowedMethods:
+    - require
+    - require_relative
+    - include
+    - extend
+    - prepend
+    - raise
+    - fail
+    - gem
+    - source
+    - ruby
+    - desc
+    - task
+    - namespace
+    - yield
 
 #################### CUSTOMS ###########################
 CustomCops/Style/CommentNormalization:
