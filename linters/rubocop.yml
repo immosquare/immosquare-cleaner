@@ -185,11 +185,8 @@ Style/MethodCallWithArgsParentheses:
     - after_commit
     - after_rollback
     ## Rails Model - Other
-    - scope
     - delegate
-    - alias_attribute
     - enum
-    - serialize
 
 #################### CUSTOMS ###########################
 CustomCops/Style/CommentNormalization:

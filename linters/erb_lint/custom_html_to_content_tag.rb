@@ -26,7 +26,23 @@ module ERBLint
       ## Void elements that cannot have content (self-closing tags)
       ##============================================================##
       VOID_ELEMENTS = [
-        "area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "menuitem", "meta", "param", "source", "track", "wbr"
+        "area",
+        "base",
+        "br",
+        "col",
+        "command",
+        "embed",
+        "hr",
+        "img",
+        "input",
+        "keygen",
+        "link",
+        "menuitem",
+        "meta",
+        "param",
+        "source",
+        "track",
+        "wbr"
       ].freeze
 
       ##============================================================##
@@ -44,7 +60,54 @@ module ERBLint
       ##============================================================##
       EXCLUDED_METHODS = [
         "render",
-        "content_tag"
+        "content_tag",
+        "image_tag"
+      ].freeze
+
+      ##============================================================##
+      ## Form builder methods - if called on a receiver, skip conversion
+      ## This detects form builders regardless of variable name (f, form, etc.)
+      ## Example: <div><%= f.input(:name) %></div> should stay as-is
+      ##============================================================##
+      FORM_BUILDER_METHODS = [
+        "input",
+        "label",
+        "text_field",
+        "text_area",
+        "password_field",
+        "hidden_field",
+        "file_field",
+        "check_box",
+        "radio_button",
+        "select",
+        "collection_select",
+        "collection_check_boxes",
+        "collection_radio_buttons",
+        "grouped_collection_select",
+        "date_select",
+        "time_select",
+        "datetime_select",
+        "date_field",
+        "time_field",
+        "datetime_field",
+        "datetime_local_field",
+        "month_field",
+        "week_field",
+        "url_field",
+        "email_field",
+        "number_field",
+        "range_field",
+        "search_field",
+        "telephone_field",
+        "phone_field",
+        "color_field",
+        "submit",
+        "button",
+        "association",
+        "input_field",
+        "error",
+        "hint",
+        "full_error"
       ].freeze
 
       def run(processed_source)
@@ -165,23 +228,32 @@ module ERBLint
       end
 
       ##============================================================##
-      ## Check if the ERB code calls an excluded method
+      ## Check if the ERB code calls an excluded method or form builder
       ## Uses Prism parser for proper Ruby AST analysis
       ##============================================================##
       def excluded_method?(erb_code)
         return false unless erb_code
 
-        method_name = extract_method_name(erb_code)
-        return false unless method_name
+        call_node = extract_call_node(erb_code)
+        return false unless call_node
 
-        EXCLUDED_METHODS.include?(method_name)
+        method_name = call_node.name.to_s
+        return true if EXCLUDED_METHODS.include?(method_name)
+
+        ##============================================================##
+        ## If method is a form builder method called on a receiver,
+        ## skip conversion (e.g., f.input, form.text_field, etc.)
+        ##============================================================##
+        return true if call_node.receiver && FORM_BUILDER_METHODS.include?(method_name)
+
+        false
       end
 
       ##============================================================##
-      ## Extract the method name from Ruby code using Prism parser
+      ## Extract the CallNode from Ruby code using Prism parser
       ## Handles both direct calls and calls with if/unless modifiers
       ##============================================================##
-      def extract_method_name(erb_code)
+      def extract_call_node(erb_code)
         result = Prism.parse(erb_code)
         return nil unless result.success?
 
@@ -190,13 +262,11 @@ module ERBLint
         ##============================================================##
         ## Handle if/unless modifiers: `render(...) if condition`
         ##============================================================##
-        if node.is_a?(Prism::IfNode) || node.is_a?(Prism::UnlessNode)
-          node = node.statements&.body&.first
-        end
+        node = node.statements&.body&.first if node.is_a?(Prism::IfNode) || node.is_a?(Prism::UnlessNode)
 
         return nil unless node.is_a?(Prism::CallNode)
 
-        node.name.to_s
+        node
       rescue StandardError
         nil
       end
