@@ -1,3 +1,9 @@
+## [0.1.84] - 2025-12-03
+- CustomHtmlToContentTag: exclude form builder methods (f.input, form.text_field, etc.) by detecting method names instead of variable names
+- add image_tag to excluded methods
+- clean up rubocop AllowedMethods list (remove invalid/duplicate entries)
+- CommentNormalization: preserve single `#` comments (temporary commented code) separate from `##` doc comments
+
 ## [0.1.83] - 2025-12-03
 - fix CustomHtmlToContentTag to handle if/unless modifiers (render ... if condition)
 

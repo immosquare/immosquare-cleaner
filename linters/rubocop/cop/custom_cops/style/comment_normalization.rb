@@ -71,9 +71,22 @@ module RuboCop
             end
 
             standalone_comments.each_with_index do |comment, index|
-              next_comment = standalone_comments[index + 1]
+              next_comment      = standalone_comments[index + 1]
+              comment_text      = comment.text.strip
+              next_comment_text = next_comment&.text&.strip
+              is_double_hash    = comment_text.start_with?("##")
 
-              if next_comment && next_comment.location.line == comment.location.line + 1
+              ##============================================================##
+              ## On vérifie si le prochain commentaire est sur la ligne suivante
+              ## ET si les deux commentaires sont du même "type" (## ou #)
+              ## Cela permet de ne pas fusionner les commentaires temporaires
+              ## (# x = 1) avec les vrais commentaires (##)
+              ##============================================================##
+              next_is_double_hash  = next_comment_text&.start_with?("##")
+              same_type            = is_double_hash == next_is_double_hash
+              next_line_contiguous = next_comment && next_comment.location.line == comment.location.line + 1
+
+              if next_line_contiguous && same_type
                 current_block << comment
               else
                 current_block << comment
