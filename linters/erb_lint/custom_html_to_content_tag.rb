@@ -65,6 +65,22 @@ module ERBLint
       ].freeze
 
       ##============================================================##
+      ## HTML tags that should not be converted to content_tag
+      ## These tags are more readable as HTML (tables, etc.)
+      ##============================================================##
+      EXCLUDED_TAGS = [
+        "th",
+        "td",
+        "tr",
+        "thead",
+        "tbody",
+        "tfoot",
+        "table",
+        "caption",
+        "colgroup"
+      ].freeze
+
+      ##============================================================##
       ## Form builder methods - if called on a receiver, skip conversion
       ## This detects form builders regardless of variable name (f, form, etc.)
       ## Example: <div><%= f.input(:name) %></div> should stay as-is
@@ -124,6 +140,7 @@ module ERBLint
           tag_name = extract_tag_name(child)
           next if tag_name.nil?
           next if VOID_ELEMENTS.include?(tag_name.downcase)
+          next if EXCLUDED_TAGS.include?(tag_name.downcase)
 
           ##============================================================##
           ## Check if next child is text containing only ERB output
