@@ -1,3 +1,6 @@
+## [0.1.82] - 2025-12-03
+- add EXCLUDED_METHODS to CustomHtmlToContentTag linter
+
 ## [0.1.81] - 2025-12-03
 - add custom erb_lint linter CustomHtmlToContentTag to convert HTML tags with ERB content to content_tag helpers
 
