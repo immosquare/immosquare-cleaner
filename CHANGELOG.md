@@ -1,3 +1,6 @@
+## [0.1.81] - 2025-12-03
+- add custom erb_lint linter CustomHtmlToContentTag to convert HTML tags with ERB content to content_tag helpers
+
 ## [0.1.80] - 2025-12-03
 - enforce parentheses for method calls with arguments (link_to, content_tag, render, redirect_to, etc.)
 - add custom erb_lint linter CustomSingleLineIfModifier to convert if/unless blocks to inline modifiers
