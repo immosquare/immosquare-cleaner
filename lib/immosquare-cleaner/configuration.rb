@@ -1,7 +1,7 @@
 module ImmosquareCleaner
   class Configuration
 
-    attr_accessor :rubocop_options, :htmlbeautifier_options, :erblint_options, :exclude_files
+    attr_accessor(:rubocop_options, :htmlbeautifier_options, :erblint_options, :exclude_files)
 
     def initialize
       @rubocop_options        = nil
