@@ -6,6 +6,8 @@ linters:
     enabled: false
   CustomSingleLineIfModifier:
     enabled: true
+  CustomHtmlToContentTag:
+    enabled: true
   Rubocop:
     enabled: true
     rubocop_config:

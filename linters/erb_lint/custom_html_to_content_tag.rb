@@ -1,0 +1,229 @@
+# frozen_string_literal: true
+
+module ERBLint
+  module Linters
+    ##============================================================##
+    ## This linter detects HTML tags containing only a single ERB
+    ## output statement and converts them to content_tag helpers.
+    ##
+    ## @example
+    ##   # bad
+    ##   <div class="card-title"><%= t("app.title") %></div>
+    ##
+    ##   # good
+    ##   <%= content_tag(:div, t("app.title"), :class => "card-title") %>
+    ##
+    ##============================================================##
+    class CustomHtmlToContentTag < Linter
+      include LinterRegistry
+
+      MSG = "Use content_tag helper instead of HTML tag with ERB output."
+
+      ##============================================================##
+      ## Void elements that cannot have content (self-closing tags)
+      ##============================================================##
+      VOID_ELEMENTS = %w[
+        area base br col command embed hr img input keygen
+        link menuitem meta param source track wbr
+      ].freeze
+
+      def run(processed_source)
+        document = processed_source.ast
+        children = document.children.to_a
+
+        children.each_with_index do |child, index|
+          ##============================================================##
+          ## Look for opening tag (not closing, not void element)
+          ##============================================================##
+          next unless child&.type == :tag
+          next if closing_tag?(child)
+
+          tag_name = extract_tag_name(child)
+          next if tag_name.nil?
+          next if VOID_ELEMENTS.include?(tag_name.downcase)
+
+          ##============================================================##
+          ## Check if next child is text containing only ERB output
+          ##============================================================##
+          next_child = children[index + 1]
+          next unless next_child&.type == :text
+
+          erb_node = extract_single_erb_output(next_child)
+          next unless erb_node
+
+          ##============================================================##
+          ## Check if next-next child is the closing tag
+          ##============================================================##
+          closing_child = children[index + 2]
+          next unless closing_child&.type == :tag
+          next unless closing_tag?(closing_child)
+          next unless extract_tag_name(closing_child) == tag_name
+
+          ##============================================================##
+          ## Build the content_tag replacement
+          ##============================================================##
+          attributes = extract_attributes(child)
+          erb_code = extract_erb_code(erb_node)
+
+          new_code = build_content_tag(tag_name, erb_code, attributes)
+
+          ##============================================================##
+          ## Calculate the full range from opening to closing tag
+          ##============================================================##
+          full_range = processed_source.to_source_range(
+            child.loc.begin_pos...closing_child.loc.end_pos
+          )
+
+          add_offense(full_range, MSG, {:new_code => new_code})
+        end
+      end
+
+      def autocorrect(_processed_source, offense)
+        lambda do |corrector|
+          corrector.replace(offense.source_range, offense.context[:new_code])
+        end
+      end
+
+      private
+
+      ##============================================================##
+      ## Check if tag is a closing tag (has solidus as first child)
+      ##============================================================##
+      def closing_tag?(tag_node)
+        tag_node.children.first&.type == :solidus
+      end
+
+      ##============================================================##
+      ## Extract tag name from tag node
+      ##============================================================##
+      def extract_tag_name(tag_node)
+        name_node = tag_node.children.find {|c| c&.type == :tag_name }
+        name_node&.children&.first
+      end
+
+      ##============================================================##
+      ## Extract single ERB output node from text node
+      ## Returns nil if text contains anything other than whitespace
+      ## and a single ERB output
+      ##============================================================##
+      def extract_single_erb_output(text_node)
+        erb_nodes = []
+        has_non_whitespace_text = false
+
+        text_node.children.each do |child|
+          if child.is_a?(String)
+            has_non_whitespace_text = true unless child.match?(/\A\s*\z/)
+          elsif child&.type == :erb
+            erb_nodes << child
+          end
+        end
+
+        return nil if has_non_whitespace_text
+        return nil if erb_nodes.size != 1
+
+        erb_node = erb_nodes.first
+        ##============================================================##
+        ## Must be output ERB (<%= ... %>) not statement (<% ... %>)
+        ##============================================================##
+        indicator = erb_node.children.first
+        return nil unless indicator&.type == :indicator
+        return nil unless indicator.children.first == "="
+
+        erb_node
+      end
+
+      ##============================================================##
+      ## Extract Ruby code from ERB node
+      ##============================================================##
+      def extract_erb_code(erb_node)
+        code_node = erb_node.children.find {|c| c&.type == :code }
+        code_node&.loc&.source&.strip
+      end
+
+      ##============================================================##
+      ## Extract attributes from tag node as hash
+      ##============================================================##
+      def extract_attributes(tag_node)
+        attrs = {}
+        attrs_node = tag_node.children.find {|c| c&.type == :tag_attributes }
+        return attrs unless attrs_node
+
+        attrs_node.children.each do |attr|
+          next unless attr&.type == :attribute
+
+          name_node = attr.children.find {|c| c&.type == :attribute_name }
+          value_node = attr.children.find {|c| c&.type == :attribute_value }
+
+          name = name_node&.children&.first
+          next unless name
+
+          ##============================================================##
+          ## Value can be a string or contain ERB
+          ##============================================================##
+          value = extract_attribute_value(value_node)
+          attrs[name] = value
+        end
+
+        attrs
+      end
+
+      ##============================================================##
+      ## Extract attribute value, handling both static and ERB values
+      ##============================================================##
+      def extract_attribute_value(value_node)
+        return nil unless value_node
+
+        parts = []
+        value_node.children.each do |child|
+          if child.is_a?(String)
+            parts << child
+          elsif child.respond_to?(:type)
+            next if child.type == :quote
+
+            if child.type == :erb
+              erb_code = extract_erb_code(child)
+              parts << "\#{#{erb_code}}"
+            end
+          end
+        end
+
+        parts.join
+      end
+
+      ##============================================================##
+      ## Build content_tag call
+      ##============================================================##
+      def build_content_tag(tag_name, content, attributes)
+        if attributes.empty?
+          "<%= content_tag(:#{tag_name}, #{content}) %>"
+        else
+          attrs_str = attributes.map do |name, value|
+            key = normalize_attribute_name(name)
+            ##============================================================##
+            ## Check if value contains interpolation
+            ##============================================================##
+            if value&.include?('#{')
+              "#{key} => \"#{value}\""
+            else
+              "#{key} => \"#{value}\""
+            end
+          end.join(", ")
+
+          "<%= content_tag(:#{tag_name}, #{content}, #{attrs_str}) %>"
+        end
+      end
+
+      ##============================================================##
+      ## Normalize attribute name to Ruby symbol format
+      ## class -> :class, data-value -> :\"data-value\" or data: { value: }
+      ##============================================================##
+      def normalize_attribute_name(name)
+        if name.match?(/\A[a-z_][a-z0-9_]*\z/i)
+          ":#{name}"
+        else
+          ":\"#{name}\""
+        end
+      end
+    end
+  end
+end
