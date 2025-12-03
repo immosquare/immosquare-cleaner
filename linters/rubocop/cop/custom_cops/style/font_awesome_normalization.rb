@@ -2,28 +2,32 @@ module RuboCop
   module Cop
     module CustomCops
       module Style
-        # This cop identifies usage of short Font Awesome prefix styles (e.g., 'fas', 'far', 'fal')
-        # and suggests replacing them with the long version style (which is the standard since v6).
-        #
-        # Doc : https://docs.fontawesome.com/web/setup/upgrade/whats-changed#full-style-names
-        #
-        # @example
-        #   # bad
-        #   font_awesome_icon("fas fa-user")
-        #   font_awesome_icon("far fa-circle-info")
-        #   font_awesome_icon("fal fa-bell")
-        #
-        #   # good
-        #   font_awesome_icon("fa-solid fa-user")
-        #   font_awesome_icon("fa-regular fa-circle-info")
-        #   font_awesome_icon("fa-light fa-bell")
+        ##============================================================##
+        ## This cop identifies usage of short Font Awesome prefix styles (e.g., 'fas', 'far', 'fal')
+        ## and suggests replacing them with the long version style (which is the standard since v6).
+        ##
+        ## Doc : https://docs.fontawesome.com/web/setup/upgrade/whats-changed#full-style-names
+        ##
+        ## @example
+        ## bad
+        ## font_awesome_icon("fas fa-user")
+        ## font_awesome_icon("far fa-circle-info")
+        ## font_awesome_icon("fal fa-bell")
+        ##
+        ## good
+        ## font_awesome_icon("fa-solid fa-user")
+        ## font_awesome_icon("fa-regular fa-circle-info")
+        ## font_awesome_icon("fa-light fa-bell")
+        ##============================================================##
         class FontAwesomeNormalization < RuboCop::Cop::Base
 
           extend AutoCorrector
 
           MSG = "Use long version Font Awesome style prefix instead of short version.".freeze
 
-          # Mapping from short prefixes to long prefixes
+          ##============================================================##
+          ## Mapping from short prefixes to long prefixes
+          ##============================================================##
           FA_PREFIX_MAP = {
             "fas"   => "fa-solid",
             "far"   => "fa-regular",
@@ -44,11 +48,11 @@ module RuboCop
             "fab"   => "fa-brands"
           }.freeze
 
-          def_node_matcher :font_awesome_icon_call?, <<~PATTERN
+          def_node_matcher(:font_awesome_icon_call?, <<~PATTERN)
             (send nil? :font_awesome_icon $...)
           PATTERN
 
-          def_node_matcher :string_argument?, <<~PATTERN
+          def_node_matcher(:string_argument?, <<~PATTERN)
             (str $_)
           PATTERN
 
@@ -93,7 +97,9 @@ module RuboCop
                   corrector.replace(node, replacement)
                 end
 
-                # Once we've found a match, no need to check other prefixes
+                ##============================================================##
+                ## Once we've found a match, no need to check other prefixes
+                ##============================================================##
                 break
               end
             end
