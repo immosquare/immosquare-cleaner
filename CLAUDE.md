@@ -74,6 +74,13 @@ The gem includes custom cops in `linters/rubocop/cop/custom_cops/style/`:
 - `CommentNormalization`: Normalizes comment formatting
 - `FontAwesomeNormalization`: Standardizes Font Awesome usage
 
+### Custom erb_lint Linters
+The gem includes custom erb_lint linters in `linters/erb_lint/`:
+- `CustomSingleLineIfModifier`: Converts `<% if %><%= %><% end %>` blocks to inline `<%= ... if condition %>`
+- `CustomHtmlToContentTag`: Converts `<div class="x"><%= content %></div>` to `<%= content_tag(:div, content, :class => "x") %>`
+
+A symlink `.erb_linters -> linters/erb_lint` is required because erb_lint hardcodes the custom linters directory. See: https://github.com/Shopify/erb_lint/blob/main/lib/erb_lint/linter_registry.rb#L7
+
 ### File Processing Strategy
 - All processors ensure files end with a single newline via `File.normalize_last_line`
 - Temporary files are cleaned up after processing
@@ -92,4 +99,11 @@ The gem includes custom cops in `linters/rubocop/cop/custom_cops/style/`:
 - `lib/immosquare-cleaner/markdown.rb`: Custom markdown processor
 - `lib/tasks/immosquare_cleaner.rake`: Rails integration tasks
 - `linters/`: All linter configuration files
+- `linters/erb_lint/`: Custom erb_lint linters
+- `linters/rubocop/cop/`: Custom RuboCop cops
+- `.erb_linters`: Symlink to `linters/erb_lint` (required by erb_lint)
 - `bin/immosquare-cleaner`: CLI executable
+
+## Version-Specific Config Files
+
+The gem generates version-specific config files on first run (e.g., `rubocop-3.4.1.yml`, `erb-lint-3.4.1.yml`). These are cached and should be deleted when modifying the base config files to force regeneration.

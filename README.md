@@ -6,20 +6,39 @@ A meticulously crafted Ruby gem to enhance the cleanliness and structure of your
 
 The cleaner recognizes and caters to various file formats:
 
-| File Type   | File Extension                                                                                                                                                                                        | Processor                                                                                                           |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| ERB         | `.html.erb` , `.html`                                                                                                                                                                                 | [htmlbeautifier](https://github.com/threedaymonk/htmlbeautifier) && [erb-lint](https://github.com/Shopify/erb-lint) |
-| Ruby        | `.rb`, `.rake`, `Gemfile`, `Rakefile`, `.axlsx`, `.gemspec`, `.ru`, `.podspec`, `.jbuilder`, `.rabl`, `.thor`, `config.ru`, `Berksfile`, `Capfile`, `Guardfile`, `Podfile`, `Thorfile`, `Vagrantfile` | [rubocop](https://rubocop.org/)                                                                                     |
-| YAML        | `.yml` (only files in locales folder)                                                                                                                                                                 | [ImmosquareYaml](https://github.com/immosquare/immosquare-yaml)                                                     |
-| JS          | `.js`, `.mjs`, `js.erb`, `.jsx`, `.ts`, `.ts.erb`, `.tsx`                                                                                                                                             | [eslint](https://eslint.org/)                                                                                       |
-| JSON        | `.json`                                                                                                                                                                                               | [ImmosquareExtensions](https://github.com/immosquare/immosquare-extensions)                                         |
-| Markdown    | `.md`, `.md.erb`                                                                                                                                                                                      | [ImmosquareCleaner](https://github.com/immosquare/immosquare-cleaner)                                               |
-| Shell       | `.sh`, `bash`, `zsh`, `zshrc`, `bashrc`, `bash_profile`, `zprofile`                                                                                                                                   | [shfmt](https://github.com/mvdan/sh)                                                                                |
-| Others      | Any other format                                                                                                                                                                                      | [prettier](https://prettier.io/)                                                                                    |
+| File Type   | File Extension                                                                                                                                                                                                    | Processor                                                                                                           |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| ERB         | `.html.erb` , `.html`                                                                                                                                                                                             | [htmlbeautifier](https://github.com/threedaymonk/htmlbeautifier) && [erb-lint](https://github.com/Shopify/erb-lint) |
+| Ruby        | `.rb`, `.rake`, `Gemfile`, `Rakefile`, `Brewfile`, `.axlsx`, `.gemspec`, `.ru`, `.podspec`, `.jbuilder`, `.rabl`, `.thor`, `config.ru`, `Berksfile`, `Capfile`, `Guardfile`, `Podfile`, `Thorfile`, `Vagrantfile` | [rubocop](https://rubocop.org/)                                                                                     |
+| YAML        | `.yml` (only files in locales folder)                                                                                                                                                                             | [ImmosquareYaml](https://github.com/immosquare/immosquare-yaml)                                                     |
+| JS          | `.js`, `.mjs`, `js.erb`, `.jsx`, `.ts`, `.ts.erb`, `.tsx`                                                                                                                                                         | [eslint](https://eslint.org/)                                                                                       |
+| JSON        | `.json`                                                                                                                                                                                                           | [ImmosquareExtensions](https://github.com/immosquare/immosquare-extensions)                                         |
+| Markdown    | `.md`, `.md.erb`                                                                                                                                                                                                  | [ImmosquareCleaner](https://github.com/immosquare/immosquare-cleaner)                                               |
+| Shell       | `.sh`, `bash`, `zsh`, `zshrc`, `bashrc`, `bash_profile`, `zprofile`                                                                                                                                               | [shfmt](https://github.com/mvdan/sh)                                                                                |
+| Others      | Any other format                                                                                                                                                                                                  | [prettier](https://prettier.io/)                                                                                    |
 
 ## Linter Configurations
 
 You can view the specific configurations for all supported linters in the [linters folder](https://github.com/immosquare/immosquare-cleaner/tree/main/linters) of the repository.
+
+### Custom RuboCop Cops
+
+The gem includes custom RuboCop cops:
+
+| Cop                                         | Description                                                   |
+| ------------------------------------------- | ------------------------------------------------------------- |
+| `CustomCops/Style/CommentNormalization`     | Normalizes comment formatting                                 |
+| `CustomCops/Style/FontAwesomeNormalization` | Standardizes Font Awesome class names (fas -> fa-solid)       |
+| `CustomCops/Style/AlignAssignments`         | Aligns consecutive variable assignments (disabled by default) |
+
+### Custom erb_lint Linters
+
+The gem includes custom erb_lint linters for ERB files:
+
+| Linter                       | Description                                                                              |
+| ---------------------------- | ---------------------------------------------------------------------------------------- |
+| `CustomSingleLineIfModifier` | Converts `<% if cond %><%= x %><% end %>` to `<%= x if cond %>`                          |
+| `CustomHtmlToContentTag`     | Converts `<div class="x"><%= y %></div>` to `<%= content_tag(:div, y, :class => "x") %>` |
 
 ## Installation
 
@@ -54,7 +73,13 @@ end
 
 ## Usage
 
-To clean a specific file:
+### Command Line
+
+```bash
+bundle exec immosquare-cleaner path/to/your/file.rb
+```
+
+### Ruby API
 
 ```ruby
 ImmosquareCleaner.clean("path/to/your/file.rb")
