@@ -179,12 +179,21 @@ module ERBLint
 
       ##============================================================##
       ## Extract the method name from Ruby code using Prism parser
+      ## Handles both direct calls and calls with if/unless modifiers
       ##============================================================##
       def extract_method_name(erb_code)
         result = Prism.parse(erb_code)
         return nil unless result.success?
 
         node = result.value.statements.body.first
+
+        ##============================================================##
+        ## Handle if/unless modifiers: `render(...) if condition`
+        ##============================================================##
+        if node.is_a?(Prism::IfNode) || node.is_a?(Prism::UnlessNode)
+          node = node.statements&.body&.first
+        end
+
         return nil unless node.is_a?(Prism::CallNode)
 
         node.name.to_s

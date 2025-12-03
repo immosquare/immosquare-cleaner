@@ -1,3 +1,6 @@
+## [0.1.83] - 2025-12-03
+- fix CustomHtmlToContentTag to handle if/unless modifiers (render ... if condition)
+
 ## [0.1.82] - 2025-12-03
 - add EXCLUDED_METHODS to CustomHtmlToContentTag linter
 
