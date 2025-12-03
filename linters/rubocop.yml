@@ -111,6 +111,7 @@ Style/MethodCallWithArgsParentheses:
   EnforcedStyle: require_parentheses
   IgnoreMacros: false
   AllowedMethods:
+    ## Ruby core
     - require
     - require_relative
     - include
@@ -118,13 +119,77 @@ Style/MethodCallWithArgsParentheses:
     - prepend
     - raise
     - fail
+    - yield
+    - attr_accessor
+    - attr_reader
+    - attr_writer
+    ## Bundler / Gemfile
     - gem
+    - group
     - source
     - ruby
+    - install_plugin
+    ## Rake
     - desc
     - task
     - namespace
-    - yield
+    ## Rails Controller
+    - before_action
+    - after_action
+    - around_action
+    - skip_before_action
+    - prepend_before_action
+    - append_before_action
+    - helper_method
+    - layout
+    - rescue_from
+    ## Rails Model - Associations
+    - belongs_to
+    - has_many
+    - has_one
+    - has_and_belongs_to_many
+    ## Rails Model - Validations
+    - validates
+    - validate
+    - validates_presence_of
+    - validates_uniqueness_of
+    - validates_length_of
+    - validates_format_of
+    - validates_numericality_of
+    - validates_inclusion_of
+    - validates_exclusion_of
+    - validates_confirmation_of
+    - validates_acceptance_of
+    - validates_absence_of
+    - validates_associated
+    - validates_each
+    - validates_with
+    ## Rails Model - Callbacks
+    - after_initialize
+    - after_find
+    - before_validation
+    - after_validation
+    - before_save
+    - after_save
+    - around_save
+    - before_create
+    - after_create
+    - around_create
+    - before_update
+    - after_update
+    - around_update
+    - before_destroy
+    - after_destroy
+    - around_destroy
+    - after_touch
+    - after_commit
+    - after_rollback
+    ## Rails Model - Other
+    - scope
+    - delegate
+    - alias_attribute
+    - enum
+    - serialize
 
 #################### CUSTOMS ###########################
 CustomCops/Style/CommentNormalization:
