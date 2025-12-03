@@ -9,10 +9,17 @@ require_relative "immosquare-cleaner/markdown"
 require_relative "immosquare-cleaner/railtie" if defined?(Rails)
 
 ##============================================================##
-## Importing the 'English' library allows us to use more human-readable
+## note 1 : Importing the 'English' library allows us to use more human-readable
 ## global variables, such as $INPUT_RECORD_SEPARATOR instead of $/,
 ## which enhances code clarity and makes it easier to understand
 ## the purpose of these variables in our code.
+## ---------
+## note 2 :
+## Custom erb_lint linters are stored in this folder.
+## A symlink .erb_linters -> linters/erb_lint is required at the
+## gem root because erb_lint hardcodes the custom linters directory
+## to ".erb_linters" and this cannot be configured.
+## See: https://github.com/Shopify/erb_lint/blob/main/lib/erb_lint/linter_registry.rb#L7
 ##============================================================##
 module ImmosquareCleaner
   class << self
@@ -46,7 +53,7 @@ module ImmosquareCleaner
     ##============================================================##
     ## Gem configuration
     ##============================================================##
-    attr_writer :configuration
+    attr_writer(:configuration)
 
     def configuration
       @configuration ||= Configuration.new

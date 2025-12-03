@@ -1,13 +1,5 @@
 # frozen_string_literal: true
 
-##============================================================##
-## Custom erb_lint linters are stored in this folder.
-## A symlink .erb_linters -> linters/erb_lint is required at the
-## gem root because erb_lint hardcodes the custom linters directory
-## to ".erb_linters" and this cannot be configured.
-## See: https://github.com/Shopify/erb_lint/blob/main/lib/erb_lint/linter_registry.rb#L7
-##============================================================##
-
 module ERBLint
   module Linters
     ##============================================================##
@@ -15,16 +7,17 @@ module ERBLint
     ## statement and converts them to inline modifier syntax.
     ##
     ## @example
-    ##   # bad
+    ## bad
     ##   <% if condition %>
     ##     <%= link_to("Home", root_path) %>
     ##   <% end %>
     ##
-    ##   # good
+    ## good
     ##   <%= link_to("Home", root_path) if condition %>
     ##
     ##============================================================##
     class CustomSingleLineIfModifier < Linter
+
       include LinterRegistry
 
       MSG = "Use modifier if/unless for single-line ERB output."
@@ -106,8 +99,8 @@ module ERBLint
       def valid_if_modifier_pattern?(if_node, output_node, end_node, processed_source)
         ##============================================================##
         ## Check indicators: if_node should be <% (not <%=)
-        ##                   output_node should be <%= (output)
-        ##                   end_node should be <% (not <%=)
+        ## output_node should be <%= (output)
+        ## end_node should be <% (not <%=)
         ##============================================================##
         return false unless is_statement_erb?(if_node)
         return false unless is_output_erb?(output_node)
@@ -150,7 +143,7 @@ module ERBLint
       ##============================================================##
       def is_output_erb?(erb_node)
         indicator = erb_node.children.first
-        indicator&.respond_to?(:children) && indicator.children.first == "="
+        indicator.respond_to?(:children) && indicator.children.first == "="
       end
 
       ##============================================================##
@@ -173,6 +166,7 @@ module ERBLint
 
         processed_source.source_buffer.source[start_pos...end_pos]
       end
+
     end
   end
 end
