@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "prism"
+
 module ERBLint
   module Linters
     ##============================================================##
@@ -25,6 +27,14 @@ module ERBLint
       VOID_ELEMENTS = %w[
         area base br col command embed hr img input keygen
         link menuitem meta param source track wbr
+      ].freeze
+
+      ##============================================================##
+      ## Methods that should not be converted to content_tag
+      ## - render: partials should stay in HTML for readability
+      ##============================================================##
+      EXCLUDED_METHODS = %w[
+        render
       ].freeze
 
       def run(processed_source)
@@ -60,11 +70,15 @@ module ERBLint
           next unless extract_tag_name(closing_child) == tag_name
 
           ##============================================================##
+          ## Extract ERB code and check if it should be skipped
+          ##============================================================##
+          erb_code = extract_erb_code(erb_node)
+          next if excluded_method?(erb_code)
+
+          ##============================================================##
           ## Build the content_tag replacement
           ##============================================================##
           attributes = extract_attributes(child)
-          erb_code = extract_erb_code(erb_node)
-
           new_code = build_content_tag(tag_name, erb_code, attributes)
 
           ##============================================================##
@@ -138,6 +152,34 @@ module ERBLint
       def extract_erb_code(erb_node)
         code_node = erb_node.children.find {|c| c&.type == :code }
         code_node&.loc&.source&.strip
+      end
+
+      ##============================================================##
+      ## Check if the ERB code calls an excluded method
+      ## Uses Prism parser for proper Ruby AST analysis
+      ##============================================================##
+      def excluded_method?(erb_code)
+        return false unless erb_code
+
+        method_name = extract_method_name(erb_code)
+        return false unless method_name
+
+        EXCLUDED_METHODS.include?(method_name)
+      end
+
+      ##============================================================##
+      ## Extract the method name from Ruby code using Prism parser
+      ##============================================================##
+      def extract_method_name(erb_code)
+        result = Prism.parse(erb_code)
+        return nil unless result.success?
+
+        node = result.value.statements.body.first
+        return nil unless node.is_a?(Prism::CallNode)
+
+        node.name.to_s
+      rescue StandardError
+        nil
       end
 
       ##============================================================##
