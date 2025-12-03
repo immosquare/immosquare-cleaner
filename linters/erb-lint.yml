@@ -4,6 +4,8 @@ linters:
     enabled: false
   SpaceInHtmlTag:
     enabled: false
+  CustomSingleLineIfModifier:
+    enabled: true
   Rubocop:
     enabled: true
     rubocop_config:
