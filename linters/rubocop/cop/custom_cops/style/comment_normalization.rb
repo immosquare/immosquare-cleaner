@@ -18,16 +18,6 @@ module RuboCop
 
             comment_blocks = find_comment_blocks(processed_source.comments)
 
-
-            ##============================================================##
-            ## On ne veut traiter que les blocs de commentaires où la première ligne
-            ## du bloc commence par ##
-            ##============================================================##
-            comment_blocks = comment_blocks.select do |block|
-              block.first.text.strip.start_with?("##")
-            end
-
-
             comment_blocks.each do |block|
               correct_block = normalize_comment_block(block)
 
@@ -59,7 +49,7 @@ module RuboCop
 
 
           ##============================================================##
-          ## On ne veut traiter que les commentaires qui ne sont pas
+          ## On ne veut traiter que les commentaires ## qui ne sont pas
           ## des commentaires de fin de ligne ruby
           ##============================================================##
           def find_comment_blocks(comments)
@@ -67,26 +57,14 @@ module RuboCop
             current_block       = []
             standalone_comments = comments.select do |comment|
               line = processed_source.lines[comment.location.line - 1]
-              line.strip.start_with?("#")
+              line.strip.start_with?("##")
             end
 
             standalone_comments.each_with_index do |comment, index|
-              next_comment      = standalone_comments[index + 1]
-              comment_text      = comment.text.strip
-              next_comment_text = next_comment&.text&.strip
-              is_double_hash    = comment_text.start_with?("##")
-
-              ##============================================================##
-              ## On vérifie si le prochain commentaire est sur la ligne suivante
-              ## ET si les deux commentaires sont du même "type" (## ou #)
-              ## Cela permet de ne pas fusionner les commentaires temporaires
-              ## (# x = 1) avec les vrais commentaires (##)
-              ##============================================================##
-              next_is_double_hash  = next_comment_text&.start_with?("##")
-              same_type            = is_double_hash == next_is_double_hash
+              next_comment         = standalone_comments[index + 1]
               next_line_contiguous = next_comment && next_comment.location.line == comment.location.line + 1
 
-              if next_line_contiguous && same_type
+              if next_line_contiguous
                 current_block << comment
               else
                 current_block << comment
@@ -106,7 +84,6 @@ module RuboCop
 
             body = block.map do |comment|
               text                       = comment.text.to_s.strip
-              chars                      = text.chars.uniq
               alphanumercic              = text.match?(/[\p{L}0-9]/)
               first_line_with_text_found = true if alphanumercic && !first_line_with_text_found
               if text == BORDER_LINE
@@ -145,25 +122,18 @@ module RuboCop
 
           ##============================================================##
           ## Expliquons la regex :
+          ## ##\s*#*\s*(?=[[:alnum:]])
+          ## ---------
           ## ## : match littéralement "##"
-          ## | \s* : match 0 ou plusieurs espaces
-          ## | #* : match 0 ou plusieurs #
-          ## | \s* : match encore 0 ou plusieurs espaces
-          ## | (?=[[:alnum:]]) : lookahead positif qui vérifie qu'on a un caractère alphanumérique après
+          ## \s* : match 0 ou plusieurs espaces
+          ## #* : match 0 ou plusieurs #
+          ## \s* : match encore 0 ou plusieurs espaces
+          ## (?=[[:alnum:]]) : lookahead positif qui vérifie qu'on a un caractère alphanumérique après
           ##============================================================##
           def cleaned_line(line)
-            if line.start_with?("## |")
-              line
-            elsif line.start_with?("##")
-              line.gsub(/##\s*#*\s*(?=[[:alnum:]])/, "## ")
-            else
-              ##============================================================##
-              ## Pour une ligne commençant par # simple, on la convertit en ##
-              ## On enlève d'abord le # initial et tous les espaces qui suivent
-              ##============================================================##
-              cleaned = line.gsub(/^#\s*/, "")
-              "## #{cleaned}"
-            end
+            return line if line.start_with?("## |")
+
+            line.gsub(/##\s*#*\s*(?=[[:alnum:]])/, "## ")
           end
 
           def needs_correction?(block, correct_block)
