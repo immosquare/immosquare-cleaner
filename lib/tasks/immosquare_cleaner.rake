@@ -14,7 +14,8 @@ namespace :immosquare_cleaner do
       "public",
       "test",
       "tmp",
-      "vendor"
+      "vendor",
+      "db"
     ]
     extensions_to_exclude = [
       ".lock",
