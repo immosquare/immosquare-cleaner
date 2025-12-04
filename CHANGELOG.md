@@ -1,3 +1,6 @@
+## [0.1.93] - 2025-12-04
+- exclude db folder from cleaning
+
 ## [0.1.92] - 2025-12-04
 - Move if/unless modifiers outside content_tag
 - Use single quotes for attribute values containing double quotes
