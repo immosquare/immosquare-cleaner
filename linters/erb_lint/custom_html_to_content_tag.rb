@@ -213,21 +213,31 @@ module ERBLint
       ##============================================================##
       ## Extract single ERB output node from text node
       ## Returns nil if text contains anything other than whitespace
-      ## and a single ERB output
+      ## and a single ERB output. Also rejects if there are nested tags.
       ##============================================================##
       def extract_single_erb_output(text_node)
         erb_nodes = []
         has_non_whitespace_text = false
+        has_nested_tags = false
 
         text_node.children.each do |child|
           if child.is_a?(String)
             has_non_whitespace_text = true unless child.match?(/\A\s*\z/)
-          elsif child&.type == :erb
-            erb_nodes << child
+          elsif child.respond_to?(:type)
+            case child.type
+            when :erb
+              erb_nodes << child
+            when :tag
+              ##============================================================##
+              ## If there's any nested tag, don't convert the parent
+              ##============================================================##
+              has_nested_tags = true
+            end
           end
         end
 
         return nil if has_non_whitespace_text
+        return nil if has_nested_tags
         return nil if erb_nodes.size != 1
 
         erb_node = erb_nodes.first
@@ -256,41 +266,37 @@ module ERBLint
       def excluded_method?(erb_code)
         return false unless erb_code
 
-        call_node = extract_call_node(erb_code)
-        return false unless call_node
-
-        method_name = call_node.name.to_s
-        return true if EXCLUDED_METHODS.include?(method_name)
-
-        ##============================================================##
-        ## If method is a form builder method called on a receiver,
-        ## skip conversion (e.g., f.input, form.text_field, etc.)
-        ##============================================================##
-        return true if call_node.receiver && FORM_BUILDER_METHODS.include?(method_name)
-
-        false
-      end
-
-      ##============================================================##
-      ## Extract the CallNode from Ruby code using Prism parser
-      ## Handles both direct calls and calls with if/unless modifiers
-      ##============================================================##
-      def extract_call_node(erb_code)
         result = Prism.parse(erb_code)
-        return nil unless result.success?
-
         node = result.value.statements.body.first
+
+        ##============================================================##
+        ## yield is a YieldNode, not a CallNode - always exclude it
+        ## Note: Prism reports yield outside block as syntax error,
+        ## but still creates the node, so check before result.success?
+        ##============================================================##
+        return true if node.is_a?(Prism::YieldNode)
+
+        return false unless result.success?
 
         ##============================================================##
         ## Handle if/unless modifiers: `render(...) if condition`
         ##============================================================##
         node = node.statements&.body&.first if node.is_a?(Prism::IfNode) || node.is_a?(Prism::UnlessNode)
 
-        return nil unless node.is_a?(Prism::CallNode)
+        return false unless node.is_a?(Prism::CallNode)
 
-        node
+        method_name = node.name.to_s
+        return true if EXCLUDED_METHODS.include?(method_name)
+
+        ##============================================================##
+        ## If method is a form builder method called on a receiver,
+        ## skip conversion (e.g., f.input, form.text_field, etc.)
+        ##============================================================##
+        return true if node.receiver && FORM_BUILDER_METHODS.include?(method_name)
+
+        false
       rescue StandardError
-        nil
+        false
       end
 
       ##============================================================##
