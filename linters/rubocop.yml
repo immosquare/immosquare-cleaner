@@ -123,6 +123,9 @@ Style/MethodCallWithArgsParentheses:
     - attr_accessor
     - attr_reader
     - attr_writer
+    - run
+    - exec
+    - load
     ## Bundler / Gemfile
     - gem
     - group
@@ -187,6 +190,19 @@ Style/MethodCallWithArgsParentheses:
     ## Rails Model - Other
     - delegate
     - enum
+    ## Rails routes
+    - get
+    - post
+    - put
+    - patch
+    - delete
+    - options
+    - head
+    - match
+    - root
+    ## Rails tasks
+    - rake
+    - every
 
 #################### CUSTOMS ###########################
 CustomCops/Style/CommentNormalization:
