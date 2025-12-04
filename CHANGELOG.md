@@ -1,3 +1,9 @@
+## [0.1.92] - 2025-12-04
+- Move if/unless modifiers outside content_tag
+- Use single quotes for attribute values containing double quotes
+- Wrap ambiguous method calls in parentheses
+- Use string instead of symbol for tag names with special chars (x-card)
+
 ## [0.1.91] - 2025-12-03
 - add more methods to excluded methods list
 
