@@ -61,7 +61,8 @@ module ERBLint
       EXCLUDED_METHODS = [
         "render",
         "content_tag",
-        "image_tag"
+        "image_tag",
+        "link_to"
       ].freeze
 
       ##============================================================##
