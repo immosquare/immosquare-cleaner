@@ -100,6 +100,14 @@ Simply install the [immosquare-vscode](https://marketplace.visualstudio.com/item
 
 That's it!
 
+## Development
+
+### Running Tests
+
+```bash
+bundle exec rake test
+```
+
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request on our [GitHub repository](https://github.com/immosquare/immosquare-cleaner).
