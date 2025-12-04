@@ -204,10 +204,10 @@ Style/MethodCallWithArgsParentheses:
     - rake
     - every
     - command
-    ## Capistrano
     - set
     - append
     - server
+    - after
 
 #################### CUSTOMS ###########################
 CustomCops/Style/CommentNormalization:
