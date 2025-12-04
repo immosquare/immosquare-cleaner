@@ -1,3 +1,7 @@
+## [0.1.87] - 2025-12-03
+- add more methods to excluded methods list
+- add more methods to AllowedMethods list
+
 ## [0.1.86] - 2025-12-03
 - add link_to to excluded methods
 
