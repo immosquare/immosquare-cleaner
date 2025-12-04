@@ -9,7 +9,6 @@ class CustomHtmlToContentTagTest < Test::Unit::TestCase
   ##============================================================##
   ## Basic conversions
   ##============================================================##
-
   def test_simple_tag_with_erb
     source = '<div class="card"><%= t("title") %></div>'
     result = autocorrect(source)
