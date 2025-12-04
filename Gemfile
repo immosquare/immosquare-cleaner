@@ -10,3 +10,7 @@ group :development do
   ##============================================================##
   gem "ruby-lsp"
 end
+
+group :test do
+  gem "test-unit"
+end

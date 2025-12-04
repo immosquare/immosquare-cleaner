@@ -566,8 +566,10 @@ module ERBLint
         if node.is_a?(Prism::IfNode) || node.is_a?(Prism::UnlessNode)
           ##============================================================##
           ## Only handle modifier form (no else, single statement body)
+          ## Use subsequent for IfNode, else_clause for UnlessNode
           ##============================================================##
-          if node.consequent.nil? && node.statements&.body&.size == 1
+          else_branch = node.is_a?(Prism::IfNode) ? node.subsequent : node.else_clause
+          if else_branch.nil? && node.statements&.body&.size == 1
             keyword = node.is_a?(Prism::IfNode) ? "if" : "unless"
             condition = node.predicate.slice
             content = node.statements.body.first.slice
