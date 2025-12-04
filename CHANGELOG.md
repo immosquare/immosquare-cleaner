@@ -1,3 +1,6 @@
+## [0.1.86] - 2025-12-03
+- add link_to to excluded methods
+
 ## [0.1.85] - 2025-12-03
 - add JavaScript/TypeScript comment normalization using Babel parser
 - normalize `//` comments to bordered format matching Ruby `##` style
