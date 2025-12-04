@@ -349,4 +349,11 @@ class CustomHtmlToContentTagTest < Test::Unit::TestCase
     assert_equal(expected, result)
   end
 
+  def test_attribute_with_erb_interpolation_preserves_inner_quotes
+    # Case: for="substep_<%= hash["id"] %>" should not escape quotes inside #{}
+    source = '<label for="substep_<%= substep_hash["id"] %>"><%= substep_hash["name"] %></label>'
+    result = autocorrect(source)
+    assert_equal('<%= content_tag(:label, substep_hash["name"], :for => "substep_#{substep_hash["id"]}") %>', result)
+  end
+
 end

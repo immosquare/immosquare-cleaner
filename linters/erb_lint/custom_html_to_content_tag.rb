@@ -533,9 +533,10 @@ module ERBLint
 
         if has_interpolation && allow_interpolation
           ##============================================================##
-          ## Must use double quotes for interpolation, escape inner quotes
+          ## Must use double quotes for interpolation
+          ## Only escape quotes OUTSIDE of interpolation blocks
           ##============================================================##
-          escaped = value.gsub('"', '\\"')
+          escaped = escape_quotes_outside_interpolation(value)
           "\"#{escaped}\""
         elsif has_double_quotes
           ##============================================================##
@@ -545,6 +546,49 @@ module ERBLint
         else
           "\"#{value}\""
         end
+      end
+
+      ##============================================================##
+      ## Escape double quotes that are outside interpolation blocks
+      ## Example: 'foo "bar" #{x["y"]}' -> 'foo \"bar\" #{x["y"]}'
+      ##============================================================##
+      def escape_quotes_outside_interpolation(value)
+        result = +""
+        i = 0
+
+        while i < value.length
+          if value[i, 2] == '#{'
+            ##============================================================##
+            ## Found interpolation start, find matching closing brace
+            ##============================================================##
+            depth = 1
+            j = i + 2
+            while j < value.length && depth > 0
+              if value[j] == "{"
+                depth += 1
+              elsif value[j] == "}"
+                depth -= 1
+              end
+              j += 1
+            end
+            ##============================================================##
+            ## Copy interpolation block as-is (no escaping)
+            ##============================================================##
+            result << value[i...j]
+            i = j
+          elsif value[i] == '"'
+            ##============================================================##
+            ## Escape quote outside interpolation
+            ##============================================================##
+            result << '\\"'
+            i += 1
+          else
+            result << value[i]
+            i += 1
+          end
+        end
+
+        result
       end
 
       ##============================================================##
