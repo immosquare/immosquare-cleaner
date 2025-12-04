@@ -203,6 +203,11 @@ Style/MethodCallWithArgsParentheses:
     ## Rails tasks
     - rake
     - every
+    - command
+    ## Capistrano
+    - set
+    - append
+    - server
 
 #################### CUSTOMS ###########################
 CustomCops/Style/CommentNormalization:
