@@ -322,25 +322,55 @@ module ERBLint
 
       ##============================================================##
       ## Extract attribute value, handling both static and ERB values
+      ## Returns a hash with :type (:static, :dynamic, :erb_only) and :value
       ##============================================================##
       def extract_attribute_value(value_node)
         return nil unless value_node
 
         parts = []
+        erb_parts = []
+        static_parts = []
+
         value_node.children.each do |child|
           if child.is_a?(String)
-            parts << child
+            parts << {:type => :static, :value => child}
+            static_parts << child
           elsif child.respond_to?(:type)
             next if child.type == :quote
 
             if child.type == :erb
               erb_code = extract_erb_code(child)
-              parts << "\#{#{erb_code}}"
+              parts << {:type => :erb, :value => erb_code}
+              erb_parts << erb_code
             end
           end
         end
 
-        parts.join
+        ##============================================================##
+        ## Determine the attribute value type:
+        ## - :erb_only: Only ERB, no static text (use Ruby directly)
+        ## - :dynamic: Mix of static and ERB (use interpolation)
+        ## - :static: Only static text (use quoted string)
+        ##============================================================##
+        if erb_parts.any? && static_parts.all? {|s| s.match?(/\A\s*\z/) }
+          ##============================================================##
+          ## Pure ERB value: class="<%= expr %>" -> :class => (expr)
+          ##============================================================##
+          {:type => :erb_only, :value => erb_parts.first}
+        elsif erb_parts.any?
+          ##============================================================##
+          ## Mixed value: class="foo <%= expr %>" -> :class => "foo #{expr}"
+          ##============================================================##
+          combined = parts.map do |part|
+            part[:type] == :erb ? "\#{#{part[:value]}}" : part[:value]
+          end.join
+          {:type => :dynamic, :value => combined}
+        else
+          ##============================================================##
+          ## Static value: class="foo" -> :class => "foo"
+          ##============================================================##
+          {:type => :static, :value => static_parts.join}
+        end
       end
 
       ##============================================================##
@@ -367,10 +397,10 @@ module ERBLint
         if attributes.empty?
           base = "content_tag(#{formatted_tag}, #{wrapped_content})"
         else
-          attrs_str = attributes.map do |name, value|
+          attrs_str = attributes.map do |name, attr_data|
             key = normalize_attribute_name(name)
-            quoted_value = quote_attribute_value(value)
-            "#{key} => #{quoted_value}"
+            formatted_value = format_attribute_value(attr_data)
+            "#{key} => #{formatted_value}"
           end.join(", ")
 
           base = "content_tag(#{formatted_tag}, #{wrapped_content}, #{attrs_str})"
@@ -451,18 +481,51 @@ module ERBLint
       end
 
       ##============================================================##
-      ## Quote attribute value for Ruby output
-      ## - Uses double quotes by default
-      ## - Switches to single quotes if value contains double quotes
-      ## - Handles interpolation by keeping double quotes and escaping
+      ## Format attribute value based on its type
+      ## - :erb_only: Pure ERB -> (expr) with parentheses if needed
+      ## - :dynamic: Mixed -> "text #{expr}" with interpolation
+      ## - :static: Pure text -> "value" with proper quoting
       ##============================================================##
-      def quote_attribute_value(value)
+      def format_attribute_value(attr_data)
+        return '""' if attr_data.nil?
+
+        type = attr_data[:type]
+        value = attr_data[:value]
+
         return '""' if value.nil? || value.empty?
 
+        case type
+        when :erb_only
+          ##============================================================##
+          ## Pure ERB: wrap in parentheses for safety
+          ## class="<%= x if y %>" -> :class => (x if y)
+          ##============================================================##
+          "(#{value})"
+        when :dynamic
+          ##============================================================##
+          ## Mixed static and ERB: use interpolation
+          ## class="foo <%= bar %>" -> :class => "foo #{bar}"
+          ##============================================================##
+          quote_string_value(value, :allow_interpolation => true)
+        else
+          ##============================================================##
+          ## Static value: simple quoting
+          ##============================================================##
+          quote_string_value(value, :allow_interpolation => false)
+        end
+      end
+
+      ##============================================================##
+      ## Quote a string value for Ruby output
+      ## - Uses double quotes by default
+      ## - Switches to single quotes if value contains double quotes
+      ## - Keeps double quotes for interpolation
+      ##============================================================##
+      def quote_string_value(value, allow_interpolation: false)
         has_interpolation = value.include?('#{')
         has_double_quotes = value.include?('"')
 
-        if has_interpolation
+        if has_interpolation && allow_interpolation
           ##============================================================##
           ## Must use double quotes for interpolation, escape inner quotes
           ##============================================================##
