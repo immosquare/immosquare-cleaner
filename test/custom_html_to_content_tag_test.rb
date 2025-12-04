@@ -327,4 +327,26 @@ class CustomHtmlToContentTagTest < Test::Unit::TestCase
     assert_equal('<%= content_tag(:span, @active ? "Yes" : "No") %>', result)
   end
 
+  def test_nested_divs_with_erb_attribute_not_converted
+    # Case: nested divs where outer has ERB in attribute - should not cascade
+    source = <<~ERB.chomp
+      <div class="immosquare-tab-content">
+        <div class="<%= "active" if @selected_index == 1 %>" data-immosquare-tab="tab1">
+          <%= modal_save_button_html %>
+        </div>
+      </div>
+    ERB
+
+    result = autocorrect(source)
+
+    # Only the innermost div should be converted, outer div stays as HTML
+    expected = <<~ERB.chomp
+      <div class="immosquare-tab-content">
+        <%= content_tag(:div, modal_save_button_html, :class => ("active" if @selected_index == 1), :"data-immosquare-tab" => "tab1") %>
+      </div>
+    ERB
+
+    assert_equal(expected, result)
+  end
+
 end
