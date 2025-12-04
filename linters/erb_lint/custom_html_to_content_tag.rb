@@ -59,6 +59,8 @@ module ERBLint
       ##   - content_tag(:div, x) → allow (user-written)
       ##============================================================##
       EXCLUDED_METHODS = [
+        "yield",
+        "render_to_string",
         "render",
         "content_tag",
         "image_tag",
