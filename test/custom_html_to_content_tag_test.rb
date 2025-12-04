@@ -256,4 +256,75 @@ class CustomHtmlToContentTagTest < Test::Unit::TestCase
     assert_true(offenses.empty?)
   end
 
+  ##============================================================##
+  ## Real-world cases from conversation
+  ##============================================================##
+
+  def test_if_modifier_with_method_chain
+    # Case: <%= last_evolution.new_value if last_evolution.new_value.present? %>
+    source = '<div class="mb"><%= last_evolution.new_value if last_evolution.new_value.present? %></div>'
+    result = autocorrect(source)
+    assert_equal('<%= content_tag(:div, last_evolution.new_value, :class => "mb") if last_evolution.new_value.present? %>', result)
+  end
+
+  def test_multiple_data_attributes
+    # Case: multiple data attributes with different quote styles
+    source = %(<div class="fs-normal" data-toto='["vertical", "individual"]' data-tata="building"><%= t("app.buildings.singular") %></div>)
+    result = autocorrect(source)
+    assert_equal(%(<%= content_tag(:div, t("app.buildings.singular"), :class => "fs-normal", :"data-toto" => '["vertical", "individual"]', :"data-tata" => "building") %>), result)
+  end
+
+  def test_nested_tags_with_yield_not_converted
+    # Case: yield in nested structure should not convert any parent
+    source = <<~ERB.chomp
+      <div class="container my-2">
+        <div class="row mt-2">
+          <div class="col-lg-8 flex-grow-1">
+            <%= yield %>
+          </div>
+        </div>
+      </div>
+    ERB
+
+    result = autocorrect(source)
+
+    # Nothing should change because yield is excluded
+    assert_equal(source, result)
+  end
+
+  def test_erb_attribute_with_unless_modifier
+    # Case: attribute with unless modifier
+    source = '<div class="<%= "hidden" unless @visible %>"><%= content %></div>'
+    result = autocorrect(source)
+    assert_equal('<%= content_tag(:div, content, :class => ("hidden" unless @visible)) %>', result)
+  end
+
+  def test_method_with_hash_argument_no_parens
+    # Case: method call with hash argument without parentheses
+    source = '<div class="text-center"><%= tag t("app.add.user"), backoffice_path(@agency), :class => "btn btn-primary" %></div>'
+    result = autocorrect(source)
+    assert_equal('<%= content_tag(:div, (tag t("app.add.user"), backoffice_path(@agency), :class => "btn btn-primary"), :class => "text-center") %>', result)
+  end
+
+  def test_simple_variable_content
+    # Case: simple variable as content
+    source = '<span class="badge"><%= @count %></span>'
+    result = autocorrect(source)
+    assert_equal('<%= content_tag(:span, @count, :class => "badge") %>', result)
+  end
+
+  def test_method_with_parentheses_not_wrapped
+    # Case: method call WITH parentheses should NOT be wrapped again
+    source = '<div><%= format_date(created_at) %></div>'
+    result = autocorrect(source)
+    assert_equal('<%= content_tag(:div, format_date(created_at)) %>', result)
+  end
+
+  def test_ternary_in_content
+    # Case: ternary operator in content
+    source = '<span><%= @active ? "Yes" : "No" %></span>'
+    result = autocorrect(source)
+    assert_equal('<%= content_tag(:span, @active ? "Yes" : "No") %>', result)
+  end
+
 end
