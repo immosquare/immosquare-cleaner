@@ -1,3 +1,6 @@
+## [0.1.91] - 2025-12-03
+- add more methods to excluded methods list
+
 ## [0.1.90] - 2025-12-03
 - add more methods to excluded methods list
 
