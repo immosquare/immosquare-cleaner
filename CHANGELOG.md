@@ -1,3 +1,12 @@
+## [0.1.94] - 2025-12-04
+- Fix CustomHtmlToContentTag: handle nested tags correctly (only convert innermost)
+- Fix CustomHtmlToContentTag: properly exclude yield from conversion
+- Fix CustomHtmlToContentTag: preserve quotes in interpolated attribute values
+- Fix CustomHtmlToContentTag: handle pure ERB attributes with parentheses instead of interpolation
+- Add comprehensive test suite for CustomHtmlToContentTag linter
+- Add test command to README
+- Exclude font files (.otf, .ttf) from cleaning
+
 ## [0.1.93] - 2025-12-04
 - exclude db folder from cleaning
 
