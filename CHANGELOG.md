@@ -1,3 +1,7 @@
+## [0.1.85] - 2025-12-03
+- add JavaScript/TypeScript comment normalization using Babel parser
+- normalize `//` comments to bordered format matching Ruby `##` style
+
 ## [0.1.84] - 2025-12-03
 - CustomHtmlToContentTag: exclude form builder methods (f.input, form.text_field, etc.) by detecting method names instead of variable names
 - add image_tag to excluded methods
