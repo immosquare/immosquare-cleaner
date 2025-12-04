@@ -1,3 +1,6 @@
+## [0.1.89] - 2025-12-03
+- add more methods to excluded methods list
+
 ## [0.1.88] - 2025-12-03
 - add html, body,  to excluded tags list
 
