@@ -345,23 +345,170 @@ module ERBLint
 
       ##============================================================##
       ## Build content_tag call
+      ## Handles if/unless modifiers by moving them outside content_tag
       ##============================================================##
       def build_content_tag(tag_name, content, attributes)
+        ##============================================================##
+        ## Extract modifier (if/unless) from content if present
+        ##============================================================##
+        content_part, modifier_part = extract_modifier(content)
+
+        ##============================================================##
+        ## Wrap content in parentheses if it's an ambiguous method call
+        ## (method call without parentheses that has arguments)
+        ##============================================================##
+        wrapped_content = needs_parentheses?(content_part) ? "(#{content_part})" : content_part
+
+        ##============================================================##
+        ## Format tag name as symbol or string depending on characters
+        ##============================================================##
+        formatted_tag = format_tag_name(tag_name)
+
         if attributes.empty?
-          "<%= content_tag(:#{tag_name}, #{content}) %>"
+          base = "content_tag(#{formatted_tag}, #{wrapped_content})"
         else
           attrs_str = attributes.map do |name, value|
             key = normalize_attribute_name(name)
-            ##============================================================##
-            ## Check if value contains interpolation
-            ##============================================================##
-            if value&.include?('#{')
-            end
-            "#{key} => \"#{value}\""
+            quoted_value = quote_attribute_value(value)
+            "#{key} => #{quoted_value}"
           end.join(", ")
 
-          "<%= content_tag(:#{tag_name}, #{content}, #{attrs_str}) %>"
+          base = "content_tag(#{formatted_tag}, #{wrapped_content}, #{attrs_str})"
         end
+
+        if modifier_part
+          "<%= #{base} #{modifier_part} %>"
+        else
+          "<%= #{base} %>"
+        end
+      end
+
+      ##============================================================##
+      ## Format tag name for content_tag
+      ## - Simple tags (div, span) -> :div, :span
+      ## - Tags with special chars (x-card) -> "x-card"
+      ##============================================================##
+      def format_tag_name(tag_name)
+        if tag_name.match?(/\A[a-z_][a-z0-9_]*\z/i)
+          ":#{tag_name}"
+        else
+          "\"#{tag_name}\""
+        end
+      end
+
+      ##============================================================##
+      ## Check if Ruby code needs parentheses when used as argument
+      ## Returns true for method calls without parentheses that have
+      ## arguments (which would be ambiguous in content_tag context)
+      ## Example: "tag t('x'), path, :class => 'y'" needs parentheses
+      ##============================================================##
+      def needs_parentheses?(erb_code)
+        return false unless erb_code
+
+        result = Prism.parse(erb_code)
+        return false unless result.success?
+
+        node = result.value.statements.body.first
+        return false unless node.is_a?(Prism::CallNode)
+
+        ##============================================================##
+        ## Check if it's a method call with arguments but no parentheses
+        ##============================================================##
+        has_arguments = node.arguments&.arguments&.any?
+        return false unless has_arguments
+
+        ##============================================================##
+        ## Check if parentheses are missing by looking at the source
+        ## If the method name is not immediately followed by '(', it
+        ## needs wrapping
+        ##============================================================##
+        method_name = node.name.to_s
+        source = erb_code.strip
+
+        ##============================================================##
+        ## Find position after method name (accounting for receiver)
+        ##============================================================##
+        if node.receiver
+          ##============================================================##
+          ## For calls like "tag.div" or "f.input", find the method call
+          ##============================================================##
+          call_loc = node.call_operator_loc || node.message_loc
+          return false unless call_loc
+
+          after_method = call_loc.end_offset + method_name.length
+        else
+          after_method = method_name.length
+        end
+
+        ##============================================================##
+        ## Check if character after method name is '('
+        ##============================================================##
+        return false if after_method >= source.length
+
+        source[after_method] != "("
+      rescue StandardError
+        false
+      end
+
+      ##============================================================##
+      ## Quote attribute value for Ruby output
+      ## - Uses double quotes by default
+      ## - Switches to single quotes if value contains double quotes
+      ## - Handles interpolation by keeping double quotes and escaping
+      ##============================================================##
+      def quote_attribute_value(value)
+        return '""' if value.nil? || value.empty?
+
+        has_interpolation = value.include?('#{')
+        has_double_quotes = value.include?('"')
+
+        if has_interpolation
+          ##============================================================##
+          ## Must use double quotes for interpolation, escape inner quotes
+          ##============================================================##
+          escaped = value.gsub('"', '\\"')
+          "\"#{escaped}\""
+        elsif has_double_quotes
+          ##============================================================##
+          ## Use single quotes to avoid escaping
+          ##============================================================##
+          "'#{value}'"
+        else
+          "\"#{value}\""
+        end
+      end
+
+      ##============================================================##
+      ## Extract if/unless modifier from Ruby code
+      ## Returns [content, modifier] or [content, nil]
+      ## Example: "foo if bar" => ["foo", "if bar"]
+      ##============================================================##
+      def extract_modifier(erb_code)
+        return [erb_code, nil] unless erb_code
+
+        result = Prism.parse(erb_code)
+        return [erb_code, nil] unless result.success?
+
+        node = result.value.statements.body.first
+
+        ##============================================================##
+        ## Check for if/unless modifier
+        ##============================================================##
+        if node.is_a?(Prism::IfNode) || node.is_a?(Prism::UnlessNode)
+          ##============================================================##
+          ## Only handle modifier form (no else, single statement body)
+          ##============================================================##
+          if node.consequent.nil? && node.statements&.body&.size == 1
+            keyword = node.is_a?(Prism::IfNode) ? "if" : "unless"
+            condition = node.predicate.slice
+            content = node.statements.body.first.slice
+            return [content, "#{keyword} #{condition}"]
+          end
+        end
+
+        [erb_code, nil]
+      rescue StandardError
+        [erb_code, nil]
       end
 
       ##============================================================##
