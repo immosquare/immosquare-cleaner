@@ -21,8 +21,17 @@ namespace :immosquare_cleaner do
       ".lock",
       ".lockb",
       ".otf",
-      ".ttf"
+      ".ttf",
+      ".png",
+      ".jpg",
+      ".jpeg",
+      ".gif",
+      ".svg",
+      ".ico",
+      ".webp",
+      ".csv"
     ]
+
     file_paths = Dir.glob("#{Rails.root}/**/*").reject do |file_path|
       File.directory?(file_path) || file_path.gsub("#{Rails.root}/", "").start_with?(*paths_to_exclude) || file_path.end_with?(*extensions_to_exclude)
     end
