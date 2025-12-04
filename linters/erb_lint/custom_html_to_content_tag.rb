@@ -70,6 +70,8 @@ module ERBLint
       ## These tags are more readable as HTML (tables, etc.)
       ##============================================================##
       EXCLUDED_TAGS = [
+        "html",
+        "body",
         "th",
         "td",
         "tr",
