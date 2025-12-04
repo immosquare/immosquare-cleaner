@@ -328,7 +328,8 @@ module ERBLint
 
       ##============================================================##
       ## Extract attribute value, handling both static and ERB values
-      ## Returns a hash with :type (:static, :dynamic, :erb_only) and :value
+      ## Returns a hash with :type (:static, :dynamic, :erb_only)
+      ## For :dynamic, also includes :parts array for proper escaping
       ##============================================================##
       def extract_attribute_value(value_node)
         return nil unless value_node
@@ -365,12 +366,10 @@ module ERBLint
           {:type => :erb_only, :value => erb_parts.first}
         elsif erb_parts.any?
           ##============================================================##
-          ## Mixed value: class="foo <%= expr %>" -> :class => "foo #{expr}"
+          ## Mixed value: keep parts separate for proper escaping
+          ## class="foo <%= expr %>" -> :class => "foo #{expr}"
           ##============================================================##
-          combined = parts.map do |part|
-            part[:type] == :erb ? "\#{#{part[:value]}}" : part[:value]
-          end.join
-          {:type => :dynamic, :value => combined}
+          {:type => :dynamic, :parts => parts}
         else
           ##============================================================##
           ## Static value: class="foo" -> :class => "foo"
@@ -496,9 +495,6 @@ module ERBLint
         return '""' if attr_data.nil?
 
         type = attr_data[:type]
-        value = attr_data[:value]
-
-        return '""' if value.nil? || value.empty?
 
         case type
         when :erb_only
@@ -506,89 +502,64 @@ module ERBLint
           ## Pure ERB: wrap in parentheses for safety
           ## class="<%= x if y %>" -> :class => (x if y)
           ##============================================================##
+          value = attr_data[:value]
+          return '""' if value.nil? || value.empty?
+
           "(#{value})"
         when :dynamic
           ##============================================================##
-          ## Mixed static and ERB: use interpolation
+          ## Mixed static and ERB: build string from parts
+          ## Escape quotes only in static parts, not in ERB parts
           ## class="foo <%= bar %>" -> :class => "foo #{bar}"
           ##============================================================##
-          quote_string_value(value, :allow_interpolation => true)
+          parts = attr_data[:parts]
+          return '""' if parts.nil? || parts.empty?
+
+          build_interpolated_string(parts)
         else
           ##============================================================##
           ## Static value: simple quoting
           ##============================================================##
-          quote_string_value(value, :allow_interpolation => false)
+          value = attr_data[:value]
+          return '""' if value.nil? || value.empty?
+
+          quote_static_string(value)
         end
       end
 
       ##============================================================##
-      ## Quote a string value for Ruby output
+      ## Build an interpolated string from parts
+      ## Static parts have quotes escaped, ERB parts are wrapped in #{}
+      ##============================================================##
+      def build_interpolated_string(parts)
+        result = parts.map do |part|
+          if part[:type] == :erb
+            ##============================================================##
+            ## ERB part: wrap in interpolation, no escaping needed
+            ##============================================================##
+            "\#{#{part[:value]}}"
+          else
+            ##============================================================##
+            ## Static part: escape double quotes
+            ##============================================================##
+            part[:value].gsub('"', '\\"')
+          end
+        end.join
+
+        "\"#{result}\""
+      end
+
+      ##============================================================##
+      ## Quote a static string value for Ruby output
       ## - Uses double quotes by default
       ## - Switches to single quotes if value contains double quotes
-      ## - Keeps double quotes for interpolation
       ##============================================================##
-      def quote_string_value(value, allow_interpolation: false)
-        has_interpolation = value.include?('#{')
-        has_double_quotes = value.include?('"')
-
-        if has_interpolation && allow_interpolation
-          ##============================================================##
-          ## Must use double quotes for interpolation
-          ## Only escape quotes OUTSIDE of interpolation blocks
-          ##============================================================##
-          escaped = escape_quotes_outside_interpolation(value)
-          "\"#{escaped}\""
-        elsif has_double_quotes
-          ##============================================================##
-          ## Use single quotes to avoid escaping
-          ##============================================================##
+      def quote_static_string(value)
+        if value.include?('"')
           "'#{value}'"
         else
           "\"#{value}\""
         end
-      end
-
-      ##============================================================##
-      ## Escape double quotes that are outside interpolation blocks
-      ## Example: 'foo "bar" #{x["y"]}' -> 'foo \"bar\" #{x["y"]}'
-      ##============================================================##
-      def escape_quotes_outside_interpolation(value)
-        result = +""
-        i = 0
-
-        while i < value.length
-          if value[i, 2] == '#{'
-            ##============================================================##
-            ## Found interpolation start, find matching closing brace
-            ##============================================================##
-            depth = 1
-            j = i + 2
-            while j < value.length && depth > 0
-              if value[j] == "{"
-                depth += 1
-              elsif value[j] == "}"
-                depth -= 1
-              end
-              j += 1
-            end
-            ##============================================================##
-            ## Copy interpolation block as-is (no escaping)
-            ##============================================================##
-            result << value[i...j]
-            i = j
-          elsif value[i] == '"'
-            ##============================================================##
-            ## Escape quote outside interpolation
-            ##============================================================##
-            result << '\\"'
-            i += 1
-          else
-            result << value[i]
-            i += 1
-          end
-        end
-
-        result
       end
 
       ##============================================================##
