@@ -168,7 +168,8 @@ module ImmosquareCleaner
             File.write(temp_file_path, File.read(file_path))
             cmds = []
             cmds << "bundle exec erb_lint --config #{erblint_config_with_version_path} #{file_path} #{ImmosquareCleaner.configuration.erblint_options || "--autocorrect"}" if file_path.end_with?(".erb")
-            cmds << "bun eslint --config #{gem_root}/linters/eslint.config.mjs  #{temp_file_path} --fix"
+            cmds << "bun #{gem_root}/linters/normalize-comments.mjs #{temp_file_path}"
+            cmds << "bun eslint --config #{gem_root}/linters/eslint.config.mjs #{temp_file_path} --fix"
 
             launch_cmds(cmds)
             File.normalize_last_line(temp_file_path)
