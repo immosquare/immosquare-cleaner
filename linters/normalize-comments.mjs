@@ -88,6 +88,18 @@ const groupConsecutiveComments = (comments, originalLines) => {
     }
 
     //============================================================//
+    // Skip Sprockets directives (//= link, //= require, etc.)
+    //============================================================//
+    if (comment.value.startsWith("=")) {
+      if (currentBlock.length > 0) {
+        blocks.push(currentBlock)
+        currentBlock = []
+      }
+      lastLine = -2
+      return
+    }
+
+    //============================================================//
     // Check if this is a standalone comment (line starts with //)
     // Skip end-of-line comments (e.g., const x = 1 // comment)
     //============================================================//
