@@ -1,3 +1,7 @@
+## [0.1.95] - 2025-12-05
+- Skip Sprockets directives (//= link, //= require, etc.) in comment normalization
+- Exclude .erb files (.js.erb, .ts.erb) from JavaScript comment normalization
+
 ## [0.1.94] - 2025-12-04
 - Fix CustomHtmlToContentTag: handle nested tags correctly (only convert innermost)
 - Fix CustomHtmlToContentTag: properly exclude yield from conversion
