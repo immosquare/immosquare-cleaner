@@ -36,6 +36,7 @@ const normalizeComments = (filePath) => {
   // Process blocks in reverse order to avoid line number shifts
   //============================================================//
   const blocksReversed = [...commentBlocks].reverse()
+  let hasChanges = false
 
   blocksReversed.forEach((block) => {
     const normalized = normalizeCommentBlock(block, lines)
@@ -47,10 +48,16 @@ const normalizeComments = (filePath) => {
       // Replace the lines in the original array
       //============================================================//
       lines.splice(startLine, endLine - startLine + 1, ...normalized)
+      hasChanges = true
     }
   })
 
-  writeFileSync(filePath, lines.join("\n"))
+  //============================================================//
+  // Only write if there were changes
+  //============================================================//
+  if (hasChanges) {
+    writeFileSync(filePath, lines.join("\n"))
+  }
 }
 
 //============================================================//
@@ -64,7 +71,7 @@ const groupConsecutiveComments = (comments, originalLines) => {
 
   comments.forEach((comment) => {
     //============================================================//
-    // Only process line comments (// style), not block comments (/* */)
+    // Only process line comments (// style), not block comments
     //============================================================//
     if (comment.type !== "CommentLine") {
       if (currentBlock.length > 0) {
@@ -89,8 +96,9 @@ const groupConsecutiveComments = (comments, originalLines) => {
 
     //============================================================//
     // Skip Sprockets directives (//= link, //= require, etc.)
+    // These start with "= " followed by a directive keyword
     //============================================================//
-    if (comment.value.startsWith("=")) {
+    if (/^=\s*\w/.test(comment.value)) {
       if (currentBlock.length > 0) {
         blocks.push(currentBlock)
         currentBlock = []
@@ -149,7 +157,7 @@ const normalizeCommentBlock = (block, originalLines) => {
   const indent    = firstLine.match(/^(\s*)/)[1]
 
   //============================================================//
-  // Extract the text content from each comment
+  // Extract the text content from each comment (skip borders)
   //============================================================//
   const bodyLines            = []
   let firstLineWithTextFound = false
@@ -188,6 +196,20 @@ const normalizeCommentBlock = (block, originalLines) => {
     result.push(indent + line)
   })
   result.push(indent + BORDER_LINE)
+
+  //============================================================//
+  // Compare with existing - skip if already correctly formatted
+  //============================================================//
+  const startLine     = block[0].loc.start.line - 1
+  const endLine       = block[block.length - 1].loc.start.line - 1
+  const existingLines = originalLines.slice(startLine, endLine + 1)
+
+  //============================================================//
+  // Check if existing lines match the result exactly
+  //============================================================//
+  if (existingLines.length === result.length && existingLines.every((line, i) => line === result[i])) {
+    return null
+  }
 
   return result
 }
