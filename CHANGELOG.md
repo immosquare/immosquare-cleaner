@@ -1,3 +1,6 @@
+## [0.1.96] - 2025-12-09
+- Add comment normalization for JavaScript files
+
 ## [0.1.95] - 2025-12-05
 - Skip Sprockets directives (//= link, //= require, etc.) in comment normalization
 - Exclude .erb files (.js.erb, .ts.erb) from JavaScript comment normalization
