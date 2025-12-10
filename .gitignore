@@ -4,4 +4,9 @@ node_modules/*
 linters/rubocop-*
 linters/erb-lint-*
 /tmp/*
-.claude/*.local.*
+
+##============================================================##
+## Claude personal settings
+##============================================================##
+/.claude/settings.local.json
+

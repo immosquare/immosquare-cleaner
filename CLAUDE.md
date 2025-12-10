@@ -4,106 +4,67 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is `immosquare-cleaner`, a Ruby gem that provides comprehensive code formatting and linting for Rails applications. It supports multiple file formats including Ruby, ERB, JavaScript, JSON, YAML, Markdown, and other formats via Prettier.
+`immosquare-cleaner` is a Ruby gem providing comprehensive code formatting and linting for Rails applications. It dispatches to different processors based on file extensions:
 
-## Key Architecture
-
-The gem is structured around a central `ImmosquareCleaner` module with a `clean` method that dispatches to different processors based on file extensions:
-
-- **Ruby files** (`.rb`, `.rake`, Gemfiles, etc.): Processed with RuboCop
-- **ERB files** (`.html.erb`, `.html`): Processed with htmlbeautifier + erb_lint
-- **JavaScript files** (`.js`, `.mjs`, `.js.erb`): Processed with ESLint (and erb_lint for `.js.erb`)
-- **JSON files**: Formatted using custom JSON beautifier
-- **YAML files** (in locales folders): Processed with ImmosquareYaml
+- **Ruby files** (`.rb`, `.rake`, Gemfiles, etc.): RuboCop
+- **ERB files** (`.html.erb`, `.html`): htmlbeautifier + erb_lint
+- **JavaScript/TypeScript** (`.js`, `.mjs`, `.jsx`, `.ts`, `.tsx`, `.js.erb`): ESLint + custom comment normalizer
+- **JSON files**: ImmosquareExtensions JSON beautifier
+- **YAML files** (in locales folders): ImmosquareYaml
 - **Markdown files** (`.md`, `.md.erb`): Custom markdown processor
-- **Other formats**: Processed with Prettier
+- **Shell files** (`.sh`, `bash`, `zsh`, etc.): shfmt
+- **Other formats**: Prettier
 
 ## Development Commands
 
-### Gem Commands
 ```bash
+# Run tests
+bundle exec rake test
+
+# Run a single test file
+bundle exec ruby -Itest test/normalize_comments_js_test.rb
+
 # Clean a specific file
 bundle exec immosquare-cleaner path/to/file.rb
 
-# Clean all Rails app files
-rake immosquare_cleaner:clean_app
-
-# Update dependencies and clean package.json
-bun run morning
+# Update all dependencies
+bundle update && bundle clean --force && bun update
 ```
 
-### Dependencies Management
-```bash
-# Update Ruby dependencies
-bundle update && bundle clean --force
+## Key Architecture
 
-# Update JavaScript dependencies  
-bun update
+### Entry Point
+`lib/immosquare-cleaner.rb` - The `ImmosquareCleaner.clean(file_path)` method determines file type and dispatches to appropriate processor.
 
-# Install JavaScript dependencies (auto-runs if node_modules missing)
-bun install
-```
+### Custom Linters
 
-## Configuration
+**RuboCop Cops** (`linters/rubocop/cop/custom_cops/style/`):
+- `CommentNormalization`: Normalizes Ruby comment formatting with border lines
+- `FontAwesomeNormalization`: Converts `fas`/`far` to `fa-solid`/`fa-regular`
+- `AlignAssignments`: Aligns consecutive variable assignments (disabled by default)
 
-The gem can be configured via `config/initializers/immosquare-cleaner.rb`:
+**erb_lint Linters** (`linters/erb_lint/`):
+- `CustomSingleLineIfModifier`: `<% if cond %><%= x %><% end %>` → `<%= x if cond %>`
+- `CustomHtmlToContentTag`: `<div class="x"><%= y %></div>` → `<%= content_tag(:div, y, :class => "x") %>`
 
-```ruby
-ImmosquareCleaner.config do |config|
-  config.rubocop_options        = "--your-rubocop-options-here"
-  config.htmlbeautifier_options = "--your-htmlbeautifier-options-here"
-  config.erblint_options        = "--your-erblint-options-here"
-  config.exclude_files          = ["db/schema.rb", "db/seeds.rb"]
-end
-```
+**JS Comment Normalizer** (`linters/normalize-comments.mjs`):
+- Adds border lines (`//====...====//`) around standalone comments
+- Preserves sprockets directives (`//= require`), TypeScript triple-slash, and end-of-line comments
 
-## Important Implementation Details
+### Critical Implementation Details
 
-### Ruby Version Handling
-- The gem dynamically creates version-specific config files (`rubocop-3.4.1.yml`, `erb-lint-3.4.1.yml`)
-- Uses `parser_prism` for Ruby 3.3+ and `parser_whitequark` for older versions
+1. **erb_lint Symlink**: `.erb_linters -> linters/erb_lint` is required because erb_lint hardcodes the custom linters directory path.
 
-### ESLint Workaround for V9+
-- ESLint V9+ has a "File ignored because outside of base path" issue
-- The gem copies JS files to a temporary folder within the gem directory before linting
-- Files are cleaned up after processing
+2. **ESLint V9+ Workaround**: Due to "File ignored because outside of base path" issue, JS files are copied to `tmp/` within the gem directory before linting, then copied back.
 
-### Custom RuboCop Cops
-The gem includes custom cops in `linters/rubocop/cop/custom_cops/style/`:
-- `AlignAssignments`: Aligns variable assignments
-- `CommentNormalization`: Normalizes comment formatting
-- `FontAwesomeNormalization`: Standardizes Font Awesome usage
+3. **Version-Specific Configs**: The gem generates `rubocop-{VERSION}.yml` and `erb-lint-{VERSION}.yml` on first run. Delete these when modifying base configs to force regeneration.
 
-### Custom erb_lint Linters
-The gem includes custom erb_lint linters in `linters/erb_lint/`:
-- `CustomSingleLineIfModifier`: Converts `<% if %><%= %><% end %>` blocks to inline `<%= ... if condition %>`
-- `CustomHtmlToContentTag`: Converts `<div class="x"><%= content %></div>` to `<%= content_tag(:div, content, :class => "x") %>`
+4. **Parser Selection**: Uses `parser_prism` for Ruby 3.3+, `parser_whitequark` for older versions.
 
-A symlink `.erb_linters -> linters/erb_lint` is required because erb_lint hardcodes the custom linters directory. See: https://github.com/Shopify/erb_lint/blob/main/lib/erb_lint/linter_registry.rb#L7
-
-### File Processing Strategy
-- All processors ensure files end with a single newline via `File.normalize_last_line`
-- Temporary files are cleaned up after processing
-- Commands are executed from the gem root directory for consistent path resolution
+5. **Command Execution**: All linter commands run from the gem root via `Dir.chdir(gem_root)` to ensure correct path resolution.
 
 ## Prerequisites
 
-- **Bun**: Required for JavaScript tooling (ESLint, Prettier)
+- **Bun**: Required for ESLint, Prettier, and the JS comment normalizer
 - **Ruby 3.2.6+**: Minimum Ruby version
-- **Bundle**: For Ruby dependency management
-
-## File Structure
-
-- `lib/immosquare-cleaner.rb`: Main module with file processing logic
-- `lib/immosquare-cleaner/configuration.rb`: Configuration class
-- `lib/immosquare-cleaner/markdown.rb`: Custom markdown processor
-- `lib/tasks/immosquare_cleaner.rake`: Rails integration tasks
-- `linters/`: All linter configuration files
-- `linters/erb_lint/`: Custom erb_lint linters
-- `linters/rubocop/cop/`: Custom RuboCop cops
-- `.erb_linters`: Symlink to `linters/erb_lint` (required by erb_lint)
-- `bin/immosquare-cleaner`: CLI executable
-
-## Version-Specific Config Files
-
-The gem generates version-specific config files on first run (e.g., `rubocop-3.4.1.yml`, `erb-lint-3.4.1.yml`). These are cached and should be deleted when modifying the base config files to force regeneration.
+- **shfmt**: Required for shell script formatting (`brew install shfmt`)
