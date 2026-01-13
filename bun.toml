@@ -1,2 +1,21 @@
+##============================================================##
+## Bun configuration
+## https://bun.sh/docs/runtime/bunfig
+##============================================================##
+
+
 [install]
+
+##============================================================##
+## Force "isolated" mode for dependencies (requires Bun >= 1.3.2)
+## This prevents version conflicts between transitive dependencies
+## (e.g. entities@4.x vs entities@7.x via htmlparser2)
+## See: https://bun.com/docs/pm/isolated-installs
+## See: https://github.com/maizzle/framework/pull/1662
+##============================================================##
+linker = "isolated"
+
+##============================================================##
+## Disable automatic installation of peerDependencies
+##============================================================##
 peer = false
