@@ -1,3 +1,13 @@
+## [0.1.97] - 2026-01-13
+
+### Changed
+- Configurer Bun en mode isolated pour éviter les conflits de dépendances transitives
+- Migrer vers Ruby 4.0.0
+- Mettre à jour les dépendances (eslint, prettier, typescript, etc.)
+
+### Added
+- Ajouter CLAUDE.md pour guider Claude Code dans le projet
+
 ## [0.1.96] - 2025-12-09
 - Add comment normalization for JavaScript files
 
