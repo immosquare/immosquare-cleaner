@@ -1,5 +1,6 @@
 {
   "name":         "immosquare-cleaner",
+  "version":      "0.1.98",
   "private":      true,
   "dependencies": {
     "@babel/parser":                    "^7.28.6",

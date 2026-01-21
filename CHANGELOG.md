@@ -1,3 +1,10 @@
+## [0.1.98] - 2026-01-21
+
+### Changed
+- Mettre à jour bun.lock et package.json
+- Migrer vers Ruby 4.0.1
+- Même règle de présentation pour `encode` et `new` sur Jbuilder
+
 ## [0.1.97] - 2026-01-13
 
 ### Changed
