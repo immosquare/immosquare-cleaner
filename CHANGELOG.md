@@ -1,9 +1,14 @@
+## [0.1.99] - 2026-01-22
+
+### Added
+- Add a -p option to prevent concurrent writes (happens regularly with rubymine)
+
 ## [0.1.98] - 2026-01-21
 
 ### Changed
-- Mettre à jour bun.lock et package.json
-- Migrer vers Ruby 4.0.1
-- Même règle de présentation pour `encode` et `new` sur Jbuilder
+- Update bun.lock and package.json
+- Migrate to Ruby 4.0.1
+- Same presentation rule for `encode` and `new` on Jbuilder
 
 ## [0.1.97] - 2026-01-13
 

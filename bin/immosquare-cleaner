@@ -2,6 +2,7 @@
 
 require "immosquare-cleaner"
 require "optparse"
+require "digest"
 
 ##============================================================##
 ## Prevent "invalid byte sequence in US-ASCII" error on some files (eg: yaml)
@@ -27,7 +28,9 @@ options = {}
 ##============================================================##
 OptionParser.new do |parser|
   parser.banner = "Usage: immosquare-cleaner [options] file"
-
+  parser.on("-p", "--prevent-concurrent-write", "Prevent concurrent write") do
+    options[:prevent_concurrent_write] = true
+  end
   parser.on("-h", "--help", "Prints this help") do
     puts(parser)
     exit
@@ -70,4 +73,28 @@ end
 ## We can now call the clean method, passing the file absolute path and options
 ##============================================================##
 file_path = File.expand_path(file_path)
-ImmosquareCleaner.clean(file_path, **options)
+if options[:prevent_concurrent_write]
+  ##============================================================##
+  ## concurrent write detection
+  ## wait 2s for the ide to do a pre-processing, then 3 cases :
+  ## - if the original file changed during the clean, give up
+  ## - if the cleaned file has the same checksum, do nothing
+  ## - else, erase the original file with the cleaned one
+  ##============================================================##
+  sleep(2)
+  before = Digest::MD5.file(file_path)
+  temp_path = "/tmp/#{file_path}"
+  FileUtils.mkdir_p(File.dirname(temp_path))
+  FileUtils.copy(file_path, temp_path)
+  ImmosquareCleaner.clean(temp_path, **options)
+  if Digest::MD5.file(file_path) != before
+    puts("Original file has changed, giving up cleaning.")
+  elsif Digest::MD5.file(temp_path) == before
+    puts("Cleaner had nothing to do, moving on.")
+  else
+    puts("Overwriting original file with cleaned version.")
+    FileUtils.move(temp_path, file_path)
+  end
+else
+  ImmosquareCleaner.clean(file_path, **options)
+end
