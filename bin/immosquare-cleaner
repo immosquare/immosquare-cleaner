@@ -82,7 +82,7 @@ if options[:prevent_concurrent_write]
   ## - else, erase the original file with the cleaned one
   ##============================================================##
   sleep(2)
-  before = Digest::MD5.file(file_path)
+  before    = Digest::MD5.file(file_path)
   temp_path = "/tmp/#{file_path}"
   FileUtils.mkdir_p(File.dirname(temp_path))
   FileUtils.copy(file_path, temp_path)
