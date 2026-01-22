@@ -1,3 +1,8 @@
+## [0.1.100] - 2026-01-22
+
+### Changed
+- Align variable assignments in prevent_concurrent_write block
+
 ## [0.1.99] - 2026-01-22
 
 ### Added
