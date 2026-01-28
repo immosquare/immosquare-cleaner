@@ -42,18 +42,10 @@ The gem includes custom erb_lint linters for ERB files:
 
 ## Installation
 
-**Prerequisites**:
-- Please be sure to have [bun](https://bun.sh/) installed. (This is necessary to launch eslint & prettier commands.)
-- For shell script formatting, install [shfmt](https://github.com/mvdan/sh): `brew install shfmt`
-
-Add the gem in your development group in the Gemfile:
+Requires [bun](https://bun.sh/) and [shfmt](https://github.com/mvdan/sh) (`brew install shfmt`).
 
 ```ruby
-group :development do
-  ...
-  gem "immosquare-cleaner"
-  ...
-end
+gem "immosquare-cleaner", :group => :development
 ```
 
 
