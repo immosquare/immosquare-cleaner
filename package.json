@@ -11,7 +11,7 @@
     "eslint-plugin-align-import":       "^1.0.0",
     "eslint-plugin-erb":                "^2.1.1",
     "eslint-plugin-prefer-arrow":       "^1.2.3",
-    "eslint-plugin-sonarjs":            "^3.0.6",
+    "eslint-plugin-sonarjs":            "^3.0.7",
     "prettier":                         "^3.8.1",
     "typescript":                       "^5.9.3"
   }
