@@ -4,14 +4,14 @@
   "dependencies": {
     "@babel/parser":                    "^7.29.0",
     "@eslint/js":                       "^10.0.1",
-    "@typescript-eslint/eslint-plugin": "^8.55.0",
-    "@typescript-eslint/parser":        "^8.55.0",
+    "@typescript-eslint/eslint-plugin": "^8.56.0",
+    "@typescript-eslint/parser":        "^8.56.0",
     "eslint":                           "^10.0.0",
     "eslint-plugin-align-assignments":  "^1.1.2",
     "eslint-plugin-align-import":       "^1.0.0",
     "eslint-plugin-erb":                "^2.1.1",
     "eslint-plugin-prefer-arrow":       "^1.2.3",
-    "eslint-plugin-sonarjs":            "^3.0.7",
+    "eslint-plugin-sonarjs":            "^4.0.0",
     "prettier":                         "^3.8.1",
     "typescript":                       "^5.9.3"
   }
