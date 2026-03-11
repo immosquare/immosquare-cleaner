@@ -31,6 +31,8 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
+    addressable (2.8.9)
+      public_suffix (>= 2.0.2, < 8.0)
     ast (2.4.3)
     base64 (0.3.0)
     better_html (2.2.0)
@@ -60,13 +62,18 @@ GEM
     immosquare-extensions (0.1.28)
     immosquare-yaml (0.1.28)
       immosquare-extensions (~> 0, >= 0.1.18)
-    json (2.18.1)
+    json (2.19.1)
+    json-schema (6.2.0)
+      addressable (~> 2.8)
+      bigdecimal (>= 3.1, < 5)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
     loofah (2.25.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
+    mcp (0.8.0)
+      json-schema (>= 4.1)
     minitest (6.0.2)
       drb (~> 2.0)
       prism (~> 1.5)
@@ -92,6 +99,7 @@ GEM
       racc
     power_assert (3.0.1)
     prism (1.9.0)
+    public_suffix (7.0.5)
     racc (1.8.1)
     rails-dom-testing (2.3.0)
       activesupport (>= 5.0.0)
@@ -106,10 +114,11 @@ GEM
       logger
       tsort
     regexp_parser (2.11.3)
-    rubocop (1.84.2)
+    rubocop (1.85.1)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
+      mcp (~> 0.6)
       parallel (~> 1.10)
       parser (>= 3.3.0.2)
       rainbow (>= 2.2.2, < 4.0)
@@ -117,7 +126,7 @@ GEM
       rubocop-ast (>= 1.49.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 2.4.0, < 4.0)
-    rubocop-ast (1.49.0)
+    rubocop-ast (1.49.1)
       parser (>= 3.3.7.2)
       prism (~> 1.7)
     ruby-lsp (0.26.7)
@@ -155,4 +164,4 @@ DEPENDENCIES
   test-unit
 
 BUNDLED WITH
-  4.0.7
+  4.0.8
