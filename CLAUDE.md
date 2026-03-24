@@ -4,16 +4,16 @@ Gem de formatting/linting multi-format pour Rails. Point d'entrée : `Immosquare
 
 ## Processors par extension
 
-| Extension | Processor |
-|-----------|-----------|
-| `.rb`, `.rake`, Gemfile | RuboCop |
-| `.html.erb`, `.html` | htmlbeautifier + erb_lint |
-| `.js`, `.mjs`, `.jsx`, `.ts`, `.tsx` | ESLint + normalize-comments.mjs |
-| `.json` | ImmosquareExtensions |
-| `.yml` (locales/) | ImmosquareYaml |
-| `.md` | Custom markdown processor |
-| `.sh`, `bash`, `zsh` | shfmt |
-| Autres | Prettier |
+| Extension                                                           | Processor                       |
+| ------------------------------------------------------------------- | ------------------------------- |
+| `.rb`, `.rake`, Gemfile                                             | RuboCop                         |
+| `.html.erb`, `.html`                                                | htmlbeautifier + erb_lint       |
+| `.js`, `.mjs`, `js.erb`, `.jsx`, `.ts`, `.ts.erb`, `.tsx`           | ESLint + normalize-comments.mjs |
+| `.json`                                                             | ImmosquareExtensions            |
+| `.yml` (locales/)                                                   | ImmosquareYaml                  |
+| `.md`, `.md.erb`                                                    | Custom markdown processor       |
+| `.sh`, `bash`, `zsh`, `zshrc`, `bashrc`, `bash_profile`, `zprofile` | shfmt                           |
+| Autres                                                              | Prettier                        |
 
 ## Commandes
 
@@ -29,6 +29,9 @@ bundle exec immosquare-cleaner path/to/file        # Nettoyer un fichier
 - `CommentNormalization` : Bordures autour des commentaires
 - `FontAwesomeNormalization` : `fas`/`far` → `fa-solid`/`fa-regular`
 - `AlignAssignments` : Aligne les `=` consécutifs (désactivé par défaut)
+
+**RuboCop** (`linters/rubocop/cop/style/`) :
+- `MethodCallWithArgsParentheses` override : Autorise l'omission des parenthèses dans les blocs/fichiers Jbuilder (`json.field "value"`)
 
 **erb_lint** (`linters/erb_lint/`) :
 - `CustomSingleLineIfModifier` : `<% if x %><%= y %><% end %>` → `<%= y if x %>`

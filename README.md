@@ -25,11 +25,12 @@ You can view the specific configurations for all supported linters in the [linte
 
 The gem includes custom RuboCop cops:
 
-| Cop                                         | Description                                                   |
-| ------------------------------------------- | ------------------------------------------------------------- |
-| `CustomCops/Style/CommentNormalization`     | Normalizes comment formatting                                 |
-| `CustomCops/Style/FontAwesomeNormalization` | Standardizes Font Awesome class names (fas -> fa-solid)       |
-| `CustomCops/Style/AlignAssignments`         | Aligns consecutive variable assignments (disabled by default) |
+| Cop                                         | Description                                                          |
+| ------------------------------------------- | -------------------------------------------------------------------- |
+| `CustomCops/Style/CommentNormalization`     | Normalizes comment formatting                                        |
+| `CustomCops/Style/FontAwesomeNormalization` | Standardizes Font Awesome class names (fas -> fa-solid)              |
+| `CustomCops/Style/AlignAssignments`         | Aligns consecutive variable assignments (disabled by default)        |
+| `Style/MethodCallWithArgsParentheses`       | Allows parentheses omission in Jbuilder blocks and `.jbuilder` files |
 
 ### Custom erb_lint Linters
 
