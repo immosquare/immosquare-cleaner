@@ -1,8 +1,8 @@
-## [Unreleased]
+## [0.1.101] - 2026-04-20
 
 ### Changed
-- Refactor `ImmosquareCleaner.clean` to dispatch through a Processors registry (`lib/immosquare-cleaner/processors/*.rb`) instead of an inline `if/elsif` chain
-- Initializer `config/initializers/immosquare-cleaner.rb` is now loaded once on first access to `configuration` (previously reloaded on every `clean` call) — reduces per-file I/O in hook scenarios
+- Dispatch `ImmosquareCleaner.clean` through a Processors registry (`lib/immosquare-cleaner/processors/*.rb`) instead of an inline `if/elsif` chain
+- Load `config/initializers/immosquare-cleaner.rb` once on first access to `configuration` instead of on every `clean` call — reduces per-file I/O in hook scenarios
 
 ## [0.1.100] - 2026-01-22
 
