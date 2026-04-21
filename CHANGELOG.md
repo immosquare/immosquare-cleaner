@@ -1,3 +1,8 @@
+## [0.1.102] - 2026-04-21
+
+### Fixed
+- Drop `**options` forwarding in `bin/immosquare-cleaner` — aligns with the current `ImmosquareCleaner.clean(file_path)` signature
+
 ## [0.1.101] - 2026-04-20
 
 ### Changed
