@@ -1,3 +1,8 @@
+## [0.1.103] - 2026-04-21
+
+### Fixed
+- ESLint 10 crash (`context.getSourceCode is not a function`) on every JS/TS file — add a Proxy-based compatibility shim around the unmaintained `eslint-plugin-align-assignments` and `eslint-plugin-align-import` plugins
+
 ## [0.1.102] - 2026-04-21
 
 ### Fixed
