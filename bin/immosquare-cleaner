@@ -86,7 +86,7 @@ if options[:prevent_concurrent_write]
   temp_path = "/tmp/#{file_path}"
   FileUtils.mkdir_p(File.dirname(temp_path))
   FileUtils.copy(file_path, temp_path)
-  ImmosquareCleaner.clean(temp_path, **options)
+  ImmosquareCleaner.clean(temp_path)
   if Digest::MD5.file(file_path) != before
     puts("Original file has changed, giving up cleaning.")
   elsif Digest::MD5.file(temp_path) == before
@@ -96,5 +96,5 @@ if options[:prevent_concurrent_write]
     FileUtils.move(temp_path, file_path)
   end
 else
-  ImmosquareCleaner.clean(file_path, **options)
+  ImmosquareCleaner.clean(file_path)
 end
