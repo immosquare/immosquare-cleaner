@@ -1,3 +1,13 @@
+## [0.1.104] - 2026-04-28
+
+### Fixed
+- Markdown processor now preserves fenced code blocks (``` and ~~~) verbatim — Ruby snippets containing `|` were previously reformatted as markdown tables
+- Escape `file_path` with `Shellwords.escape` in erb, javascript, prettier, ruby and shell processors — paths with spaces or shell metacharacters no longer break the linter chain
+
+### Changed
+- Bump Ruby 4.0.2 → 4.0.3
+- Update Gemfile.lock, bun.lock and package.json dependencies
+
 ## [0.1.103] - 2026-04-21
 
 ### Fixed
