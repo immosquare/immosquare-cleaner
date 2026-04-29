@@ -1,3 +1,5 @@
+require "shellwords"
+
 module ImmosquareCleaner
   module Processors
     class Shell < Base
@@ -18,7 +20,7 @@ module ImmosquareCleaner
 
       def run
         if system("which shfmt > /dev/null 2>&1")
-          cmds = ["shfmt -i 2 -w \"#{file_path}\""]
+          cmds = ["shfmt -i 2 -w #{Shellwords.escape(file_path)}"]
           launch_cmds(cmds)
           normalize_last_line
         else

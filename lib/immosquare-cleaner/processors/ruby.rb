@@ -1,3 +1,5 @@
+require "shellwords"
+
 module ImmosquareCleaner
   module Processors
     class Ruby < Base
@@ -39,7 +41,7 @@ module ImmosquareCleaner
         rubocop_options = ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all --no-parallel"
         config_path     = "#{ImmosquareCleaner.gem_root}/linters/rubocop-#{RUBY_VERSION}.yml"
 
-        cmds = ["bundle exec rubocop -c #{config_path} \"#{file_path}\" #{rubocop_options}"]
+        cmds = ["bundle exec rubocop -c #{config_path} #{Shellwords.escape(file_path)} #{rubocop_options}"]
         launch_cmds(cmds)
         normalize_last_line
       end

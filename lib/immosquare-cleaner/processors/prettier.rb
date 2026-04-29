@@ -1,3 +1,5 @@
+require "shellwords"
+
 module ImmosquareCleaner
   module Processors
     ##============================================================##
@@ -9,7 +11,7 @@ module ImmosquareCleaner
     class Prettier < Base
 
       def run
-        cmds = ["bun prettier --write #{file_path} --config #{ImmosquareCleaner.gem_root}/linters/prettier.yml"]
+        cmds = ["bun prettier --write #{Shellwords.escape(file_path)} --config #{ImmosquareCleaner.gem_root}/linters/prettier.yml"]
         launch_cmds(cmds)
       end
 

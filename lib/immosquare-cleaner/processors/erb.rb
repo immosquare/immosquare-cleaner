@@ -1,4 +1,5 @@
 require "fileutils"
+require "shellwords"
 
 module ImmosquareCleaner
   module Processors
@@ -12,10 +13,11 @@ module ImmosquareCleaner
         config_path            = "#{ImmosquareCleaner.gem_root}/linters/erb-lint-#{RUBY_VERSION}.yml"
         htmlbeautifier_options = ImmosquareCleaner.configuration.htmlbeautifier_options || "--keep-blank-lines 4"
         erblint_options        = ImmosquareCleaner.configuration.erblint_options || "--autocorrect"
+        escaped_file           = Shellwords.escape(file_path)
 
         cmds = [
-          "bundle exec htmlbeautifier #{file_path} #{htmlbeautifier_options}",
-          "bundle exec erb_lint --config #{config_path} #{file_path} #{erblint_options}"
+          "bundle exec htmlbeautifier #{escaped_file} #{htmlbeautifier_options}",
+          "bundle exec erb_lint --config #{config_path} #{escaped_file} #{erblint_options}"
         ]
 
         launch_cmds(cmds)

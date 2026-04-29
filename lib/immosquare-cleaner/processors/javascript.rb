@@ -1,5 +1,6 @@
 require "digest"
 require "fileutils"
+require "shellwords"
 
 module ImmosquareCleaner
   module Processors
@@ -39,7 +40,8 @@ module ImmosquareCleaner
 
         begin
           FileUtils.cp(file_path, temp_file_path)
-          cmds = []
+          cmds         = []
+          escaped_temp = Shellwords.escape(temp_file_path)
 
           ##============================================================##
           ## Run erb_lint against the TEMP file, not the original. Otherwise
@@ -50,12 +52,12 @@ module ImmosquareCleaner
           if file_path.end_with?(".erb")
             erblint_config  = "#{ImmosquareCleaner.gem_root}/linters/erb-lint-#{RUBY_VERSION}.yml"
             erblint_options = ImmosquareCleaner.configuration.erblint_options || "--autocorrect"
-            cmds << "bundle exec erb_lint --config #{erblint_config} #{temp_file_path} #{erblint_options}"
+            cmds << "bundle exec erb_lint --config #{erblint_config} #{escaped_temp} #{erblint_options}"
           else
-            cmds << "bun #{ImmosquareCleaner.gem_root}/linters/normalize-comments.mjs #{temp_file_path}"
+            cmds << "bun #{ImmosquareCleaner.gem_root}/linters/normalize-comments.mjs #{escaped_temp}"
           end
 
-          cmds << "bun eslint --config #{ImmosquareCleaner.gem_root}/linters/eslint.config.mjs #{temp_file_path} --fix"
+          cmds << "bun eslint --config #{ImmosquareCleaner.gem_root}/linters/eslint.config.mjs #{escaped_temp} --fix"
 
           launch_cmds(cmds)
           normalize_last_line(temp_file_path)
