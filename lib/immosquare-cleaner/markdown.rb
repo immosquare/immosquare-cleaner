@@ -2,10 +2,26 @@ module ImmosquareCleaner
   module Markdown
     class << self
 
+      ##============================================================##
+      ## A fenced code block opens/closes with a line whose first
+      ## non-space chars are ``` or ~~~ (optionally followed by a
+      ## language tag). Inside such a block we must NOT reformat —
+      ## a Ruby snippet with `|` would otherwise be parsed as a
+      ## markdown table.
+      ##
+      ## Per CommonMark, the closing fence must use the same marker
+      ## (``` or ~~~) as the opening, so we track which marker
+      ## opened the block — otherwise a ~~~ line shown inside a
+      ## ``` block (e.g. when documenting markdown itself) would
+      ## prematurely close the fence.
+      ##============================================================##
+      FENCE_REGEX = /\A\s*(```|~~~)/
+
       def clean(file_path)
         results        = []
         array_to_parse = []
         lines          = []
+        fence_marker   = nil
 
         ##============================================================##
         ## We parse each line of the file
@@ -16,6 +32,28 @@ module ImmosquareCleaner
           ##============================================================##
           previous_line = lines.last
           lines << current_line
+
+          ##============================================================##
+          ## Detect entering/exiting a fenced code block. Inside a
+          ## fence, only a line whose marker matches the opening one
+          ## closes it; any other fence marker is emitted verbatim.
+          ##============================================================##
+          fence_match = current_line.match(FENCE_REGEX)
+
+          if fence_match && (fence_marker.nil? || fence_marker == fence_match[1])
+            if !array_to_parse.empty?
+              results << cleaned_array(array_to_parse)
+              array_to_parse = []
+            end
+            results << current_line
+            fence_marker = fence_marker.nil? ? fence_match[1] : nil
+            next
+          end
+
+          if fence_marker
+            results << current_line
+            next
+          end
 
           ##============================================================##
           ## We add the line to the array if it starts with a pipe
