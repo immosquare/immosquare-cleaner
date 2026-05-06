@@ -1,3 +1,11 @@
+## [0.1.105] - 2026-05-05
+
+### Changed
+- `CommentNormalization` cop now preserves user-authored structure inside `##` blocks: bullet/numbered lists, nested indentation (3+ spaces), pipe raw lines (`## | ...`), fenced code blocks (`` ## ``` ``), and explicit separators (`## ---`). Non-alphanumeric lines are no longer aggressively rewritten as inside separators.
+
+### Fixed
+- `CommentNormalization` cop: top border line is now indented along with the rest of the block when the comment lives inside an indented scope (method body, nested module, etc.)
+
 ## [0.1.104] - 2026-04-28
 
 ### Fixed
