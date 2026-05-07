@@ -7,7 +7,7 @@ require_relative "../linters/rubocop/cop/custom_cops/style/comment_normalization
 class CommentNormalizationTest < Test::Unit::TestCase
 
   ##============================================================##
-  ## Lance le cop sur la source et retourne la source corrigée.
+  ## Runs the cop on the source and returns the corrected source.
   ##============================================================##
   def autocorrect(source)
     processed    = RuboCop::ProcessedSource.new(source, RUBY_VERSION.to_f)
@@ -23,7 +23,7 @@ class CommentNormalizationTest < Test::Unit::TestCase
   end
 
   ##============================================================##
-  ## Cas de base : ajout des bordures
+  ## Base case: adds borders
   ##============================================================##
   def test_adds_borders_around_simple_block
     source = "## Hello world\n"
@@ -85,7 +85,7 @@ class CommentNormalizationTest < Test::Unit::TestCase
   end
 
   ##============================================================##
-  ## Nouvelles fonctionnalités : flexibilité du contenu
+  ## New features: content flexibility
   ##============================================================##
   def test_preserves_bullet_list
     source = <<~RUBY
@@ -202,7 +202,7 @@ class CommentNormalizationTest < Test::Unit::TestCase
   end
 
   ##============================================================##
-  ## Séparateurs et lignes vides
+  ## Separators and blank lines
   ##============================================================##
   def test_explicit_separator_becomes_inside_separator
     source = <<~RUBY
@@ -289,7 +289,7 @@ class CommentNormalizationTest < Test::Unit::TestCase
   end
 
   ##============================================================##
-  ## Bloc déjà formaté avec liste : doit rester intact
+  ## Already-formatted block with a list: must stay intact
   ## Edge cases
   ##============================================================##
   def test_unclosed_fence_keeps_content_raw_until_end

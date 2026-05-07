@@ -53,7 +53,7 @@ module RuboCop
           end
 
           ##============================================================##
-          ## Pour les assignments d'index (listing["key"] = ...)
+          ## For index assignments (listing["key"] = ...)
           ##============================================================##
           def on_send(node)
             return unless node.method_name == :[]= && node.arguments.length == 2
@@ -69,7 +69,7 @@ module RuboCop
           private
 
           ##============================================================##
-          ## Vérifier que c'est bien un assignment simple (=) et pas (>=, <=, =>, etc.)
+          ## Make sure it's a plain "=" assignment, not >=, <=, =>, etc.
           ##============================================================##
           def check_assignment(node)
             return unless assignment_operator?(node)
@@ -78,16 +78,16 @@ module RuboCop
           end
 
           ##============================================================##
-          ## Vérifier si l'opérateur est un simple "=" (pas >=, <=, =>, etc.)
+          ## Check whether the operator is a plain "=" (not >=, <=, =>, etc.)
           ##============================================================##
           def assignment_operator?(node)
             ##============================================================##
-            ## Pour les send nodes (index assignment)
+            ## For send nodes (index assignment)
             ##============================================================##
             return true if node.respond_to?(:method_name) && node.method_name == :[]=
 
             ##============================================================##
-            ## Pour les assignments classiques
+            ## For regular assignments
             ##============================================================##
             source = node.source.strip
             return false unless source.include?("=")
@@ -100,7 +100,7 @@ module RuboCop
           end
 
           ##============================================================##
-          ## Ajouter un assignment au groupe courant ou créer un nouveau groupe
+          ## Add an assignment to the current group, or start a new group
           ##============================================================##
           def add_to_group(node)
             current_line = node.location.line
@@ -116,7 +116,7 @@ module RuboCop
           end
 
           ##============================================================##
-          ## Retourne true si les deux lignes sont consécutives (pas de ligne vide entre elles)
+          ## Returns true if the two lines are consecutive (no blank line between them)
           ##============================================================##
           def consecutive_lines?(line1, line2)
             gap = line2 - line1 - 1
@@ -124,7 +124,7 @@ module RuboCop
           end
 
           ##============================================================##
-          ## Finaliser le groupe courant s'il contient plus d'un assignment
+          ## Finalize the current group if it contains more than one assignment
           ##============================================================##
           def finalize_current_group
             @assignment_groups << @current_group.dup if @current_group.length > 1
@@ -133,7 +133,7 @@ module RuboCop
           end
 
           ##============================================================##
-          ## Traiter tous les groupes d'assignments pour vérifier l'alignement
+          ## Process every assignment group to check alignment
           ##============================================================##
           def process_groups
             @assignment_groups.each do |group|
@@ -142,7 +142,7 @@ module RuboCop
           end
 
           ##============================================================##
-          ## Vérifier l'alignement d'un groupe et corriger si nécessaire
+          ## Check a group's alignment and correct it if needed
           ##============================================================##
           def check_and_correct_alignment(group)
             lefts         = group.map {|node| node.source.split("=")[0].to_s.strip.gsub(/\s+/, "").gsub(",", ", ") }

@@ -14,12 +14,12 @@ module RuboCop
           SPACE            = " ".freeze
 
           ##============================================================##
-          ## Patterns détectés ligne par ligne dans un bloc :
-          ## - STRUCTURED_LINE : puces, citations, listes numérotées
-          ## - INDENTED_LINE   : indentation explicite (3+ espaces après ##)
-          ## - RAW_LINE        : ligne préservée telle quelle (## | ...)
-          ## - FENCE_LINE      : ouverture/fermeture d'un bloc de code (## ```)
-          ## - USER_SEPARATOR  : séparateur explicite (## ---, ===, ___)
+          ## Patterns detected line by line within a block:
+          ## - STRUCTURED_LINE : bullets, quotes, numbered lists
+          ## - INDENTED_LINE   : explicit indentation (3+ spaces after ##)
+          ## - RAW_LINE        : line preserved as-is (## | ...)
+          ## - FENCE_LINE      : open/close of a code block (## ```)
+          ## - USER_SEPARATOR  : explicit separator (## ---, ===, ___)
           ##============================================================##
           STRUCTURED_LINE = /\A##\s+([-*+>]|\d+[.)])\s/
           INDENTED_LINE   = /\A##\s{3,}\S/
@@ -47,9 +47,9 @@ module RuboCop
           private
 
           ##============================================================##
-          ## On ne traite que les commentaires qui commencent en début de
-          ## ligne par "##" (pas les commentaires de fin de ligne ruby).
-          ## Les blocs sont des suites de lignes contiguës.
+          ## Only process comments that start at the beginning of the
+          ## line with "##" (not Ruby end-of-line comments).
+          ## Blocks are runs of contiguous lines.
           ##============================================================##
           def find_comment_blocks(comments)
             standalone = comments.select do |comment|
@@ -67,9 +67,9 @@ module RuboCop
           end
 
           ##============================================================##
-          ## Encadre le body avec BORDER_LINE et indente toutes les lignes
-          ## sur la colonne du bloc original. Le range remplacé démarre en
-          ## colonne 0, donc la première ligne doit aussi recevoir le pad.
+          ## Wraps the body with BORDER_LINE and indents every line to
+          ## the original block's column. The replaced range starts at
+          ## column 0, so the first line must also receive the pad.
           ##============================================================##
           def normalize_comment_block(block)
             body = build_body(block)
@@ -80,15 +80,15 @@ module RuboCop
           end
 
           ##============================================================##
-          ## Transforme chaque ligne du bloc :
-          ## - bordures existantes        → ignorées
-          ## - lignes vides en tête       → ignorées (avant tout contenu)
-          ## - fenced code blocks (## ```)→ contenu préservé tel quel
-          ## - lignes "raw" (## | ...)    → préservées
-          ## - listes / indentation 3+    → préservées
-          ## - séparateurs (## ---)       → INSIDE_SEPARATOR
-          ## - lignes "##" seules         → conservées comme ligne vide
-          ## - texte normal               → nettoyé via #cleaned_line
+          ## Transforms each line of the block:
+          ## - existing borders            → dropped
+          ## - leading blank lines         → dropped (before any content)
+          ## - fenced code blocks (## ```) → content preserved as-is
+          ## - raw lines (## | ...)        → preserved
+          ## - lists / 3+ indent           → preserved
+          ## - separators (## ---)         → INSIDE_SEPARATOR
+          ## - bare "##" lines             → kept as blank line
+          ## - normal text                 → cleaned via #cleaned_line
           ##============================================================##
           def build_body(block)
             body         = []
@@ -124,11 +124,11 @@ module RuboCop
           end
 
           ##============================================================##
-          ## Nettoie une ligne de texte standard :
-          ## - "### foo"  → "## foo"  (collapse les # répétés)
-          ## - "##  foo"  → "## foo"  (un seul espace après ##)
-          ## NB : les lignes avec 3+ espaces volontaires sont déjà
-          ## interceptées en amont par INDENTED_LINE.
+          ## Cleans up a standard text line:
+          ## - "### foo"  → "## foo"  (collapse repeated #)
+          ## - "##  foo"  → "## foo"  (single space after ##)
+          ## NB: lines with 3+ intentional spaces are already caught
+          ## upstream by INDENTED_LINE.
           ##============================================================##
           def cleaned_line(text)
             text.sub(/\A##\s*#+\s*(?=\S)/, "## ").sub(/\A##\s+(?=\S)/, "## ")
@@ -139,8 +139,8 @@ module RuboCop
           end
 
           ##============================================================##
-          ## Compare en strippant chaque ligne : on ignore les différences
-          ## d'indentation puisque le range cible déjà la bonne colonne.
+          ## Compare lines after stripping: we ignore indentation
+          ## differences since the range already targets the right column.
           ##============================================================##
           def needs_correction?(block, normalized)
             current_lines    = block.map {|c| c.text.to_s.strip }
