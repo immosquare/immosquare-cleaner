@@ -1,3 +1,15 @@
+## [0.1.106] - 2026-05-07
+
+### Added
+- ESLint config: enable `eslint-plugin-unused-imports` with `no-unused-imports` autofix to strip unused `import` statements on save (unused vars/locals intentionally left untouched)
+
+### Fixed
+- Prettier processor: disable ANSI color output so VS Code's "Format on save" no longer surfaces escape sequences in the editor
+
+### Changed
+- Document the CLI flags passed to each underlying tool (RuboCop, ERB, Prettier, shfmt) directly inside the corresponding processors
+- Refresh `Gemfile.lock`, `bun.lock` and `package.json` dependencies
+
 ## [0.1.105] - 2026-05-05
 
 ### Changed
