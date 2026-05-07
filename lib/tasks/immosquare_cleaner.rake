@@ -1,6 +1,24 @@
+require "parallel"
+require "etc"
+
 namespace :immosquare_cleaner do
   ##============================================================##
-  ## Function to clean files in rails app
+  ## Runs immosquare-cleaner across every file of a Rails app to
+  ## format/lint in bulk, dispatching by extension:
+  ## RuboCop (.rb), erb_lint + htmlbeautifier (.html.erb),
+  ## ESLint (.js/.ts/.jsx/.tsx), ImmosquareYaml (locales/*.yml),
+  ## shfmt (.sh), Prettier (everything else).
+  ##
+  ## Useful to normalize a codebase in one shot (onboarding,
+  ## cleaner version upgrade, large refactor) rather than
+  ## relying on the per-file Edit/Write hook.
+  ##
+  ## Skips generated/non-source folders (asset builds,
+  ## node_modules, vendor, tmp, log, public, db, test, coverage)
+  ## and binary/lock files (.lock, .png, .csv, etc.).
+  ##
+  ## Parallelized via threads (linters shell out, so the GVL is
+  ## released). Override with: CLEANER_THREADS=N rake ...
   ##============================================================##
   desc "clean files in rails app"
   task :clean_app => :environment do
@@ -36,11 +54,23 @@ namespace :immosquare_cleaner do
       File.directory?(file_path) || file_path.gsub("#{Rails.root}/", "").start_with?(*paths_to_exclude) || file_path.end_with?(*extensions_to_exclude)
     end
 
-    puts("Cleaning files...")
+    total   = file_paths.size
+    mutex   = Mutex.new
+    index   = 0
+    threads = ENV["CLEANER_THREADS"]&.to_i || [Etc.nprocessors, 8].min
+    started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
-    file_paths.each.with_index do |file_path, index|
-      puts("#{index + 1}/#{file_paths.size} - #{file_path}")
+    puts("Cleaning #{total} files with #{threads} threads...")
+
+    Parallel.each(file_paths, :in_threads => threads) do |file_path|
+      i = mutex.synchronize { index += 1 }
+      puts("#{i}/#{total} - #{file_path}")
       ImmosquareCleaner.clean(file_path)
     end
+
+    elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - started
+    mins    = (elapsed / 60).to_i
+    secs    = (elapsed % 60).round(1)
+    puts("Done in #{mins}m #{secs}s (#{total} files, #{threads} threads)")
   end
 end
