@@ -1,3 +1,14 @@
+## [0.1.107] - 2026-05-07
+
+### Added
+- `clean_app` rake task is now parallelized via threads (defaults to `min(nprocessors, 8)`, override with `CLEANER_THREADS=N`); prints elapsed time on completion
+
+### Fixed
+- Disable `Layout/LeadingCommentSpace`: it was inserting a space inside `##---##` internal dividers, which then split comment blocks and caused `CommentNormalization` to re-wrap each fragment with its own `##===##` borders
+
+### Changed
+- Translate French comments to English in `rubocop.yml`, the custom cops, and the test file
+
 ## [0.1.106] - 2026-05-07
 
 ### Added
