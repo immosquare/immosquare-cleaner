@@ -1,6 +1,7 @@
 import js                                from "@eslint/js"
 import preferArrow                       from "eslint-plugin-prefer-arrow"
 import sonarjs                           from "eslint-plugin-sonarjs"
+import unusedImports                     from "eslint-plugin-unused-imports"
 import { alignAssignments, alignImport } from "./eslint-plugins/eslint10-compat.mjs"
 import erb                               from "eslint-plugin-erb"
 import tseslint                          from "@typescript-eslint/eslint-plugin"
@@ -99,7 +100,14 @@ const commonRules = {
   //============================================================//
   // Disallow magic numbers
   //============================================================//
-  "no-magic-numbers": ["off", { ignore: [], ignoreArrayIndexes: true, enforceConst: true, detectObjects: false }]
+  "no-magic-numbers": ["off", { ignore: [], ignoreArrayIndexes: true, enforceConst: true, detectObjects: false }],
+
+  //============================================================//
+  // Unused imports: autofix-able, removes the import statement.
+  // Unused vars are intentionally NOT enabled here — removing
+  // function bodies / locals on save is too disruptive.
+  //============================================================//
+  "unused-imports/no-unused-imports": [2]
 }
 
 //============================================================//
@@ -108,6 +116,7 @@ const commonRules = {
 const commonPlugins = {
   "prefer-arrow":      preferArrow,
   "sonarjs":           sonarjs,
+  "unused-imports":    unusedImports,
   "align-assignments": alignAssignments,
   "align-import":      alignImport
 }
