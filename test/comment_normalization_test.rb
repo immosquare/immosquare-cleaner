@@ -346,6 +346,32 @@ class CommentNormalizationTest < Test::Unit::TestCase
     assert_equal(expected, autocorrect(source))
   end
 
+  ##============================================================##
+  ## Regression: ##---...---## section dividers and indented JSON
+  ## must be preserved (was broken when Layout/LeadingCommentSpace
+  ## inserted a space after the first #).
+  ##============================================================##
+  def test_preserves_internal_section_dividers_and_indented_json
+    source = <<~RUBY
+      ##============================================================##
+      ## Header.
+      ##   "PostToolUse": [{
+      ##     "matcher": "Edit|Write",
+      ##     "hooks":   [{
+      ##       "type":    "command"
+      ##     }]
+      ##   }]
+      ##
+      ##------------------------------------------------------------##
+      ## Section
+      ##------------------------------------------------------------##
+      ## body
+      ##============================================================##
+    RUBY
+
+    assert_equal(source, autocorrect(source))
+  end
+
   def test_idempotent_on_complex_block
     source = <<~RUBY
       ##============================================================##

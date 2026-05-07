@@ -47,6 +47,8 @@ Layout/TrailingWhitespace:
   Enabled: true # On ne veut pas de white spaces en fin de ligne
 Layout/EmptyLines:
   Enabled: false # On veut pouvoir mettre des lignes blanches comme on veut
+Layout/LeadingCommentSpace:
+  Enabled: false # Conflicts with our `##` convention (borders `##===##`, internal dividers `##---##`) — the cop sees `##` as `#` + `#` and inserts a space
 Layout/SpaceInsideBlockBraces:
   SpaceBeforeBlockParameters: false # On ne veut pas d'espace au début des block PitchBlock.all.each {|b| b.save}
 
