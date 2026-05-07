@@ -10,6 +10,18 @@ module ImmosquareCleaner
       end
 
       def run
+        ##============================================================##
+        ## htmlbeautifier flags:
+        ## --keep-blank-lines 4 : preserve up to 4 consecutive blank
+        ##                        lines (default 1 collapses spacing
+        ##                        we want to keep in long views)
+        ##
+        ## erb_lint flags:
+        ## --config             : pin the shared config (versioned per
+        ##                        Ruby version, inherits the matching
+        ##                        rubocop-X.Y.Z.yml)
+        ## --autocorrect        : apply autocorrectable offenses in place
+        ##============================================================##
         config_path            = "#{ImmosquareCleaner.gem_root}/linters/erb-lint-#{RUBY_VERSION}.yml"
         htmlbeautifier_options = ImmosquareCleaner.configuration.htmlbeautifier_options || "--keep-blank-lines 4"
         erblint_options        = ImmosquareCleaner.configuration.erblint_options || "--autocorrect"

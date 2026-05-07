@@ -38,6 +38,14 @@ module ImmosquareCleaner
       end
 
       def run
+        ##============================================================##
+        ## RuboCop flags:
+        ## -c                  : pin the shared config (versioned per
+        ##                       Ruby version to handle parser drift)
+        ## --autocorrect-all   : apply both safe and unsafe corrections
+        ## --no-parallel       : single-file run, parallelism is wasted
+        ##                       overhead and breaks custom cop loading
+        ##============================================================##
         rubocop_options = ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all --no-parallel"
         config_path     = "#{ImmosquareCleaner.gem_root}/linters/rubocop-#{RUBY_VERSION}.yml"
 
