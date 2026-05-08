@@ -152,6 +152,23 @@ class CleanTest < Test::Unit::TestCase
     assert_match(/<%= j\(render\(:partial => "x"\)\) %>/, content)
   end
 
+  def test_defensive_or_fallback_preserved
+    ##============================================================##
+    ## `foo.to_sym || :default` is a defensive guard against `foo`
+    ## being nil. Lint/UselessOr considers `||` unreachable (since
+    ## `nil.to_sym` raises) and would strip it — silently introducing
+    ## a crash. The guard must survive `clean()`.
+    ##============================================================##
+    file_path = File.join(@tmp_dir, "defensive_or.html.erb")
+    source    = %(<%= simple_form_for(@page.form_root.to_sym || :form, :url => "/") do |f| %>\n<% end %>\n)
+    File.write(file_path, source)
+
+    ImmosquareCleaner.clean(file_path)
+    content = File.read(file_path)
+
+    assert_match(/\|\| :form/, content)
+  end
+
   private
 
   def dispatch(file_path)

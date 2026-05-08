@@ -23,6 +23,8 @@ Lint/RescueException:
   Enabled: false # Allow `rescue Exception => e` without forcing StandardError
 Lint/UnusedMethodArgument:
   Enabled: false # Allow defining methods with unused parameters (otherwise the cop renames the param with a leading _ on save while still writing the method)
+Lint/UselessOr:
+  Enabled: false # The cop strips defensive `expr || :default` fallbacks (e.g. `foo.to_sym || :default`) when the LHS technically can't return nil. Ruby raises rather than returning nil there, so the `||` is dead by the cop's logic — but the dev wrote it as a guard against the LHS itself being nil. erb_lint also bypasses `SafeAutoCorrect: false` so the strip happens silently on save. Keep the guard.
 
 #################### Naming ###########################
 Naming/VariableNumber:
