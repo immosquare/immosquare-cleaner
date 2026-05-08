@@ -18,9 +18,14 @@ module ImmosquareCleaner
       private
 
       def launch_cmds(cmds)
-        Dir.chdir(ImmosquareCleaner.gem_root) do
-          cmds.each {|cmd| system(cmd) }
-        end
+        ##============================================================##
+        ## Use Process.spawn's :chdir option instead of Dir.chdir to
+        ## set the child process's working directory. Dir.chdir is
+        ## process-global and not thread-safe — running multiple
+        ## chdir blocks concurrently raises "conflicting chdir during
+        ## another chdir block", which breaks the parallel rake task.
+        ##============================================================##
+        cmds.each {|cmd| system(cmd, :chdir => ImmosquareCleaner.gem_root) }
       end
 
       def normalize_last_line(path = file_path)
