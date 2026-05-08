@@ -106,6 +106,8 @@ Style/SymbolArray:
   EnforcedStyle: brackets # Format arrays as [:a, :b, :c], not %i[a b c]
 Style/RescueModifier:
   Enabled: false # Allow inline rescue modifier (some_method rescue SomeException)
+Style/NestedParenthesizedCalls:
+  Enabled: false # Redundant with Style/MethodCallWithArgsParentheses (require_parentheses) — both flag `outer(inner arg)`. RuboCop dedupes the inserted `(` but not the matching `)`, and erb_lint's integration ships both corrections independently → output gets an extra `)` (e.g. `j(render :partial => "x")` becomes `j(render(:partial => "x")))`, breaking the ERB at render time).
 
 #################### OVERWRITE ###########################
 Style/MethodCallWithArgsParentheses:

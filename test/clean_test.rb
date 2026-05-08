@@ -133,6 +133,25 @@ class CleanTest < Test::Unit::TestCase
     end
   end
 
+  def test_no_double_paren_on_nested_method_calls
+    ##============================================================##
+    ## `j(render :partial => "x")` must autocorrect to
+    ## `j(render(:partial => "x"))` — never `j(render(:partial => "x")))`
+    ## (extra `)`). The bug came from Style/MethodCallWithArgsParentheses
+    ## and Style/NestedParenthesizedCalls both inserting closing parens
+    ## at different offsets, which erb_lint's correction pipeline did
+    ## not deduplicate.
+    ##============================================================##
+    file_path = File.join(@tmp_dir, "double_paren.html.erb")
+    File.write(file_path, %(<%= j(render :partial => "x") %>\n))
+
+    ImmosquareCleaner.clean(file_path)
+    content = File.read(file_path)
+
+    refute_match(/\)\)\)/, content)
+    assert_match(/<%= j\(render\(:partial => "x"\)\) %>/, content)
+  end
+
   private
 
   def dispatch(file_path)
