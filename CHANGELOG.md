@@ -1,3 +1,10 @@
+## [0.1.109] - 2026-05-08
+
+### Fixed
+- erb_lint: isolate `.js.erb` templates from HTML-context linters so JavaScript templates are no longer reformatted as HTML
+- RuboCop: disable `Lint/UselessOr` to preserve defensive `|| fallback` patterns
+- RuboCop: disable `Style/NestedParenthesizedCalls`
+
 ## [0.1.108] - 2026-05-07
 
 ### Fixed
