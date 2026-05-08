@@ -88,7 +88,22 @@ class CleanTest < Test::Unit::TestCase
   end
 
   def test_dispatch_javascript
-    ["app.js", "app.mjs", "app.jsx", "app.ts", "app.tsx", "view.js.erb", "view.ts.erb"].each do |path|
+    paths = [
+      "app.js",
+      "app.mjs",
+      "app.cjs",
+      "app.jsx",
+      "app.ts",
+      "app.tsx",
+      "view.js.erb",
+      "view.mjs.erb",
+      "view.cjs.erb",
+      "view.jsx.erb",
+      "view.ts.erb",
+      "view.tsx.erb",
+      "view.coffee.erb"
+    ]
+    paths.each do |path|
       assert_equal(ImmosquareCleaner::Processors::Javascript, dispatch(path), "expected #{path} → Javascript")
     end
   end
@@ -133,6 +148,13 @@ class CleanTest < Test::Unit::TestCase
     end
   end
 
+  ##============================================================##
+  ## End-to-end regression tests for autocorrect bugs that only
+  ## reproduce through the full erb_lint + rubocop pipeline.
+  ## They write a .html.erb / .js.erb file, run the real cleaner,
+  ## and assert that the file is still syntactically valid.
+  ##============================================================##
+
   def test_no_double_paren_on_nested_method_calls
     ##============================================================##
     ## `j(render :partial => "x")` must autocorrect to
@@ -167,6 +189,72 @@ class CleanTest < Test::Unit::TestCase
     content = File.read(file_path)
 
     assert_match(/\|\| :form/, content)
+  end
+
+  def test_js_erb_html_in_js_string_not_promoted_to_content_tag
+    ##============================================================##
+    ## In a .js.erb file, HTML inside a JS string literal must NOT
+    ## be promoted to content_tag — doing so breaks the host string
+    ## (attribute quoting collides with the surrounding `"..."`,
+    ## any `j()` JS-escape no longer wraps the full HTML). The
+    ## JS-specific erb_lint config disables CustomHtmlToContentTag.
+    ##============================================================##
+    file_path = File.join(@tmp_dir, "js_string.js.erb")
+    File.write(file_path, %(el.innerHTML = "<div class='alert'><%= j errors.join(', ') %></div>"\n))
+
+    ImmosquareCleaner.clean(file_path)
+    content = File.read(file_path)
+
+    refute_match(/content_tag/, content)
+    assert_match(/<div class='alert'>/, content)
+  end
+
+  def test_js_erb_void_tag_self_closing_preserved
+    ##============================================================##
+    ## `<br/>` inside a JS string must NOT be rewritten to `<br>`.
+    ## The default erb_lint linter SelfClosingTag treats this as
+    ## an HTML rule and would silently mutate the literal — fine
+    ## in .html.erb, broken intent in .js.erb (the dev wrote
+    ## XHTML-style on purpose, or the string is fed to a parser
+    ## that requires it). The JS-specific erb_lint config
+    ## disables SelfClosingTag.
+    ##============================================================##
+    file_path = File.join(@tmp_dir, "self_close.js.erb")
+    File.write(file_path, %(el.innerHTML = "<br/>"\n))
+
+    ImmosquareCleaner.clean(file_path)
+    content = File.read(file_path)
+
+    assert_match(%r{<br/>}, content)
+  end
+
+  def test_html_erb_self_closing_still_corrected
+    ##============================================================##
+    ## Sanity check: SelfClosingTag must keep working on .html.erb
+    ## (non-regression of the JS-config split).
+    ##============================================================##
+    file_path = File.join(@tmp_dir, "self_close.html.erb")
+    File.write(file_path, "<br/>\n")
+
+    ImmosquareCleaner.clean(file_path)
+    content = File.read(file_path)
+
+    assert_match(/<br>/, content)
+    refute_match(%r{<br/>}, content)
+  end
+
+  def test_html_erb_content_tag_still_promoted
+    ##============================================================##
+    ## Sanity check: CustomHtmlToContentTag must keep firing on
+    ## .html.erb (non-regression of the JS-config split).
+    ##============================================================##
+    file_path = File.join(@tmp_dir, "promote.html.erb")
+    File.write(file_path, %(<div class="card"><%= title %></div>\n))
+
+    ImmosquareCleaner.clean(file_path)
+    content = File.read(file_path)
+
+    assert_match(/content_tag\(:div, title, :class => "card"\)/, content)
   end
 
   private

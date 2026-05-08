@@ -6,15 +6,30 @@ module ImmosquareCleaner
   module Processors
     class Javascript < Base
 
-      EXTENSIONS = [
+      ##============================================================##
+      ## ERB templates whose host language is JS/TS (not HTML).
+      ## erb_lint's HTML-context linters must not run on these —
+      ## they would corrupt HTML literals embedded inside JS string
+      ## literals. Routed to the JS-specific erb_lint config.
+      ##============================================================##
+      JS_ERB_EXTENSIONS = [
+        ".js.erb",
+        ".jsx.erb",
+        ".ts.erb",
+        ".tsx.erb",
+        ".mjs.erb",
+        ".cjs.erb",
+        ".coffee.erb"
+      ].freeze
+
+      EXTENSIONS = ([
         ".js",
         ".mjs",
+        ".cjs",
         ".jsx",
         ".ts",
-        ".tsx",
-        "js.erb",
-        ".ts.erb"
-      ].freeze
+        ".tsx"
+      ] + JS_ERB_EXTENSIONS).freeze
 
       def self.match?(file_path)
         file_path.end_with?(*EXTENSIONS)
@@ -50,7 +65,12 @@ module ImmosquareCleaner
           ## copy was taken before erb_lint ran).
           ##============================================================##
           if file_path.end_with?(".erb")
-            erblint_config  = "#{ImmosquareCleaner.gem_root}/linters/erb-lint-#{RUBY_VERSION}.yml"
+            ##============================================================##
+            ## JS/TS templates use the JS-specific erb_lint config to keep
+            ## HTML-context linters off the host string literals.
+            ##============================================================##
+            config_basename = file_path.downcase.end_with?(*JS_ERB_EXTENSIONS) ? "js-erb-lint" : "erb-lint"
+            erblint_config  = "#{ImmosquareCleaner.gem_root}/linters/#{config_basename}-#{RUBY_VERSION}.yml"
             erblint_options = ImmosquareCleaner.configuration.erblint_options || "--autocorrect"
             cmds << "bundle exec erb_lint --config #{erblint_config} #{escaped_temp} #{erblint_options}"
           else

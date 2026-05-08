@@ -356,4 +356,69 @@ class CustomHtmlToContentTagTest < Test::Unit::TestCase
     assert_equal('<%= content_tag(:label, substep_hash["name"], :for => "substep_#{substep_hash["id"]}") %>', result)
   end
 
+  ##============================================================##
+  ## JS/TS template files — HTML inside JS string literals must
+  ## stay verbatim. Promoting it to content_tag breaks the host
+  ## string (attribute quoting collides with the surrounding
+  ## quote, and any wrapping `j()` no longer JS-escapes the full
+  ## HTML). The cop must short-circuit on these filenames.
+  ##============================================================##
+  def test_js_erb_with_j_wrapped_erb_not_converted
+    source = %(el.insertAdjacentHTML("afterbegin", "<div class='alert'><%= j errors.join(', ') %></div>"))
+    result = autocorrect(source, :filename => "foo.js.erb")
+    assert_equal(source, result)
+  end
+
+  def test_js_erb_simple_div_not_converted
+    source = %(el.innerHTML = "<div class='x'><%= name %></div>")
+    result = autocorrect(source, :filename => "foo.js.erb")
+    assert_equal(source, result)
+  end
+
+  def test_ts_erb_not_converted
+    source = %(let html: string = "<span class='b'><%= label %></span>")
+    result = autocorrect(source, :filename => "bar.ts.erb")
+    assert_equal(source, result)
+  end
+
+  def test_jsx_erb_not_converted
+    source = %(const tpl = "<div class='card'><%= title %></div>")
+    result = autocorrect(source, :filename => "widget.jsx.erb")
+    assert_equal(source, result)
+  end
+
+  def test_tsx_erb_not_converted
+    source = %(const tpl = "<div class='card'><%= title %></div>")
+    result = autocorrect(source, :filename => "widget.tsx.erb")
+    assert_equal(source, result)
+  end
+
+  def test_mjs_erb_not_converted
+    source = %(export const html = "<p class='m'><%= text %></p>")
+    result = autocorrect(source, :filename => "esm.mjs.erb")
+    assert_equal(source, result)
+  end
+
+  def test_js_erb_uppercase_extension_not_converted
+    source = %(el.innerHTML = "<div class='x'><%= name %></div>")
+    result = autocorrect(source, :filename => "FOO.JS.ERB")
+    assert_equal(source, result)
+  end
+
+  def test_html_erb_still_converts
+    ##============================================================##
+    ## Sanity check — the JS guard must not regress .html.erb
+    ## conversion (most common case).
+    ##============================================================##
+    source = '<div class="card"><%= title %></div>'
+    result = autocorrect(source, :filename => "show.html.erb")
+    assert_equal('<%= content_tag(:div, title, :class => "card") %>', result)
+  end
+
+  def test_js_erb_no_offenses_reported
+    source = %(el.innerHTML = "<div class='x'><%= name %></div>")
+    offenses = run_linter(source, :filename => "foo.js.erb")
+    assert_true(offenses.empty?)
+  end
+
 end

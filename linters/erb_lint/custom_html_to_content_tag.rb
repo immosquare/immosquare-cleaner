@@ -131,7 +131,28 @@ module ERBLint
         "full_error"
       ].freeze
 
+      ##============================================================##
+      ## File extensions that hold JS/TS source with embedded ERB.
+      ## Inside these files HTML literals live inside JS string
+      ## contexts ("..."/'...'/`...`). Promoting them to content_tag
+      ## breaks the surrounding string two ways: the helper's output
+      ## attributes are always double-quoted and would terminate a
+      ## double-quoted JS literal early, and any `j()` JS-escape
+      ## around the ERB output would no longer wrap the full HTML.
+      ##============================================================##
+      JS_TEMPLATE_EXTENSIONS = [
+        ".js.erb",
+        ".jsx.erb",
+        ".ts.erb",
+        ".tsx.erb",
+        ".mjs.erb",
+        ".cjs.erb",
+        ".coffee.erb"
+      ].freeze
+
       def run(processed_source)
+        return if javascript_template?(processed_source.filename)
+
         document = processed_source.ast
         children = document.children.to_a
 
@@ -194,6 +215,13 @@ module ERBLint
       end
 
       private
+
+      def javascript_template?(filename)
+        return false if filename.nil?
+
+        downcased = filename.downcase
+        JS_TEMPLATE_EXTENSIONS.any? {|ext| downcased.end_with?(ext) }
+      end
 
       ##============================================================##
       ## Check if tag is a closing tag (has solidus as first child)

@@ -3,6 +3,7 @@
 node_modules/*
 linters/rubocop-*
 linters/erb-lint-*
+linters/js-erb-lint-*
 /tmp/*
 
 ##============================================================##

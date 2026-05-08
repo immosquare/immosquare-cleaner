@@ -10,11 +10,11 @@ module TestHelper
   ##============================================================##
   ## Helper to run the linter on ERB source and return corrections
   ##============================================================##
-  def run_linter(source)
-    buffer        = Parser::Source::Buffer.new("test")
+  def run_linter(source, filename: "test.html.erb")
+    buffer        = Parser::Source::Buffer.new(filename)
     buffer.source = source
 
-    processed_source = ERBLint::ProcessedSource.new("test.html.erb", source)
+    processed_source = ERBLint::ProcessedSource.new(filename, source)
     linter           = ERBLint::Linters::CustomHtmlToContentTag.new(nil, ERBLint::LinterConfig.new)
 
     linter.run(processed_source)
@@ -24,8 +24,8 @@ module TestHelper
   ##============================================================##
   ## Helper to autocorrect ERB source and return the result
   ##============================================================##
-  def autocorrect(source)
-    processed_source = ERBLint::ProcessedSource.new("test.html.erb", source)
+  def autocorrect(source, filename: "test.html.erb")
+    processed_source = ERBLint::ProcessedSource.new(filename, source)
     linter         = ERBLint::Linters::CustomHtmlToContentTag.new(nil, ERBLint::LinterConfig.new)
 
     linter.run(processed_source)

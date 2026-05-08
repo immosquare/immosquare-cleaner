@@ -124,7 +124,6 @@ module ImmosquareCleaner
     def setup_linter_configs!
       @setup_linter_configs ||= begin
         rubocop_config_with_version_path = "#{gem_root}/linters/rubocop-#{RUBY_VERSION}.yml"
-        erblint_config_with_version_path = "#{gem_root}/linters/erb-lint-#{RUBY_VERSION}.yml"
 
         if !File.exist?(rubocop_config_with_version_path)
           rubocop_config                                  = YAML.load_file("#{gem_root}/linters/rubocop.yml")
@@ -133,11 +132,20 @@ module ImmosquareCleaner
           File.write(rubocop_config_with_version_path, rubocop_config.to_yaml)
         end
 
-        if !File.exist?(erblint_config_with_version_path)
-          erblint_config                                                         = YAML.load_file("#{gem_root}/linters/erb-lint.yml")
-          erblint_config["linters"]["Rubocop"]["rubocop_config"]["inherit_from"] = ["linters/rubocop-#{RUBY_VERSION}.yml"]
-          File.write(erblint_config_with_version_path, erblint_config.to_yaml)
+        ##============================================================##
+        ## erb_lint configs that inherit the versioned rubocop config.
+        ## - erb-lint     : default config for .html.erb
+        ## - js-erb-lint  : JS-specific config for .js.erb / .ts.erb / etc.
+        ##============================================================##
+        ["erb-lint", "js-erb-lint"].each do |basename|
+          versioned_path = "#{gem_root}/linters/#{basename}-#{RUBY_VERSION}.yml"
+          next if File.exist?(versioned_path)
+
+          config                                                         = YAML.load_file("#{gem_root}/linters/#{basename}.yml")
+          config["linters"]["Rubocop"]["rubocop_config"]["inherit_from"] = ["linters/rubocop-#{RUBY_VERSION}.yml"]
+          File.write(versioned_path, config.to_yaml)
         end
+
         true
       end
     end

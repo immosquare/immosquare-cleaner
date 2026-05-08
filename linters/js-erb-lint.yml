@@ -1,0 +1,56 @@
+##============================================================##
+## erb_lint config for JS/TS templates (.js.erb, .ts.erb,
+## .jsx.erb, .tsx.erb, .mjs.erb, .cjs.erb, .coffee.erb).
+##
+## In these files HTML literals live inside JS string contexts
+## ("..."/'...'/`...`). erb_lint's default linters and our custom
+## ones assume HTML-document context and rewrite that HTML in
+## ways that corrupt the surrounding JS string (quote balance,
+## tag self-closing, content_tag promotion, etc.). This config
+## disables every HTML-context linter and keeps only:
+##   - Rubocop (lints Ruby code inside <% %>/<%= %>)
+##   - CustomSingleLineIfModifier (ERB structural, JS-safe)
+##   - ParserErrors / formatting linters that operate on ERB
+##     tokens, not HTML semantics
+##============================================================##
+EnableDefaultLinters: true
+linters:
+  ##============================================================##
+  ## HTML-context default linters — disabled for JS templates.
+  ##============================================================##
+  NoJavascriptTagHelper:
+    enabled: false
+  SpaceInHtmlTag:
+    enabled: false
+  SelfClosingTag:
+    enabled: false # Would rewrite `<br/>` -> `<br>` inside a JS string literal
+  RequireInputAutocomplete:
+    enabled: false # Flags `<input>` literals inside JS strings as missing autocomplete
+  DeprecatedClassesInline:
+    enabled: false # Inspects HTML class attributes — false positives in JS templates
+  HardCodedString:
+    enabled: false # i18n check — irrelevant for JS code (the JS lines themselves are not user-facing strings)
+
+  ##============================================================##
+  ## Custom HTML-context linters — disabled for JS templates.
+  ##============================================================##
+  CustomHtmlToContentTag:
+    enabled: false # Would promote HTML literals to content_tag(...) — breaks the host JS string
+
+  ##============================================================##
+  ## ERB-structural linters — safe in any context.
+  ##============================================================##
+  CustomSingleLineIfModifier:
+    enabled: true
+
+  ##============================================================##
+  ## Ruby code inside <% %>/<%= %> is linted by Rubocop with
+  ## the same config as .html.erb.
+  ##============================================================##
+  Rubocop:
+    enabled: true
+    rubocop_config:
+      inherit_from:
+        - linters/rubocop.yml
+      Layout/TrailingWhitespace:
+        Enabled: false
