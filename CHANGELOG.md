@@ -1,3 +1,8 @@
+## [0.1.108] - 2026-05-07
+
+### Fixed
+- `clean_app` rake task: replace process-global `Dir.chdir` block with `system`'s `:chdir` option so threaded execution no longer aborts files with `conflicting chdir during another chdir block`
+
 ## [0.1.107] - 2026-05-07
 
 ### Added
