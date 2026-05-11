@@ -4,8 +4,8 @@
   "dependencies": {
     "@babel/parser":                    "^7.29.3",
     "@eslint/js":                       "^10.0.1",
-    "@typescript-eslint/eslint-plugin": "^8.59.2",
-    "@typescript-eslint/parser":        "^8.59.2",
+    "@typescript-eslint/eslint-plugin": "^8.59.3",
+    "@typescript-eslint/parser":        "^8.59.3",
     "eslint":                           "^10.3.0",
     "eslint-plugin-align-assignments":  "^1.1.2",
     "eslint-plugin-align-import":       "^1.0.0",
