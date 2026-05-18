@@ -4,16 +4,16 @@ Gem de formatting/linting multi-format pour Rails. Point d'entrée : `Immosquare
 
 ## Processors par extension
 
-| Extension                                                           | Processor                       |
-| ------------------------------------------------------------------- | ------------------------------- |
-| `.rb`, `.rake`, Gemfile                                             | RuboCop                         |
-| `.html.erb`, `.html`                                                | htmlbeautifier + erb_lint       |
-| `.js`, `.mjs`, `js.erb`, `.jsx`, `.ts`, `.ts.erb`, `.tsx`           | ESLint + normalize-comments.mjs |
-| `.json`                                                             | ImmosquareExtensions            |
-| `.yml` (locales/)                                                   | ImmosquareYaml                  |
-| `.md`, `.md.erb`                                                    | Custom markdown processor       |
-| `.sh`, `bash`, `zsh`, `zshrc`, `bashrc`, `bash_profile`, `zprofile` | shfmt                           |
-| Autres                                                              | Prettier                        |
+| Extension                                                                           | Processor                       |
+| ----------------------------------------------------------------------------------- | ------------------------------- |
+| `.rb`, `.rake`, Gemfile                                                             | RuboCop                         |
+| `.html.erb`, `.html`                                                                | htmlbeautifier + erb_lint       |
+| `.js`, `.mjs`, `.cjs`, `.jsx`, `.ts`, `.tsx`, `.{js,mjs,cjs,jsx,ts,tsx,coffee}.erb` | ESLint + normalize-comments.mjs |
+| `.json`                                                                             | ImmosquareExtensions            |
+| `.yml` (locales/)                                                                   | ImmosquareYaml                  |
+| `.md`, `.md.erb`                                                                    | Custom markdown processor       |
+| `.sh`, `bash`, `zsh`, `zshrc`, `bashrc`, `bash_profile`, `zprofile`                 | shfmt                           |
+| Autres                                                                              | Prettier                        |
 
 ## Commandes
 
@@ -29,6 +29,8 @@ bundle exec immosquare-cleaner path/to/file        # Nettoyer un fichier
 - `CommentNormalization` : Bordures autour des commentaires
 - `FontAwesomeNormalization` : `fas`/`far` → `fa-solid`/`fa-regular`
 - `AlignAssignments` : Aligne les `=` consécutifs (désactivé par défaut)
+- `InlineMultilineCalls` : `link_to(...)` multi-ligne → single-line (skip si commentaire/string multi-ligne dans l'appel)
+- `KwargPriorityOrder` : Réordonne les kwargs de `link_to` pour mettre `:remote` puis `:method` en premier (configurable)
 
 **RuboCop** (`linters/rubocop/cop/style/`) :
 - `MethodCallWithArgsParentheses` override : Autorise l'omission des parenthèses dans les blocs/fichiers Jbuilder (`json.field "value"`)
@@ -36,6 +38,7 @@ bundle exec immosquare-cleaner path/to/file        # Nettoyer un fichier
 **erb_lint** (`linters/erb_lint/`) :
 - `CustomSingleLineIfModifier` : `<% if x %><%= y %><% end %>` → `<%= y if x %>`
 - `CustomHtmlToContentTag` : `<div class="x"><%= y %></div>` → `<%= content_tag(:div, y, :class => "x") %>`
+- `CustomAlignConsecutiveCalls` : Aligne les colonnes des `link_to` consécutifs (même arity + mêmes clés kwargs) via padding après la virgule
 
 **JS** (`linters/normalize-comments.mjs`) :
 - Ajoute bordures `//====...====//` autour des commentaires standalone
@@ -46,7 +49,7 @@ bundle exec immosquare-cleaner path/to/file        # Nettoyer un fichier
 - **ESLint V9+** : Fichiers copiés dans `tmp/` avant lint puis recopiés (workaround "outside of base path")
 - **Configs versionnées** : `rubocop-{VERSION}.yml` générés au premier run. Supprimer pour forcer régénération
 - **Parser Ruby** : `parser_prism` (Ruby 3.3+) ou `parser_whitequark` (versions antérieures)
-- **Exécution** : Commandes exécutées depuis la racine du gem via `Dir.chdir(gem_root)`
+- **Exécution** : Commandes lancées depuis la racine du gem via `system(cmd, :chdir => gem_root)` (thread-safe ; pas `Dir.chdir`)
 
 ## Prérequis
 
