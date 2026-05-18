@@ -1,3 +1,10 @@
+## [0.1.110] - 2026-05-18
+
+### Added
+- RuboCop: new `InlineMultilineCalls` cop that collapses multi-line `link_to(...)` (and similar) calls into a single line when they fit, skipping calls that contain comments or multi-line strings
+- RuboCop: new `KwargPriorityOrder` cop that reorders `link_to` keyword arguments to surface `:remote` then `:method` first (configurable)
+- erb_lint: new `CustomAlignConsecutiveCalls` linter that aligns columns of consecutive `link_to` calls (same arity + same kwarg keys) via padding after the comma
+
 ## [0.1.109] - 2026-05-08
 
 ### Fixed
