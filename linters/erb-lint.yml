@@ -8,6 +8,10 @@ linters:
     enabled: true
   CustomHtmlToContentTag:
     enabled: true
+  CustomAlignConsecutiveCalls:
+    enabled: true
+    methods:
+      - link_to
   Rubocop:
     enabled: true
     rubocop_config:

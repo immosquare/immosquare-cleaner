@@ -30,16 +30,19 @@ The gem includes custom RuboCop cops:
 | `CustomCops/Style/CommentNormalization`     | Normalizes comment formatting                                        |
 | `CustomCops/Style/FontAwesomeNormalization` | Standardizes Font Awesome class names (fas -> fa-solid)              |
 | `CustomCops/Style/AlignAssignments`         | Aligns consecutive variable assignments (disabled by default)        |
+| `CustomCops/Style/InlineMultilineCalls`     | Collapses multi-line calls (default: `link_to`) onto a single line   |
+| `CustomCops/Style/KwargPriorityOrder`       | Reorders kwargs of `link_to` so `:remote`/`:method` come first       |
 | `Style/MethodCallWithArgsParentheses`       | Allows parentheses omission in Jbuilder blocks and `.jbuilder` files |
 
 ### Custom erb_lint Linters
 
 The gem includes custom erb_lint linters for ERB files:
 
-| Linter                       | Description                                                                              |
-| ---------------------------- | ---------------------------------------------------------------------------------------- |
-| `CustomSingleLineIfModifier` | Converts `<% if cond %><%= x %><% end %>` to `<%= x if cond %>`                          |
-| `CustomHtmlToContentTag`     | Converts `<div class="x"><%= y %></div>` to `<%= content_tag(:div, y, :class => "x") %>` |
+| Linter                        | Description                                                                              |
+| ----------------------------- | ---------------------------------------------------------------------------------------- |
+| `CustomSingleLineIfModifier`  | Converts `<% if cond %><%= x %><% end %>` to `<%= x if cond %>`                          |
+| `CustomHtmlToContentTag`      | Converts `<div class="x"><%= y %></div>` to `<%= content_tag(:div, y, :class => "x") %>` |
+| `CustomAlignConsecutiveCalls` | Aligns args of consecutive ERB calls (default: `link_to`) when keys/arity match          |
 
 ## Installation
 
