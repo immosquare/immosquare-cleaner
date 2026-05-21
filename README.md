@@ -75,6 +75,13 @@ end
 bundle exec immosquare-cleaner path/to/your/file.rb
 ```
 
+| Option                             | Description                                                                                                                                                                                               |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-p`, `--prevent-concurrent-write` | Wait 2 seconds, clean a copy of the file in `/tmp`, then overwrite the original only if it hasn't changed in the meantime. Use when an IDE may be saving the file in parallel (e.g. editor on-save hook). |
+| `-h`, `--help`                     | Print usage and exit.                                                                                                                                                                                     |
+
+On first run, the CLI runs `bun install` automatically if the gem's `node_modules/` is missing.
+
 ### Ruby API
 
 ```ruby
@@ -83,11 +90,19 @@ ImmosquareCleaner.clean("path/to/your/file.rb")
 
 ## Rake Tasks
 
-To clean rails project files:
+To clean every source file of a Rails app in bulk (onboarding, cleaner upgrade, large refactor):
 
-```ruby
-rake immosquare_cleaner:clean_app
+```bash
+bundle exec rake immosquare_cleaner:clean_app
 ```
+
+The task is parallelized via threads (defaults to `min(nprocessors, 8)` since linters shell out and release the GVL). Override with:
+
+```bash
+CLEANER_THREADS=4 bundle exec rake immosquare_cleaner:clean_app
+```
+
+Generated/non-source folders (`app/assets/builds`, `app/assets/fonts`, `app/assets/images`, `coverage`, `db`, `log`, `node_modules`, `public`, `test`, `tmp`, `vendor`) and binary/lock files (`.lock`, `.lockb`, `.otf`, `.ttf`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg`, `.ico`, `.webp`, `.csv`) are skipped.
 
 
 ## Integration with Visual Studio Code & Cursor
