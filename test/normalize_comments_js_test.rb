@@ -10,10 +10,13 @@ class NormalizeCommentsJsTest < Test::Unit::TestCase
   BORDER_LINE = "//============================================================//"
 
   ##============================================================##
-  ## Helper to run the linter on JS source and return the result
+  ## Helper to run the linter on JS source and return the result.
+  ## The extension is parametrized so the same assertions can run
+  ## on .ts / .tsx / .jsx (the parser always enables the
+  ## "typescript" and "jsx" plugins regardless of extension).
   ##============================================================##
-  def run_linter(source)
-    Tempfile.create(["test", ".js"]) do |file|
+  def run_linter(source, ext = ".js")
+    Tempfile.create(["test", ext]) do |file|
       file.write(source)
       file.flush
 
@@ -326,6 +329,91 @@ class NormalizeCommentsJsTest < Test::Unit::TestCase
 
     result = run_linter(source)
     assert_equal(source, result)
+  end
+
+  ##============================================================##
+  ## TypeScript / JSX syntax
+  ## The parser always runs with plugins ["typescript", "jsx"].
+  ## These feed TS-only grammar (interfaces, enums, generics,
+  ## type annotations) and JSX literals so that a future
+  ## @babel/parser bump which breaks either grammar is caught
+  ## here — a parse failure would stop the comment being
+  ## normalized and these assertions would fail.
+  ##============================================================##
+  def test_typescript_interface_comment_gets_borders
+    source = <<~TS
+      // Typed config
+      interface Config { retries: number }
+      const config: Config = { retries: 3 }
+    TS
+
+    result = run_linter(source, ".ts")
+
+    expected = <<~TS
+      #{BORDER_LINE}
+      // Typed config
+      #{BORDER_LINE}
+      interface Config { retries: number }
+      const config: Config = { retries: 3 }
+    TS
+
+    assert_equal(expected, result)
+  end
+
+  def test_typescript_enum_and_generics_parse
+    source = <<~TS
+      // Status helpers
+      enum Status { Active, Archived }
+      function identity<T>(value: T): T { return value }
+    TS
+
+    result = run_linter(source, ".ts")
+
+    expected = <<~TS
+      #{BORDER_LINE}
+      // Status helpers
+      #{BORDER_LINE}
+      enum Status { Active, Archived }
+      function identity<T>(value: T): T { return value }
+    TS
+
+    assert_equal(expected, result)
+  end
+
+  def test_tsx_comment_gets_borders
+    source = <<~TSX
+      // Render card
+      const Card = (): JSX.Element => <div className="card">hi</div>
+    TSX
+
+    result = run_linter(source, ".tsx")
+
+    expected = <<~TSX
+      #{BORDER_LINE}
+      // Render card
+      #{BORDER_LINE}
+      const Card = (): JSX.Element => <div className="card">hi</div>
+    TSX
+
+    assert_equal(expected, result)
+  end
+
+  def test_jsx_comment_gets_borders
+    source = <<~JSX
+      // Render badge
+      const Badge = () => <span className="badge">new</span>
+    JSX
+
+    result = run_linter(source, ".jsx")
+
+    expected = <<~JSX
+      #{BORDER_LINE}
+      // Render badge
+      #{BORDER_LINE}
+      const Badge = () => <span className="badge">new</span>
+    JSX
+
+    assert_equal(expected, result)
   end
 
 end
