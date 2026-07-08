@@ -14,6 +14,6 @@
     "eslint-plugin-sonarjs":            "^4.1.0",
     "eslint-plugin-unused-imports":     "^4.4.1",
     "prettier":                         "^3.9.4",
-    "typescript":                       "^7.0.2"
+    "typescript":                       "^5"
   }
 }
