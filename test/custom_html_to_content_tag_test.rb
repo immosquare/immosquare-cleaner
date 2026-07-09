@@ -56,7 +56,7 @@ class CustomHtmlToContentTagTest < Test::Unit::TestCase
   def test_mixed_erb_attribute
     source = '<div class="btn <%= @style %>"><%= content %></div>'
     result = autocorrect(source)
-    assert_equal('<%= content_tag(:div, content, :class => "btn #{@style}") %>', result)
+    assert_equal("<%= content_tag(:div, content, :class => \"btn \#{@style}\") %>", result)
   end
 
   ##============================================================##
@@ -327,9 +327,9 @@ class CustomHtmlToContentTagTest < Test::Unit::TestCase
 
   def test_method_with_parentheses_not_wrapped
     # Case: method call WITH parentheses should NOT be wrapped again
-    source = '<div><%= format_date(created_at) %></div>'
+    source = "<div><%= format_date(created_at) %></div>"
     result = autocorrect(source)
-    assert_equal('<%= content_tag(:div, format_date(created_at)) %>', result)
+    assert_equal("<%= content_tag(:div, format_date(created_at)) %>", result)
   end
 
   def test_ternary_in_content
@@ -365,7 +365,7 @@ class CustomHtmlToContentTagTest < Test::Unit::TestCase
     # Case: for="substep_<%= hash["id"] %>" should not escape quotes inside #{}
     source = '<label for="substep_<%= substep_hash["id"] %>"><%= substep_hash["name"] %></label>'
     result = autocorrect(source)
-    assert_equal('<%= content_tag(:label, substep_hash["name"], :for => "substep_#{substep_hash["id"]}") %>', result)
+    assert_equal("<%= content_tag(:label, substep_hash[\"name\"], :for => \"substep_\#{substep_hash[\"id\"]}\") %>", result)
   end
 
   ##============================================================##
