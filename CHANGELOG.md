@@ -1,3 +1,11 @@
+## [0.1.111] - 2026-07-10
+
+### Added
+- erb_lint: exclude `cloudphoto_image_tag` and `wysiwyg_display_content` from `content_tag` conversion (alongside `render`, `image_tag`, `link_to`)
+
+### Changed
+- build: constrain `typescript` to `^5` for `typescript-eslint` compatibility, bump `@babel/parser` to `^8`, and update `eslint`, `@typescript-eslint/*`, `prettier` and `eslint-plugin-sonarjs`
+
 ## [0.1.110] - 2026-05-18
 
 ### Added
