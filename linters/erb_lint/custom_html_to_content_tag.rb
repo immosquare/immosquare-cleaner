@@ -64,7 +64,9 @@ module ERBLint
         "render",
         "content_tag",
         "image_tag",
-        "link_to"
+        "link_to",
+        "cloudphoto_image_tag",
+        "wysiwyg_display_content"
       ].freeze
 
       ##============================================================##

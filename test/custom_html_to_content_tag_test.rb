@@ -142,6 +142,18 @@ class CustomHtmlToContentTagTest < Test::Unit::TestCase
     assert_equal('<div><%= image_tag "logo.png" %></div>', result)
   end
 
+  def test_cloudphoto_image_tag_not_converted
+    source = '<div class="cover"><%= cloudphoto_image_tag(@blog.picture.url, :widths => [600, 1200]) %></div>'
+    result = autocorrect(source)
+    assert_equal('<div class="cover"><%= cloudphoto_image_tag(@blog.picture.url, :widths => [600, 1200]) %></div>', result)
+  end
+
+  def test_wysiwyg_display_content_not_converted
+    source = '<div class="prose"><%= wysiwyg_display_content(@blog.content) %></div>'
+    result = autocorrect(source)
+    assert_equal('<div class="prose"><%= wysiwyg_display_content(@blog.content) %></div>', result)
+  end
+
   ##============================================================##
   ## Form builder methods
   ##============================================================##
