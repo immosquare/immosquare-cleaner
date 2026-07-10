@@ -2,7 +2,7 @@
   "name":         "immosquare-cleaner",
   "private":      true,
   "dependencies": {
-    "@babel/parser":                    "^8.0.0",
+    "@babel/parser":                    "^8.0.4",
     "@eslint/js":                       "^10.0.1",
     "@typescript-eslint/eslint-plugin": "^8.63.0",
     "@typescript-eslint/parser":        "^8.63.0",
@@ -13,7 +13,7 @@
     "eslint-plugin-prefer-arrow":       "^1.2.3",
     "eslint-plugin-sonarjs":            "^4.1.0",
     "eslint-plugin-unused-imports":     "^4.4.1",
-    "prettier":                         "^3.9.4",
-    "typescript":                       "^5"
+    "prettier":                         "^3.9.5",
+    "typescript":                       "^7.0.2"
   }
 }
