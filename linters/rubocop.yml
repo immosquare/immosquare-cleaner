@@ -110,6 +110,8 @@ Style/SymbolArray:
   EnforcedStyle: brackets # Format arrays as [:a, :b, :c], not %i[a b c]
 Style/RescueModifier:
   Enabled: false # Allow inline rescue modifier (some_method rescue SomeException)
+Style/ArrayIntersect:
+  Enabled: false # The cop assumes the receiver of `include?` is a collection, so `MARKERS.any? { |m| some_string.include?(m) }` (searching several markers in one string) is rewritten as `MARKERS.intersect?(some_string)`. `Array#intersect?` only takes an Array, so the corrected code raises `TypeError: no implicit conversion of String into Array` — at runtime, not on save. The correction is unsafe, hence applied by our `--autocorrect-all`. Fixed upstream in rubocop/rubocop#15439 but unreleased as of 1.88.2; re-enable once a release ships it. To match several markers in a string, use `some_string.match?(Regexp.union(*MARKERS))`.
 Style/NestedParenthesizedCalls:
   Enabled: false # Redundant with Style/MethodCallWithArgsParentheses (require_parentheses) — both flag `outer(inner arg)`. RuboCop dedupes the inserted `(` but not the matching `)`, and erb_lint's integration ships both corrections independently → output gets an extra `)` (e.g. `j(render :partial => "x")` becomes `j(render(:partial => "x")))`, breaking the ERB at render time).
 
