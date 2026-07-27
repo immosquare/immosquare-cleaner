@@ -1,3 +1,11 @@
+## [0.1.112] - 2026-07-27
+
+### Fixed
+- RuboCop: disable `Style/ArrayIntersect` — its unsafe autocorrect rewrites `MARKERS.any? { |m| some_string.include?(m) }` (and the `none?` form) into `MARKERS.intersect?(some_string)`, which raises `TypeError: no implicit conversion of String into Array` at runtime; fixed upstream in rubocop/rubocop#15439 but unreleased as of RuboCop 1.88.2
+
+### Changed
+- build: bump `typescript` to `^7`, `eslint` to `^10.8`, `@typescript-eslint/*` to `^8.65`, `prettier` to `^3.9.6`, `eslint-plugin-sonarjs` to `^4.2` and `@babel/parser` to `^8.0.4`
+
 ## [0.1.111] - 2026-07-10
 
 ### Added
