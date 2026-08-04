@@ -113,6 +113,10 @@ That's it!
 
 ## Development
 
+### TypeScript and ESLint
+
+TypeScript 7 is installed as `@typescript/native`, but TypeScript 7.0 does not expose the stable programmatic API required by `typescript-eslint` and SonarJS. The `typescript` dependency therefore resolves to the fixed 6.0.3 npm tarball; using the tarball prevents `bun update --latest` from replacing the linter API. Remove this compatibility lock when `typescript-eslint` supports the TypeScript 7.1 API.
+
 ### Running Tests
 
 ```bash

@@ -53,6 +53,7 @@ bundle exec rake immosquare_cleaner:clean_app      # Bulk d'une app Rails (paral
 
 - **Symlink erb_lint** : `.erb_linters -> linters/erb_lint` requis (chemin hardcodé par erb_lint)
 - **ESLint 10** : Fichiers copiés dans `tmp/` avant lint puis recopiés (workaround "outside of base path", cf. `eslint/eslint#19118`). Plugins legacy adaptés via le shim `eslint10-compat.mjs`.
+- **TypeScript 7** : Le compilateur natif est installé sous `@typescript/native`, tandis qu'ESLint résout `typescript` vers le tarball 6.0.3. TypeScript 7.0 n'expose pas l'API requise par `typescript-eslint`/SonarJS et l'URL empêche `bun update --latest` de casser le lint ; supprimer ce verrou quand `typescript-eslint` supportera l'API TypeScript 7.1.
 - **Configs versionnées** : `rubocop-{VERSION}.yml` + `erb-lint-{VERSION}.yml` + `js-erb-lint-{VERSION}.yml` générés au premier run. Supprimer pour forcer régénération
 - **Parser Ruby** : `parser_prism` (Ruby 3.3+) ou `parser_whitequark` (versions antérieures)
 - **Exécution** : Commandes lancées depuis la racine du gem via `system(cmd, :chdir => gem_root)` (thread-safe ; pas `Dir.chdir`)
