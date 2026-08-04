@@ -1,5 +1,10 @@
 {
   "name":         "immosquare-cleaner",
+  "//":           [
+    "TypeScript 7.0 has no stable programmatic API.",
+    "ESLint uses the TypeScript 6.0.3 tarball so bun update --latest cannot replace it.",
+    "Remove this lock when typescript-eslint supports the TypeScript 7.1 API."
+  ],
   "private":      true,
   "dependencies": {
     "@babel/parser":                    "^8.0.4",
