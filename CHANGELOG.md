@@ -1,11 +1,18 @@
+## [0.1.113] - 2026-08-04
+
+### Fixed
+- ESLint: restore JS/TS linting after the TypeScript 7 upgrade by installing the native compiler as `@typescript/native` while resolving the parser-facing `typescript` dependency to a fixed 6.0.3 tarball that survives `bun update --latest`
+
+### Changed
+- build: update `@typescript-eslint/*` to `^8.66` and refresh Ruby and Node dependencies
+
 ## [0.1.112] - 2026-07-27
 
 ### Fixed
 - RuboCop: disable `Style/ArrayIntersect` — its unsafe autocorrect rewrites `MARKERS.any? { |m| some_string.include?(m) }` (and the `none?` form) into `MARKERS.intersect?(some_string)`, which raises `TypeError: no implicit conversion of String into Array` at runtime; fixed upstream in rubocop/rubocop#15439 but unreleased as of RuboCop 1.88.2
-- ESLint: keep TypeScript 7 installed as `@typescript/native` while resolving the parser-facing `typescript` dependency to the 6.0.3 tarball, because TypeScript 7.0 has no compatible programmatic API and `bun update --latest` otherwise disables all JS/TS linting
 
 ### Changed
-- build: bump `@typescript/native` to `^7.0.2`, `eslint` to `^10.8`, `@typescript-eslint/*` to `^8.66`, `prettier` to `^3.9.6`, `eslint-plugin-sonarjs` to `^4.2` and `@babel/parser` to `^8.0.4`
+- build: bump `typescript` to `^7`, `eslint` to `^10.8`, `@typescript-eslint/*` to `^8.65`, `prettier` to `^3.9.6`, `eslint-plugin-sonarjs` to `^4.2` and `@babel/parser` to `^8.0.4`
 
 ## [0.1.111] - 2026-07-10
 
