@@ -6,6 +6,7 @@
     "@eslint/js":                       "^10.0.1",
     "@typescript-eslint/eslint-plugin": "^8.66.0",
     "@typescript-eslint/parser":        "^8.66.0",
+    "@typescript/native":               "npm:typescript@^7.0.2",
     "eslint":                           "^10.8.0",
     "eslint-plugin-align-assignments":  "^1.1.2",
     "eslint-plugin-align-import":       "^1.0.0",
@@ -14,6 +15,6 @@
     "eslint-plugin-sonarjs":            "^4.2.0",
     "eslint-plugin-unused-imports":     "^4.4.1",
     "prettier":                         "^3.9.6",
-    "typescript":                       "7.0.2"
+    "typescript":                       "~7.0.2"
   }
 }
