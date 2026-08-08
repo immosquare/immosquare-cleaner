@@ -27,6 +27,8 @@ Lint/UnusedMethodArgument:
   Enabled: false # Allow defining methods with unused parameters (otherwise the cop renames the param with a leading _ on save while still writing the method)
 Lint/UselessOr:
   Enabled: false # The cop strips defensive `expr || :default` fallbacks (e.g. `foo.to_sym || :default`) when the LHS technically can't return nil. Ruby raises rather than returning nil there, so the `||` is dead by the cop's logic — but the dev wrote it as a guard against the LHS itself being nil. erb_lint also bypasses `SafeAutoCorrect: false` so the strip happens silently on save. Keep the guard.
+Lint/InterpolationCheck:
+  AutoCorrect: false # The cop reads `'#{x}'` as a typo and rewrites the literal to `"#{x}"` — or to `%{...}` when it holds a double quote — turning inert text into live interpolation. That guess is right for a real typo and wrong for every deliberate literal: test fixtures, regex sources, sed/SQL/shell fragments, docs. RuboCop marks the correction unsafe, but `--autocorrect-all` applies it anyway, and on save it either raises NameError or, worse, silently interpolates a variable that happens to be in scope. Keep the warning, drop the rewrite.
 
 #################### Naming ###########################
 Naming/VariableNumber:
