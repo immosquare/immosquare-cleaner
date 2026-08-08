@@ -1,3 +1,11 @@
+## [0.1.114] - 2026-08-08
+
+### Fixed
+- RuboCop: disable autocorrect for `Lint/InterpolationCheck` — it rewrote deliberate `'#{x}'` literals into live interpolation (test fixtures, regex sources, shell/SQL fragments), raising `NameError` or silently interpolating an in-scope variable on save; the offense is still reported
+
+### Changed
+- build: refresh Ruby and Node dependencies
+
 ## [0.1.113] - 2026-08-04
 
 ### Fixed
