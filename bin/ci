@@ -1,0 +1,72 @@
+#!/usr/bin/env zsh
+set -e
+
+##============================================================##
+## CI entry point for the gem test suite. Everything specific to
+## the build agent lives here, and is skipped when JENKINS_WORKSPACE
+## is unset, so `bin/ci test` behaves the same on a laptop.
+## Coverage is NOT started here: the CI exports COVERAGE=true and
+## test/coverage_helper.rb picks it up.
+##============================================================##
+if [ -n "$JENKINS_WORKSPACE" ]; then
+    source /usr/local/rvm/scripts/rvm
+    source /etc/profile.d/rvm.sh
+    ##============================================================##
+    ## `--install` provisions the ruby the branch asks for when the
+    ## agent does not have it yet. The check below is not redundant:
+    ## when the agent can neither download a binary for its distro
+    ## nor install the build dependencies, RVM still creates the
+    ## gemset and exits successfully, leaving a phantom ruby behind.
+    ##============================================================##
+    ruby_version="$(cat .ruby-version)"
+    rvm use --install --create "${ruby_version}@$(cat .ruby-gemset)" || true
+    if [ "$(ruby -e 'print(RUBY_VERSION)' 2>/dev/null)" != "${ruby_version#ruby-}" ]; then
+        echo "ERROR: ${ruby_version} is missing from the build agent and could not be installed there."
+        echo "       Install it on the agent: rvm install ${ruby_version}"
+        exit 1
+    fi
+
+    ##============================================================##
+    ## Bundler must never switch to the version pinned in
+    ## `BUNDLED WITH`: it reinstalls itself in that version and
+    ## re-execs, and the new process starts over without the
+    ## environment prepared above. Pinning the bundler actually
+    ## present on the agent disables that switch.
+    ##============================================================##
+    BUNDLER_VERSION="$(ruby -e 'puts(Gem::Specification.find_all_by_name("bundler").map(&:version).max)')"
+    export BUNDLER_VERSION
+fi
+
+##============================================================##
+## The `development` group carries editor and linter tooling, not
+## the suite, so the agent skips it. This MUST be exported for both
+## sub-commands: the CI calls `init` and `test` as two separate
+## processes, and a bundler that installed without a group but is
+## then asked to materialize it aborts on GemNotFound. Anything the
+## tests really need belongs to the `test` group of the Gemfile.
+##============================================================##
+export BUNDLE_WITHOUT="development"
+
+if [ -z "$1" ] ; then
+    echo "Usage: $0 [init|test]"
+    exit 1
+fi
+
+echo "Using Ruby : $(ruby --version)"
+
+##============================================================##
+## The JS, Prettier and Markdown processor tests call the library
+## directly, not the `bin/immosquare-cleaner` executable that
+## provisions node_modules on the fly: without `bun install` here,
+## ESLint and Prettier are missing from a fresh checkout and those
+## tests fail.
+##============================================================##
+if [ "$1" = "init" ] ; then
+    bundle install
+    bun install --frozen-lockfile
+    exit 0
+fi
+
+if [ "$1" = "test" ] ; then
+    exec bundle exec rake test
+fi

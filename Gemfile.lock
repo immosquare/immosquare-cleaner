@@ -128,6 +128,8 @@ GEM
       rbs (>= 3, < 5)
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
+    simplecov (1.1.1)
+    simplecov-lcov (0.9.0)
     smart_properties (1.17.0)
     test-unit (3.7.8)
       power_assert
@@ -154,6 +156,8 @@ DEPENDENCIES
   immosquare-cleaner!
   rake
   ruby-lsp
+  simplecov
+  simplecov-lcov
   test-unit
 
 BUNDLED WITH

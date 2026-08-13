@@ -1,10 +1,16 @@
 *.gem
 /spec/output
+/coverage/*
 node_modules/*
 linters/rubocop-*
 linters/erb-lint-*
 linters/js-erb-lint-*
 /tmp/*
+
+##============================================================##
+## macOS
+##============================================================##
+.DS_Store
 
 ##============================================================##
 ## Claude personal settings

@@ -14,8 +14,11 @@ Gem::Specification.new do |spec|
   ##============================================================##
   ## we add package.json so that the gems is autonomous to launch
   ## js lib prettier, eslint
+  ##
+  ## bin/ is listed file by file: bin/ci is the Jenkins entry point,
+  ## it has no business being shipped to the people installing the gem.
   ##============================================================##
-  spec.files          = Dir["lib/**/*", "bin/*", "linters/**/*"] + ["package.json", ".erb_linters"]
+  spec.files          = Dir["lib/**/*", "linters/**/*"] + ["bin/immosquare-cleaner", "package.json", ".erb_linters"]
   spec.executables    = ["immosquare-cleaner"]
   spec.require_paths  = ["lib", "linters"]
 
