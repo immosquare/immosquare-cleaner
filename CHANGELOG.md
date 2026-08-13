@@ -1,3 +1,8 @@
+## [0.1.116] - 2026-08-13
+
+### Fixed
+- Markdown: YAML frontmatter emitted verbatim — the list-spacing rule took the opening `---` for a list item and slipped a blank line between the fence and the first key; a list marker now requires a following space, so a thematic break or a leading `*emphasis*` is no longer treated as a list
+
 ## [0.1.115] - 2026-08-13
 
 ### Added
