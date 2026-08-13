@@ -1,3 +1,13 @@
+## [0.1.115] - 2026-08-13
+
+### Added
+- CI: Jenkins pipeline running the suite with SimpleCov/LCOV coverage — `bin/ci` (init/test), `Jenkinsfile` and `test/coverage_helper.rb`
+- Test suite for the markdown cleaner: table alignment, empty cells, fenced code blocks, list spacing
+
+### Fixed
+- Markdown: empty table cells kept in their column — they were dropped, shifting every following cell one column to the left and filing values under the wrong header
+- Markdown: trailing whitespace now stripped on the first line of a file, which the early return in `cleaned_line` was skipping
+
 ## [0.1.114] - 2026-08-08
 
 ### Fixed
