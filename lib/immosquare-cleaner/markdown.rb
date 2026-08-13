@@ -92,7 +92,15 @@ module ImmosquareCleaner
         ##============================================================##
         elements_size = []
         rows = array_to_clean.map do |line|
-          cells = line.split("|").map(&:strip).reject(&:empty?)
+          ##============================================================##
+          ## Only the delimiting pipes are dropped, never empty cells:
+          ## a table may legitimately hold one (an unnamed first header
+          ## above a column of row labels, a value that does not apply).
+          ## Rejecting empty cells would shift every following cell one
+          ## column to the left and silently file values under the wrong
+          ## header. `split("|", -1)` keeps trailing empty fields.
+          ##============================================================##
+          cells = line.strip.delete_prefix("|").delete_suffix("|").split("|", -1).map(&:strip)
 
           ##============================================================##
           ## We increase the size of the array if needed
@@ -119,7 +127,12 @@ module ImmosquareCleaner
           line = row.each_with_index.map do |cell, index|
             max_length = elements_size[index]
             cell =
-              if cell&.match(/^-*$/)
+              ##============================================================##
+              ## At least one dash is required: an empty cell must stay
+              ## empty, not be filled with dashes that would read as a
+              ## separator row.
+              ##============================================================##
+              if cell&.match(/\A-+\z/)
                 "-" * max_length
               else
                 cell.to_s.ljust(max_length)
