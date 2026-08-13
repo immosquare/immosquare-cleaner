@@ -145,9 +145,15 @@ module ImmosquareCleaner
       end
 
       def cleaned_line(previous_line, current_line)
-        return [current_line] if !previous_line
+        cleaned_current = current_line.rstrip
 
-        cleaned_current  = current_line.rstrip
+        ##============================================================##
+        ## The very first line of the file has no predecessor, so no
+        ## list spacing to decide — but it still gets its trailing
+        ## whitespace stripped like any other line.
+        ##============================================================##
+        return ["#{cleaned_current}\n"] if !previous_line
+
         cleaned_previous = previous_line.rstrip
         blank_line       = current_line.gsub("\n", "").empty?
         previous_is_list = cleaned_previous.lstrip.start_with?("*", "-", "+")
