@@ -17,16 +17,60 @@ module ImmosquareCleaner
       ##============================================================##
       FENCE_REGEX = /\A\s*(```|~~~)/
 
+      ##============================================================##
+      ## A list item marker is `*`, `+` or `-` followed by a space,
+      ## or alone on its line. The space is what makes it a list:
+      ## without that requirement `---` — a thematic break, and the
+      ## fence of a YAML frontmatter — and `*emphasis*` opening a
+      ## line are both read as list items, which injects a blank
+      ## line right after them. Inside a frontmatter that blank line
+      ## lands between the opening fence and the first key.
+      ##============================================================##
+      LIST_ITEM_REGEX = /\A[*+-](\s|\z)/
+
+      ##============================================================##
+      ## The fence of a YAML frontmatter: `---` alone on its line.
+      ##============================================================##
+      FRONTMATTER_FENCE_REGEX = /\A---\s*\z/
+
       def clean(file_path)
-        results        = []
-        array_to_parse = []
-        lines          = []
-        fence_marker   = nil
+        results            = []
+        array_to_parse     = []
+        lines              = []
+        fence_marker       = nil
+        frontmatter_last   = frontmatter_last_index(file_path)
+        frontmatter_opened = false
 
         ##============================================================##
         ## We parse each line of the file
         ##============================================================##
-        File.foreach(file_path) do |current_line|
+        File.foreach(file_path).with_index do |current_line, index|
+          ##============================================================##
+          ## A frontmatter is YAML, not markdown: it goes through
+          ## verbatim. Neither the list spacing nor the table rules
+          ## mean anything between its fences, and applying them adds
+          ## a blank line after the opening fence — or before the
+          ## closing one when the last key holds a list.
+          ##
+          ## Its leading blank lines are the one exception, and they
+          ## are dropped: never meaningful in YAML, and earlier
+          ## versions of this cleaner injected one there by taking the
+          ## opening `---` for a list item. Removing it here repairs
+          ## the files that already carry it.
+          ##============================================================##
+          if frontmatter_last && index <= frontmatter_last
+            lines << current_line
+
+            if index > 0 && index < frontmatter_last && !frontmatter_opened
+              next if current_line.strip.empty?
+
+              frontmatter_opened = true
+            end
+
+            results << current_line
+            next
+          end
+
           ##============================================================##
           ## We save the last line to know if we need to add a newline
           ##============================================================##
@@ -80,6 +124,25 @@ module ImmosquareCleaner
 
 
       private
+
+      ##============================================================##
+      ## Index of the closing fence of the frontmatter, or nil when
+      ## the file has none. A frontmatter only exists when `---` is
+      ## the very first line AND a closing `---` follows: without
+      ## that second condition, a file opening on a thematic break
+      ## would be emitted verbatim from end to end.
+      ##============================================================##
+      def frontmatter_last_index(file_path)
+        first_line = File.foreach(file_path).first
+        return nil if first_line.nil? || !first_line.match?(FRONTMATTER_FENCE_REGEX)
+
+        File.foreach(file_path).with_index do |line, index|
+          next if index == 0
+          return index if line.match?(FRONTMATTER_FENCE_REGEX)
+        end
+
+        nil
+      end
 
       ##============================================================##
       ## we want to clean the markdown files to have a uniform style
@@ -156,8 +219,8 @@ module ImmosquareCleaner
 
         cleaned_previous = previous_line.rstrip
         blank_line       = current_line.gsub("\n", "").empty?
-        previous_is_list = cleaned_previous.lstrip.start_with?("*", "-", "+")
-        current_is_list  = cleaned_current.lstrip.start_with?("*", "-", "+")
+        previous_is_list = cleaned_previous.lstrip.match?(LIST_ITEM_REGEX)
+        current_is_list  = cleaned_current.lstrip.match?(LIST_ITEM_REGEX)
         final            = previous_is_list && !current_is_list && !blank_line ? ["\n"] : []
         final << ["#{cleaned_current}\n"]
       end

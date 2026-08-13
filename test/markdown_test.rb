@@ -161,6 +161,127 @@ class MarkdownTest < Test::Unit::TestCase
   end
 
   ##============================================================##
+  ## A frontmatter is YAML, not markdown: it is emitted verbatim,
+  ## with no blank line slipped in after its opening fence.
+  ##============================================================##
+  def test_frontmatter_is_emitted_verbatim
+    source = <<~MARKDOWN
+      ---
+      name: example
+      description: test
+      ---
+
+      # Title
+    MARKDOWN
+
+    assert_equal(source, clean(source))
+  end
+
+  ##============================================================##
+  ## No blank line before the closing fence when the last key holds
+  ## a list: inside a frontmatter, `---` closes the YAML document,
+  ## it does not end a markdown list.
+  ##============================================================##
+  def test_frontmatter_closing_fence_after_a_list
+    source = <<~MARKDOWN
+      ---
+      paths:
+        - "**/*.html.erb"
+        - "**/*.html"
+      ---
+
+      # Title
+    MARKDOWN
+
+    assert_equal(source, clean(source))
+  end
+
+  ##============================================================##
+  ## Leading blank lines inside the frontmatter are dropped: never
+  ## meaningful in YAML, and earlier versions injected one there by
+  ## taking the opening `---` for a list item. Removing it repairs
+  ## the files that already carry it.
+  ##============================================================##
+  def test_frontmatter_leading_blank_line_is_removed
+    source = <<~MARKDOWN
+      ---
+
+      name: example
+      ---
+
+      # Title
+    MARKDOWN
+
+    expected = <<~MARKDOWN
+      ---
+      name: example
+      ---
+
+      # Title
+    MARKDOWN
+
+    assert_equal(expected, clean(source))
+  end
+
+  ##============================================================##
+  ## `---` on the first line with no closing fence is a thematic
+  ## break, not a frontmatter: the rest of the file keeps being
+  ## processed instead of being emitted verbatim to the end.
+  ##============================================================##
+  def test_leading_thematic_break_is_not_a_frontmatter
+    assert_equal(
+      "---\n- one\n\nText right after the list\n",
+      clean("---\n- one\nText right after the list\n")
+    )
+  end
+
+  ##============================================================##
+  ## A list marker is `*`, `+` or `-` followed by a space. A
+  ## thematic break and an emphasis opening a line are neither, so
+  ## no blank line is inserted after them.
+  ##============================================================##
+  def test_thematic_break_and_emphasis_are_not_list_items
+    source = <<~MARKDOWN
+      Intro
+
+      ---
+      Text after a thematic break.
+
+      *An emphasised note.*
+      Next line.
+    MARKDOWN
+
+    assert_equal(source, clean(source))
+  end
+
+  ##============================================================##
+  ## Cleaning an already-cleaned file returns identical content —
+  ## the formatting is a fixed point, so the hook that runs on every
+  ## save never keeps rewriting the same file.
+  ##============================================================##
+  def test_idempotent
+    source = <<~MARKDOWN
+      ---
+
+      name: example
+      ---
+
+      # Title
+
+      | A | Long header |
+      | - | - |
+      |   | x |
+
+      - one
+      Text right after the list
+    MARKDOWN
+
+    once = clean(source)
+
+    assert_equal(once, clean(once))
+  end
+
+  ##============================================================##
   ## A blank line is inserted after a list when the next line is
   ## regular text, and trailing whitespace is stripped everywhere.
   ##============================================================##
