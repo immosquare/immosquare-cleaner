@@ -1,3 +1,10 @@
+---
+locale: en
+tags:
+  - app:immosquare-cleaner
+  - audience:technique
+---
+
 # Immosquare-cleaner
 
 A meticulously crafted Ruby gem to enhance the cleanliness and structure of your project's files. This tool ensures consistency and uniformity across various formats, including Ruby, ERB, YAML, Markdown, JSON, JS, CSS, SASS, LESS, and other formats supported by Prettier.
