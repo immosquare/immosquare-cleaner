@@ -24,6 +24,17 @@ The cleaner recognizes and caters to various file formats:
 | Shell       | `.sh`, `bash`, `zsh`, `zshrc`, `bashrc`, `bash_profile`, `zprofile`                                                                                                                                                                                     | [shfmt](https://github.com/mvdan/sh)                                                                                |
 | Others      | Any other format                                                                                                                                                                                                                                        | [prettier](https://prettier.io/)                                                                                    |
 
+### Markdown formatting
+
+Markdown is the only format handled in-house instead of being delegated to an external tool. `ImmosquareCleaner::Markdown.clean` rewrites a file according to four rules, and strips trailing whitespace on every line.
+
+| Rule               | Behaviour                                                                                                                                                                                                          |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Tables             | Every cell is padded to the width of its column and separator rows are filled with dashes. An empty cell keeps its column rather than being dropped, which would file the following values under the wrong header. |
+| Lists              | A blank line is inserted after the last item of a list. A marker (`*`, `+`, `-`) only opens a list when a space follows it, so a `---` thematic break or a line opening on `*emphasis*` is left alone.             |
+| Fenced code blocks | Emitted verbatim. A block only closes on a fence using the marker it opened with, so a fence of the other kind shown inside it does not end it early.                                                              |
+| YAML frontmatter   | Emitted verbatim: a `---` first line followed by a matching closing `---` is YAML, not markdown. Only its leading blank lines are dropped, since they are never meaningful there.                                  |
+
 ## Linter Configurations
 
 You can view the specific configurations for all supported linters in the [linters folder](https://github.com/immosquare/immosquare-cleaner/tree/main/linters) of the repository.
@@ -129,6 +140,23 @@ TypeScript 7 is installed as `@typescript/native`, but TypeScript 7.0 does not e
 ```bash
 bundle exec rake test
 ```
+
+Coverage is off by default, so a local run stays fast and leaves no `coverage/` directory behind. Set `COVERAGE=true` to get an HTML report plus `coverage/lcov.info`:
+
+```bash
+COVERAGE=true bundle exec rake test
+```
+
+### Continuous Integration
+
+`Jenkinsfile` runs the suite on every build through `bin/ci`, which is a repository script and is not shipped with the gem:
+
+```bash
+bin/ci init   # bundle install && bun install --frozen-lockfile
+bin/ci test   # bundle exec rake test
+```
+
+`bin/ci init` installs the JS toolchain too: the JS, Prettier and Markdown tests call the library directly rather than the `immosquare-cleaner` executable, so nothing provisions `node_modules/` for them. Both sub-commands skip the `development` bundler group — anything the suite needs belongs to the `test` group of the `Gemfile`. The RVM setup only applies on a build agent, so `bin/ci` behaves the same on a laptop.
 
 ## Contributing
 

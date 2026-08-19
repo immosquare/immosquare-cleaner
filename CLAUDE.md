@@ -6,16 +6,16 @@ Gem de formatting/linting multi-format pour Rails. Point d'entrée : `Immosquare
 
 Un processor par type de fichier dans `lib/immosquare-cleaner/processors/` — chaque classe expose `match?(file_path)` + `run`. `ImmosquareCleaner.processor_for` scanne le registre `PROCESSORS` (ordre significatif : `Erb` avant `Javascript`, `Ruby` avant `Shell` pour les shebangs) et tombe sur `Processors::Prettier` en fallback.
 
-| Processor                | Extension                                                                            | Outil                                                         |
-| ------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
-| `Processors::Ruby`       | `.rb`, `.rake`, Gemfile et autres (cf. `RUBY_FILES`) + shebang `#!/usr/bin/env ruby` | RuboCop                                                       |
-| `Processors::Erb`        | `.html.erb`, `.html`                                                                 | htmlbeautifier + erb_lint                                     |
-| `Processors::Yaml`       | `.yml` dans `locales/`                                                               | ImmosquareYaml                                                |
-| `Processors::Javascript` | `.js`, `.mjs`, `.cjs`, `.jsx`, `.ts`, `.tsx`, `.{js,mjs,cjs,jsx,ts,tsx,coffee}.erb`  | ESLint + normalize-comments.mjs (ou erb_lint pour les `.erb`) |
-| `Processors::Json`       | `.json`                                                                              | ImmosquareExtensions                                          |
-| `Processors::Markdown`   | `.md`, `.md.erb`                                                                     | `ImmosquareCleaner::Markdown.clean` (tables + listes)         |
-| `Processors::Shell`      | `.sh`, `bash`, `zsh`, `zshrc`, `bashrc`, `bash_profile`, `zprofile`                  | shfmt                                                         |
-| `Processors::Prettier`   | Fallback (tout le reste)                                                             | Prettier                                                      |
+| Processor                | Extension                                                                            | Outil                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| `Processors::Ruby`       | `.rb`, `.rake`, Gemfile et autres (cf. `RUBY_FILES`) + shebang `#!/usr/bin/env ruby` | RuboCop                                                                           |
+| `Processors::Erb`        | `.html.erb`, `.html`                                                                 | htmlbeautifier + erb_lint                                                         |
+| `Processors::Yaml`       | `.yml` dans `locales/`                                                               | ImmosquareYaml                                                                    |
+| `Processors::Javascript` | `.js`, `.mjs`, `.cjs`, `.jsx`, `.ts`, `.tsx`, `.{js,mjs,cjs,jsx,ts,tsx,coffee}.erb`  | ESLint + normalize-comments.mjs (ou erb_lint pour les `.erb`)                     |
+| `Processors::Json`       | `.json`                                                                              | ImmosquareExtensions                                                              |
+| `Processors::Markdown`   | `.md`, `.md.erb`                                                                     | `ImmosquareCleaner::Markdown.clean` (tables + listes ; frontmatter YAML verbatim) |
+| `Processors::Shell`      | `.sh`, `bash`, `zsh`, `zshrc`, `bashrc`, `bash_profile`, `zprofile`                  | shfmt                                                                             |
+| `Processors::Prettier`   | Fallback (tout le reste)                                                             | Prettier                                                                          |
 
 ## Commandes
 
@@ -24,6 +24,8 @@ bundle exec rake test                              # Tests
 bundle exec ruby -Itest test/xxx_test.rb           # Test unique
 bundle exec immosquare-cleaner path/to/file        # Nettoyer un fichier
 bundle exec rake immosquare_cleaner:clean_app      # Bulk d'une app Rails (parallèle, CLEANER_THREADS=N pour override)
+COVERAGE=true bundle exec rake test                # Tests + rapport HTML et coverage/lcov.info
+bin/ci init && bin/ci test                         # Point d'entrée Jenkins (bundle + bun install, puis la suite)
 ```
 
 ## Custom Linters
@@ -57,6 +59,8 @@ bundle exec rake immosquare_cleaner:clean_app      # Bulk d'une app Rails (paral
 - **Configs versionnées** : `rubocop-{VERSION}.yml` + `erb-lint-{VERSION}.yml` + `js-erb-lint-{VERSION}.yml` générés au premier run. Supprimer pour forcer régénération
 - **Parser Ruby** : `parser_prism` (Ruby 3.3+) ou `parser_whitequark` (versions antérieures)
 - **Exécution** : Commandes lancées depuis la racine du gem via `system(cmd, :chdir => gem_root)` (thread-safe ; pas `Dir.chdir`)
+- **`bin/ci` non packagé** : le gemspec liste `bin/` fichier par fichier (`bin/immosquare-cleaner` seul) — `bin/ci` est le point d'entrée Jenkins et n'a rien à faire chez qui installe la gem
+- **Couverture** : `test/coverage_helper.rb` est chargé par `ruby_opts` du Rakefile, avant la lib — sinon un fichier déjà requis échappe à la mesure. No-op sans `COVERAGE=true`
 - **`-p` CLI** : `bin/immosquare-cleaner -p` clean une copie `/tmp` après 2s d'attente et n'écrit que si l'original n'a pas bougé — pour cohabiter avec un IDE qui sauvegarde en parallèle
 
 ## Prérequis
