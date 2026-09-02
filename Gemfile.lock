@@ -58,7 +58,7 @@ GEM
     htmlbeautifier (1.4.3)
     i18n (1.15.2)
       concurrent-ruby (~> 1.0)
-    immosquare-extensions (0.1.29)
+    immosquare-extensions (0.2.0)
     immosquare-yaml (1.0.3)
       immosquare-extensions (~> 0, >= 0.1.18)
     json (2.21.2)
@@ -161,4 +161,4 @@ DEPENDENCIES
   test-unit
 
 BUNDLED WITH
-  4.0.19
+  4.0.20
