@@ -59,7 +59,7 @@ GEM
     i18n (1.15.2)
       concurrent-ruby (~> 1.0)
     immosquare-extensions (0.2.0)
-    immosquare-yaml (1.0.3)
+    immosquare-yaml (1.0.4)
       immosquare-extensions (~> 0, >= 0.1.18)
     json (2.21.2)
     language_server-protocol (3.17.0.6)
