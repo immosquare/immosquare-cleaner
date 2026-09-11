@@ -23,3 +23,10 @@ linters/js-erb-lint-*
 .idea
 .run
 .rubocop.yml
+
+##============================================================##
+## Fichiers d'échange des éditeurs (vim). Un fichier ouvert au
+## moment d'un `git status` remonterait sinon comme un fichier
+## non suivi du dépôt.
+##============================================================##
+.*.sw[a-p]
