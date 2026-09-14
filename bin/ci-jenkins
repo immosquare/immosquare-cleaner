@@ -1,0 +1,18 @@
+#!/usr/bin/env zsh
+##============================================================##
+## Point d'entree CI sur l'agent Jenkins.
+## ------
+## Meme nom et meme role que dans les apps Rails : le Jenkinsfile
+## de tout depot immosquare n'invoque que ce script. Jenkins n'a
+## donc jamais a savoir s'il construit un gem, une app Rails ou
+## autre chose — l'entree est la meme partout.
+##
+## `init` et `test` restent deux processus distincts : bin/ci
+## exporte BUNDLE_WITHOUT pour chacun, et un bundler qui a installe
+## sans un groupe mais a qui on demande ensuite de le materialiser
+## meurt sur GemNotFound.
+##============================================================##
+set -e
+
+bin/ci init
+bin/ci test
