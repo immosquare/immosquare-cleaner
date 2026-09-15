@@ -2,71 +2,46 @@
 set -e
 
 ##============================================================##
-## CI entry point for the gem test suite. Everything specific to
-## the build agent lives here, and is skipped when JENKINS_WORKSPACE
-## is unset, so `bin/ci test` behaves the same on a laptop.
-## Coverage is NOT started here: the CI exports COVERAGE=true and
-## test/coverage_helper.rb picks it up.
+## Portable CI entry point: installs the dependencies, then runs
+## the gem test suite. The runner selects Ruby and the gemset from
+## .ruby-version and .ruby-gemset before calling this script.
 ##============================================================##
-if [ -n "$JENKINS_WORKSPACE" ]; then
-    source /usr/local/rvm/scripts/rvm
-    source /etc/profile.d/rvm.sh
-    ##============================================================##
-    ## `--install` provisions the ruby the branch asks for when the
-    ## agent does not have it yet. The check below is not redundant:
-    ## when the agent can neither download a binary for its distro
-    ## nor install the build dependencies, RVM still creates the
-    ## gemset and exits successfully, leaving a phantom ruby behind.
-    ##============================================================##
-    ruby_version="$(cat .ruby-version)"
-    rvm use --install --create "${ruby_version}@$(cat .ruby-gemset)" || true
-    if [ "$(ruby -e 'print(RUBY_VERSION)' 2>/dev/null)" != "${ruby_version#ruby-}" ]; then
-        echo "ERROR: ${ruby_version} is missing from the build agent and could not be installed there."
-        echo "       Install it on the agent: rvm install ${ruby_version}"
-        exit 1
-    fi
-
-    ##============================================================##
-    ## Bundler must never switch to the version pinned in
-    ## `BUNDLED WITH`: it reinstalls itself in that version and
-    ## re-execs, and the new process starts over without the
-    ## environment prepared above. Pinning the bundler actually
-    ## present on the agent disables that switch.
-    ##============================================================##
-    BUNDLER_VERSION="$(ruby -e 'puts(Gem::Specification.find_all_by_name("bundler").map(&:version).max)')"
-    export BUNDLER_VERSION
-fi
+cd -- "${0:A:h:h}"
 
 ##============================================================##
-## The `development` group carries editor and linter tooling, not
-## the suite, so the agent skips it. This MUST be exported for both
-## sub-commands: the CI calls `init` and `test` as two separate
-## processes, and a bundler that installed without a group but is
-## then asked to materialize it aborts on GemNotFound. Anything the
-## tests really need belongs to the `test` group of the Gemfile.
+## The development group holds editor and linter tooling only.
+## Install and tests use the same groups, even when init and test
+## run as two separate processes.
+## test/coverage_helper.rb, loaded by the Rake task, starts coverage.
 ##============================================================##
 export BUNDLE_WITHOUT="development"
+export COVERAGE="${COVERAGE:-true}"
 
-if [ -z "$1" ] ; then
-    echo "Usage: $0 [init|test]"
+ci_action="${1:-all}"
+if [ "$#" -gt 1 ]; then
+    echo "Usage: $0 [all|init|test]" >&2
     exit 1
 fi
 
+case "$ci_action" in
+    all|init|test) ;;
+    *)
+        echo "Usage: $0 [all|init|test]" >&2
+        exit 1
+        ;;
+esac
+
 echo "Using Ruby : $(ruby --version)"
 
-##============================================================##
-## The JS, Prettier and Markdown processor tests call the library
-## directly, not the `bin/immosquare-cleaner` executable that
-## provisions node_modules on the fly: without `bun install` here,
-## ESLint and Prettier are missing from a fresh checkout and those
-## tests fail.
-##============================================================##
-if [ "$1" = "init" ] ; then
+if [ "$ci_action" = "all" ] || [ "$ci_action" = "init" ]; then
     bundle install
     bun install --frozen-lockfile
-    exit 0
 fi
 
-if [ "$1" = "test" ] ; then
+##============================================================##
+## The Minitest suite runs through the Rake task; bun provides
+## ESLint and Prettier, which the tests exercise.
+##============================================================##
+if [ "$ci_action" = "all" ] || [ "$ci_action" = "test" ]; then
     exec bundle exec rake test
 fi
