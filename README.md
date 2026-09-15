@@ -120,7 +120,7 @@ To run immosquare-cleaner from Visual Studio Code or Cursor, simply install the 
 
 TypeScript 7 is installed as `@typescript/native`, but TypeScript 7.0 does not expose the stable programmatic API required by `typescript-eslint` and SonarJS. The `typescript` dependency therefore resolves to the fixed 6.0.3 npm tarball; using the tarball prevents `bun update --latest` from replacing the linter API. Remove this compatibility lock when `typescript-eslint` supports the TypeScript 7.1 API.
 
-## Running the immosquare-cleaner test suite and its Jenkins CI
+## Running the immosquare-cleaner test suite and its CI
 
 The test suite of the immosquare-cleaner repository runs through rake:
 
@@ -134,14 +134,15 @@ Coverage is off by default, so a local run stays fast and leaves no `coverage/` 
 COVERAGE=true bundle exec rake test
 ```
 
-`Jenkinsfile` runs the suite on every build through `bin/ci`, which is a repository script and is not shipped with the gem:
+The CI runs the suite on every build through `bin/ci`, which is a repository script and is not shipped with the gem:
 
 ```bash
 bin/ci init   # bundle install && bun install --frozen-lockfile
 bin/ci test   # bundle exec rake test
+bin/ci        # both, in that order (the default, `all`)
 ```
 
-`bin/ci init` installs the JS toolchain too: the JS, Prettier and Markdown tests call the library directly rather than the `immosquare-cleaner` executable, so nothing provisions `node_modules/` for them. Both sub-commands skip the `development` bundler group — anything the suite needs belongs to the `test` group of the `Gemfile`. The RVM setup only applies on a build agent, so `bin/ci` behaves the same on a laptop.
+`bin/ci init` installs the JS toolchain too: the JS, Prettier and Markdown tests call the library directly rather than the `immosquare-cleaner` executable, so nothing provisions `node_modules/` for them. Both sub-commands skip the `development` bundler group — anything the suite needs belongs to the `test` group of the `Gemfile`. The script provisions no Ruby of its own — the CI runner selects it from `.ruby-version` and `.ruby-gemset` beforehand — so `bin/ci` behaves the same on a laptop. It also defaults `COVERAGE` to `true`, and the CI collects `coverage/lcov.info`.
 
 ## Contributing to immosquare-cleaner and license
 

@@ -25,7 +25,7 @@ bundle exec ruby -Itest test/xxx_test.rb           # Test unique
 bundle exec immosquare-cleaner path/to/file        # Nettoyer un fichier
 bundle exec rake immosquare_cleaner:clean_app      # Bulk d'une app Rails (parallèle, CLEANER_THREADS=N pour override)
 COVERAGE=true bundle exec rake test                # Tests + rapport HTML et coverage/lcov.info
-bin/ci init && bin/ci test                         # Point d'entrée Jenkins (bundle + bun install, puis la suite)
+bin/ci                                             # Point d'entrée CI (bundle + bun install, puis la suite)
 ```
 
 ## Custom Linters
@@ -59,7 +59,7 @@ bin/ci init && bin/ci test                         # Point d'entrée Jenkins (bu
 - **Configs versionnées** : `rubocop-{VERSION}.yml` + `erb-lint-{VERSION}.yml` + `js-erb-lint-{VERSION}.yml` générés au premier run. Supprimer pour forcer régénération
 - **Parser Ruby** : `parser_prism` (Ruby 3.3+) ou `parser_whitequark` (versions antérieures)
 - **Exécution** : Commandes lancées depuis la racine du gem via `system(cmd, :chdir => gem_root)` (thread-safe ; pas `Dir.chdir`)
-- **`bin/ci` non packagé** : le gemspec liste `bin/` fichier par fichier (`bin/immosquare-cleaner` seul) — `bin/ci` est le point d'entrée Jenkins et n'a rien à faire chez qui installe la gem
+- **`bin/ci` non packagé** : le gemspec liste `bin/` fichier par fichier (`bin/immosquare-cleaner` seul) — `bin/ci` est le point d'entrée CI et n'a rien à faire chez qui installe la gem
 - **Couverture** : `test/coverage_helper.rb` est chargé par `ruby_opts` du Rakefile, avant la lib — sinon un fichier déjà requis échappe à la mesure. No-op sans `COVERAGE=true`
 - **`-p` CLI** : `bin/immosquare-cleaner -p` clean une copie `/tmp` après 2s d'attente et n'écrit que si l'original n'a pas bougé — pour cohabiter avec un IDE qui sauvegarde en parallèle
 
