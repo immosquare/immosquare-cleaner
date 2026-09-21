@@ -9,17 +9,17 @@
   "dependencies": {
     "@babel/parser":                    "^8.0.5",
     "@eslint/js":                       "^10.0.1",
-    "@typescript-eslint/eslint-plugin": "^8.70.0",
-    "@typescript-eslint/parser":        "^8.70.0",
+    "@typescript-eslint/eslint-plugin": "^8.70.1",
+    "@typescript-eslint/parser":        "^8.70.1",
     "@typescript/native":               "npm:typescript@^7.0.2",
-    "eslint":                           "^10.10.0",
+    "eslint":                           "^10.11.0",
     "eslint-plugin-align-assignments":  "^1.1.2",
     "eslint-plugin-align-import":       "^1.0.0",
     "eslint-plugin-erb":                "^2.1.1",
     "eslint-plugin-prefer-arrow":       "^1.2.3",
     "eslint-plugin-sonarjs":            "^4.2.1",
     "eslint-plugin-unused-imports":     "^4.4.1",
-    "prettier":                         "^3.9.7",
+    "prettier":                         "^3.9.8",
     "typescript":                       "https://registry.npmjs.org/typescript/-/typescript-6.0.3.tgz"
   }
 }
