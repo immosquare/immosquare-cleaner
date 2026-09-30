@@ -1,3 +1,10 @@
+## [1.0.1] - 2026-09-30
+
+### Fixed
+- Rails generator templates (`generators/**/templates/`) are skipped by both the directory and the single-file clean: they are raw ERB behind the target file's extension, and RuboCop, Prettier and the other processors mangled their tags
+- ESLint: `align-assignments` is a local fork that reads `context.sourceCode` and knows `||=`, `&&=` and `??=` — the unmaintained npm plugin located the `=` one column off on those operators and its autofix never settled ("Circular fixes detected"); the `eslint-plugin-align-assignments` dependency is removed
+- RuboCop: `Gemspec/RequiredRubyVersion` disabled — `TargetRubyVersion` follows the Ruby running the cleaner, so the cop flagged every gemspec
+
 ## [1.0.0] - 2026-09-30
 
 ### Removed
