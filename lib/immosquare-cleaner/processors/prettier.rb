@@ -10,6 +10,24 @@ module ImmosquareCleaner
     ##============================================================##
     class Prettier < Base
 
+      ##============================================================##
+      ## Extensions Prettier formats out of the box. Used by the
+      ## directory clean to decide which fallback files to send;
+      ## a single-file clean still falls back for any extension
+      ##============================================================##
+      EXTENSIONS = [
+        ".css",
+        ".graphql",
+        ".gql",
+        ".handlebars",
+        ".hbs",
+        ".less",
+        ".scss",
+        ".vue",
+        ".yaml",
+        ".yml"
+      ].freeze
+
       def run
         ##============================================================##
         ## Prettier flags:

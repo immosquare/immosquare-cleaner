@@ -6,7 +6,7 @@ require "immosquare-extensions"
 require "fileutils"
 require_relative "immosquare-cleaner/configuration"
 require_relative "immosquare-cleaner/markdown"
-require_relative "immosquare-cleaner/railtie" if defined?(Rails)
+require_relative "immosquare-cleaner/directory_cleaner"
 
 ##============================================================##
 ## Processors
@@ -82,6 +82,14 @@ module ImmosquareCleaner
         warn("Error cleaning #{file_path}: #{e.message}")
         warn(e.backtrace&.join("\n") || "(no backtrace)")
       end
+    end
+
+    def clean_directory(root)
+      DirectoryCleaner.run(root)
+    end
+
+    def supported?(file_path)
+      PROCESSORS.any? {|processor| processor.match?(file_path) } || file_path.end_with?(*Processors::Prettier::EXTENSIONS)
     end
 
     def gem_root
