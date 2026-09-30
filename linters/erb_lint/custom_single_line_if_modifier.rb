@@ -74,7 +74,7 @@ module ERBLint
           context = {
             :new_code       => "<%= #{new_code} %>",
             :output_node    => output_node,
-            :is_output_node => is_output_erb?(output_node)
+            :is_output_node => output_erb?(output_node)
           }
 
           add_offense(full_range, MSG, context)
@@ -102,9 +102,9 @@ module ERBLint
         ## output_node should be <%= (output)
         ## end_node should be <% (not <%=)
         ##============================================================##
-        return false unless is_statement_erb?(if_node)
-        return false unless is_output_erb?(output_node)
-        return false unless is_statement_erb?(end_node)
+        return false unless statement_erb?(if_node)
+        return false unless output_erb?(output_node)
+        return false unless statement_erb?(end_node)
 
         ##============================================================##
         ## Extract and validate the code
@@ -133,7 +133,7 @@ module ERBLint
       ##============================================================##
       ## Check if ERB node is a statement (<% ... %>)
       ##============================================================##
-      def is_statement_erb?(erb_node)
+      def statement_erb?(erb_node)
         indicator = erb_node.children.first
         indicator.nil? || (indicator.respond_to?(:children) && indicator.children.first.nil?)
       end
@@ -141,7 +141,7 @@ module ERBLint
       ##============================================================##
       ## Check if ERB node is an output (<%= ... %>)
       ##============================================================##
-      def is_output_erb?(erb_node)
+      def output_erb?(erb_node)
         indicator = erb_node.children.first
         indicator.respond_to?(:children) && indicator.children.first == "="
       end

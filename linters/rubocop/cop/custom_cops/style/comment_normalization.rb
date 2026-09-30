@@ -104,16 +104,13 @@ module RuboCop
                 in_code = !in_code
                 body << text
                 content_seen = true
-              elsif in_code || text.match?(RAW_LINE)
+              elsif verbatim_line?(text, in_code)
                 body << text
                 content_seen = true
               elsif text == BLANK_LINE
                 body << BLANK_LINE if content_seen
               elsif text.match?(USER_SEPARATOR)
                 body << INSIDE_SEPARATOR if content_seen
-              elsif text.match?(STRUCTURED_LINE) || text.match?(INDENTED_LINE)
-                body << text
-                content_seen = true
               else
                 body << cleaned_line(text)
                 content_seen = true
@@ -121,6 +118,20 @@ module RuboCop
             end
 
             body
+          end
+
+          ##============================================================##
+          ## Lines kept as written. Precedence matters: inside a code
+          ## block or on a raw line everything is verbatim, even "##" or
+          ## a separator; elsewhere a blank line and a user separator win
+          ## over the structured/indented patterns ("##   ---" is a
+          ## separator, not an indented line).
+          ##============================================================##
+          def verbatim_line?(text, in_code)
+            return true if in_code || text.match?(RAW_LINE)
+            return false if text == BLANK_LINE || text.match?(USER_SEPARATOR)
+
+            text.match?(STRUCTURED_LINE) || text.match?(INDENTED_LINE)
           end
 
           ##============================================================##
