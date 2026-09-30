@@ -1,3 +1,21 @@
+## [1.0.0] - 2026-09-30
+
+### Removed
+- **Breaking**: `rake immosquare_cleaner:clean_app` and the Rails railtie that loaded it — use `immosquare-cleaner <directory>` (or `ImmosquareCleaner.clean_directory`) instead, which covers Rails apps and any other repository
+
+### Added
+- Directory mode: `immosquare-cleaner <directory>` cleans a whole repository whatever its stack (Rails app, gem, Rust/Tauri app, JS package) — files listed by `git ls-files` so `.gitignore` is honored, nested repositories and submodules walked with their own listing, generated folders excluded, and only files with a processor or a Prettier-supported extension cleaned; `CLEANER_THREADS=N` overrides the thread count
+- Rust processor (`.rs` → rustfmt): formats through stdin so child modules are never rewritten, reads the edition from the closest `Cargo.toml` (workspace root included, 2024 by default), honors the project's or the user's `rustfmt.toml`, 2-space indent otherwise
+- TOML processor (`.toml` → taplo): aligned `=`, 2-space indent, no wrapping, multi-line arrays kept as written
+- `-p` mode reads the project configuration (`Cargo.toml`, `rustfmt.toml`) from the original file location rather than the `/tmp` copy
+- erb_lint: `<script type="module">` allowed alongside `text/javascript`
+
+### Fixed
+- ESLint: TypeScript files use `@typescript-eslint/no-unused-vars` instead of the core rule, which reported parameter names of function types as unused
+
+### Changed
+- CI: `bin/ci` is a portable entry point; the Jenkinsfile is removed and the runner selects Ruby from `.ruby-version`
+
 ## [0.1.116] - 2026-08-13
 
 ### Fixed
