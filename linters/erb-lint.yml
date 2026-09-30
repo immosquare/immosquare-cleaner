@@ -4,6 +4,15 @@ linters:
     enabled: false
   SpaceInHtmlTag:
     enabled: false
+  ##============================================================##
+  ## "module" is the standard type of ES module scripts (Vite,
+  ## importmap) — erb_lint only allows text/javascript by default
+  ##============================================================##
+  AllowedScriptType:
+    enabled: true
+    allowed_types:
+      - text/javascript
+      - module
   CustomSingleLineIfModifier:
     enabled: true
   CustomHtmlToContentTag:
