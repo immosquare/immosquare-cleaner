@@ -66,6 +66,17 @@ module ImmosquareCleaner
 
     attr_reader :root
 
+    ##============================================================##
+    ## Everything under `generators/**/templates/` is raw template
+    ## content, usually ERB behind the target file's extension: any
+    ## formatter would mangle its tags. Shared with
+    ## ImmosquareCleaner.clean so a single-file clean skips it too
+    ##============================================================##
+    def self.generator_template?(folders)
+      generators = folders.index("generators")
+      !generators.nil? && folders.drop(generators + 1).include?("templates")
+    end
+
     def initialize(root)
       @root = File.expand_path(root)
     end
@@ -139,6 +150,7 @@ module ImmosquareCleaner
       segments = path.split("/")
       folders  = directory ? segments : segments[0..-2]
       return true if folders.intersect?(EXCLUDED_DIRS) || "#{path}/".start_with?(*EXCLUDED_PATHS.map {|excluded| "#{excluded}/" })
+      return true if self.class.generator_template?(folders)
 
       !directory && (EXCLUDED_FILES.include?(segments.last) || segments.last.end_with?(*EXCLUDED_SUFFIXES))
     end

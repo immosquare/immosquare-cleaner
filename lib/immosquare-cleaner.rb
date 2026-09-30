@@ -70,10 +70,13 @@ module ImmosquareCleaner
       setup_linter_configs!
 
       ##============================================================##
-      ## Return if the file is in the exclusion list
+      ## Return if the file is in the exclusion list or is a generator
+      ## template. With `-p`, file_path is a /tmp copy: the template
+      ## check runs on origin_path
       ##============================================================##
       exclude_files = configuration.exclude_files.map {|file| File.join(Dir.pwd, file) }
       return if exclude_files.include?(file_path)
+      return if DirectoryCleaner.generator_template?(File.dirname(origin_path || file_path).split("/"))
 
       begin
         processor = processor_for(file_path)
