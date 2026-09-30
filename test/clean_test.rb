@@ -128,7 +128,7 @@ class CleanTest < Test::Unit::TestCase
   end
 
   def test_dispatch_prettier_fallback
-    ["style.css", "index.html.haml", "config.toml", "unknown.xyz"].each do |path|
+    ["style.css", "index.html.haml", "unknown.xyz"].each do |path|
       assert_equal(ImmosquareCleaner::Processors::Prettier, dispatch(path), "expected #{path} → Prettier fallback")
     end
   end

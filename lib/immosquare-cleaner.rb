@@ -18,6 +18,8 @@ require_relative "immosquare-cleaner/processors/javascript"
 require_relative "immosquare-cleaner/processors/json"
 require_relative "immosquare-cleaner/processors/markdown"
 require_relative "immosquare-cleaner/processors/shell"
+require_relative "immosquare-cleaner/processors/rust"
+require_relative "immosquare-cleaner/processors/toml"
 require_relative "immosquare-cleaner/processors/yaml"
 require_relative "immosquare-cleaner/processors/prettier"
 
@@ -61,7 +63,7 @@ module ImmosquareCleaner
       yield(configuration)
     end
 
-    def clean(file_path)
+    def clean(file_path, origin_path = nil)
       ##============================================================##
       ## Ensure linter configurations are ready
       ##============================================================##
@@ -75,7 +77,7 @@ module ImmosquareCleaner
 
       begin
         processor = processor_for(file_path)
-        processor.run(file_path)
+        processor.run(file_path, origin_path)
       rescue StandardError => e
         warn("Error cleaning #{file_path}: #{e.message}")
         warn(e.backtrace&.join("\n") || "(no backtrace)")
@@ -110,7 +112,9 @@ module ImmosquareCleaner
       Processors::Javascript,
       Processors::Json,
       Processors::Markdown,
-      Processors::Shell
+      Processors::Shell,
+      Processors::Rust,
+      Processors::Toml
     ].freeze
 
     def processor_for(file_path)

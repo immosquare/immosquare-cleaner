@@ -1,14 +1,21 @@
 module ImmosquareCleaner
   module Processors
     class Base
-      def self.run(file_path)
-        new(file_path).run
+
+      def self.run(file_path, origin_path = nil)
+        new(file_path, origin_path).run
       end
 
-      attr_reader :file_path
+      ##============================================================##
+      ## origin_path : location of the file in its project, used to
+      ##               look up project config (Cargo.toml...). Differs
+      ##               from file_path when a /tmp copy is cleaned (-p)
+      ##============================================================##
+      attr_reader :file_path, :origin_path
 
-      def initialize(file_path)
-        @file_path = file_path
+      def initialize(file_path, origin_path = nil)
+        @file_path   = file_path
+        @origin_path = origin_path || file_path
       end
 
       def run
@@ -31,6 +38,7 @@ module ImmosquareCleaner
       def normalize_last_line(path = file_path)
         File.normalize_last_line(path)
       end
+
     end
   end
 end
