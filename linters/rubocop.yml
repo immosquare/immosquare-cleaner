@@ -37,6 +37,14 @@ Naming/FileName:
   Enabled: false # Allow filenames with dashes (e.g. immosquare-cleaner.rb)
 Naming/MethodParameterName:
   MinNameLength: 1 # Allow single-character parameter names
+Naming/PredicateMethod:
+  AllowedMethods:
+    - call
+    - move_to_cache # CarrierWave hooks: the gem calls them by these names and reads their boolean return.
+    - move_to_store
+    - save # ActiveModel contract: form objects expose `save` returning true/false, like ActiveRecord.
+    - check_health # Commands returning their success status (immosquare-railtie PumaManager, Elasticsearch import): a `?` name would hide the side effects.
+    - elastic_import_with_progressbar
 
 #################### Layout ###########################
 Layout/LeadingEmptyLines:
@@ -98,6 +106,11 @@ Style/NegatedIf:
   Enabled: false # Allow rewriting `if !` as `unless`
 Style/FormatStringToken:
   EnforcedStyle: "template" ## Use %{my_string} interpolation, not %<my_string>s
+  Mode: conservative # Only strings passed to format/sprintf/%. In aggressive mode any literal containing `%<x>s` is flagged, including prose that lists placeholders (e.g. an AI prompt telling the model which tokens to preserve), where rewriting the token changes the text.
+Style/OptionalBooleanParameter:
+  AllowedMethods:
+    - respond_to_missing?
+    - perform # Sidekiq and ActiveJob serialize `perform` arguments as JSON: keyword arguments are not reliably supported, and jobs already enqueued keep their positional shape.
 Style/NumericPredicate:
   EnforcedStyle: comparison # No `.zero?` `.negative?` `.positive?`
 Style/StringLiterals:
