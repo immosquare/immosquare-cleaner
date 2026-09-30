@@ -1,10 +1,12 @@
 # CLAUDE.md
 
-Gem de formatting/linting multi-format pour Rails. Point d'entrée : `ImmosquareCleaner.clean(file_path)` dans `lib/immosquare-cleaner.rb`.
+Gem de formatting/linting multi-format, pour tout dépôt (app Rails, gem, app Rust/Tauri, package JS). Points d'entrée : `ImmosquareCleaner.clean(file_path)` et `ImmosquareCleaner.clean_directory(root)` dans `lib/immosquare-cleaner.rb`.
 
 ## Architecture
 
 Un processor par type de fichier dans `lib/immosquare-cleaner/processors/` — chaque classe expose `match?(file_path)` + `run`. `ImmosquareCleaner.processor_for` scanne le registre `PROCESSORS` (ordre significatif : `Erb` avant `Javascript`, `Ruby` avant `Shell` pour les shebangs) et tombe sur `Processors::Prettier` en fallback.
+
+`ImmosquareCleaner.clean_directory(root)` (`lib/immosquare-cleaner/directory_cleaner.rb`) nettoie tout un dépôt, quelle que soit sa stack : fichiers issus de `git ls-files` (dépôts imbriqués et submodules parcourus avec leur propre listing, `Dir.glob` hors git), exclusions en dur (`EXCLUDED_DIRS` à toute profondeur, `EXCLUDED_PATHS` depuis la racine de chaque dépôt), et seulement les fichiers qu'un processor gère ou dont Prettier connaît l'extension (`Prettier::EXTENSIONS`, via `ImmosquareCleaner.supported?`).
 
 | Processor                | Extension                                                                            | Outil                                                                             |
 | ------------------------ | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
@@ -15,6 +17,8 @@ Un processor par type de fichier dans `lib/immosquare-cleaner/processors/` — c
 | `Processors::Json`       | `.json`                                                                              | ImmosquareExtensions                                                              |
 | `Processors::Markdown`   | `.md`, `.md.erb`                                                                     | `ImmosquareCleaner::Markdown.clean` (tables + listes ; frontmatter YAML verbatim) |
 | `Processors::Shell`      | `.sh`, `bash`, `zsh`, `zshrc`, `bashrc`, `bash_profile`, `zprofile`                  | shfmt                                                                             |
+| `Processors::Rust`       | `.rs`                                                                                | rustfmt via stdin (édition et `rustfmt.toml` lus dans le projet)                  |
+| `Processors::Toml`       | `.toml`                                                                              | taplo                                                                             |
 | `Processors::Prettier`   | Fallback (tout le reste)                                                             | Prettier                                                                          |
 
 ## Commandes
@@ -23,7 +27,7 @@ Un processor par type de fichier dans `lib/immosquare-cleaner/processors/` — c
 bundle exec rake test                              # Tests
 bundle exec ruby -Itest test/xxx_test.rb           # Test unique
 bundle exec immosquare-cleaner path/to/file        # Nettoyer un fichier
-bundle exec rake immosquare_cleaner:clean_app      # Bulk d'une app Rails (parallèle, CLEANER_THREADS=N pour override)
+bundle exec immosquare-cleaner path/to/repo        # Tout un dépôt, toute stack (parallèle, CLEANER_THREADS=N pour override)
 COVERAGE=true bundle exec rake test                # Tests + rapport HTML et coverage/lcov.info
 bin/ci                                             # Point d'entrée CI (bundle + bun install, puis la suite)
 ```
@@ -61,8 +65,9 @@ bin/ci                                             # Point d'entrée CI (bundle 
 - **Exécution** : Commandes lancées depuis la racine du gem via `system(cmd, :chdir => gem_root)` (thread-safe ; pas `Dir.chdir`)
 - **`bin/ci` non packagé** : le gemspec liste `bin/` fichier par fichier (`bin/immosquare-cleaner` seul) — `bin/ci` est le point d'entrée CI et n'a rien à faire chez qui installe la gem
 - **Couverture** : `test/coverage_helper.rb` est chargé par `ruby_opts` du Rakefile, avant la lib — sinon un fichier déjà requis échappe à la mesure. No-op sans `COVERAGE=true`
-- **`-p` CLI** : `bin/immosquare-cleaner -p` clean une copie `/tmp` après 2s d'attente et n'écrit que si l'original n'a pas bougé — pour cohabiter avec un IDE qui sauvegarde en parallèle
+- **`-p` CLI** : `bin/immosquare-cleaner -p` clean une copie `/tmp` après 2s d'attente et n'écrit que si l'original n'a pas bougé — pour cohabiter avec un IDE qui sauvegarde en parallèle. Le chemin d'origine est passé en `origin_path` (`Processors::Base`) : un processor qui lit la config du projet (`Cargo.toml`, `rustfmt.toml`) la cherche depuis l'original, pas depuis `/tmp`
+- **rustfmt via stdin** : lancé sur un chemin, rustfmt réécrit aussi les modules enfants (`mod foo;`) ; `skip_children` est nightly only
 
 ## Prérequis
 
-Bun, Ruby 3.2.6+, shfmt (`brew install shfmt`)
+Bun, Ruby 3.2.6+, shfmt (`brew install shfmt`) ; rustfmt (`rustup component add rustfmt`) et taplo (`brew install taplo`) pour les fichiers Rust et TOML

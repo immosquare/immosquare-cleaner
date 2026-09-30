@@ -7,9 +7,9 @@ tags:
 
 # immosquare-cleaner
 
-immosquare-cleaner is a meticulously crafted Ruby gem to enhance the cleanliness and structure of your project's files. This tool ensures consistency and uniformity across various formats, including Ruby, ERB, YAML, Markdown, JSON, JS, CSS, SASS, LESS, and other formats supported by Prettier.
+immosquare-cleaner is a meticulously crafted Ruby gem to enhance the cleanliness and structure of your project's files. This tool ensures consistency and uniformity across various formats, including Ruby, ERB, YAML, Markdown, JSON, JS, Rust, TOML, CSS, SASS, LESS, and other formats supported by Prettier.
 
-This README is written for developers working on a Rails app that uses immosquare-cleaner, and for developers working on the gem itself. It covers the formats immosquare-cleaner supports and the tool each one is delegated to, the linter configurations and the custom cops and linters the gem ships, how to install immosquare-cleaner and run it on a single file or on a whole app, and how to run the gem's own test suite. immosquare-cleaner requires [bun](https://bun.sh/) and [shfmt](https://github.com/mvdan/sh).
+This README is written for developers working on a project that uses immosquare-cleaner (a Rails app, a gem, a Rust/Tauri app…), and for developers working on the gem itself. It covers the formats immosquare-cleaner supports and the tool each one is delegated to, the linter configurations and the custom cops and linters the gem ships, how to install immosquare-cleaner and run it on a single file or on a whole repository, and how to run the gem's own test suite. immosquare-cleaner requires [bun](https://bun.sh/) and [shfmt](https://github.com/mvdan/sh); Rust and TOML files additionally need [rustfmt](https://github.com/rust-lang/rustfmt) and [taplo](https://taplo.tamasfe.dev/).
 
 ## Supported formats and the tool each one is delegated to
 
@@ -24,7 +24,20 @@ immosquare-cleaner recognizes and caters to various file formats, and hands each
 | JSON        | `.json`                                                                                                                                                                                                                                                 | [ImmosquareExtensions](https://github.com/immosquare/immosquare-extensions)                                         |
 | Markdown    | `.md`, `.md.erb`                                                                                                                                                                                                                                        | [ImmosquareCleaner](https://github.com/immosquare/immosquare-cleaner)                                               |
 | Shell       | `.sh`, `bash`, `zsh`, `zshrc`, `bashrc`, `bash_profile`, `zprofile`                                                                                                                                                                                     | [shfmt](https://github.com/mvdan/sh)                                                                                |
+| Rust        | `.rs`                                                                                                                                                                                                                                                   | [rustfmt](https://github.com/rust-lang/rustfmt)                                                                     |
+| TOML        | `.toml`                                                                                                                                                                                                                                                 | [taplo](https://taplo.tamasfe.dev/)                                                                                 |
 | Others      | Any other format                                                                                                                                                                                                                                        | [prettier](https://prettier.io/)                                                                                    |
+
+When rustfmt, taplo or shfmt is missing, immosquare-cleaner prints the install command (`rustup component add rustfmt`, `brew install taplo`, `brew install shfmt`) and leaves the file untouched.
+
+### Rust and TOML formatting follow the edited project's configuration
+
+rustfmt and taplo are run with settings that depend on the project the file belongs to, not only on the gem's own configuration:
+
+| Tool    | Behaviour                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| rustfmt | The file is piped through stdin, so rustfmt never rewrites the child modules a `mod foo;` declaration points to. The edition is read from the closest `Cargo.toml` that declares one, walking up to the workspace root for members using `edition.workspace = true`; `2024` when none does. The closest `rustfmt.toml` / `.rustfmt.toml` wins, then the user's global rustfmt config; with none, immosquare-cleaner applies a 2-space indent. On a syntax error, rustfmt's message is printed and the file is left untouched. |
+| taplo   | The `=` of consecutive keys are aligned, nested arrays are indented with 2 spaces, lines are never wrapped, and multi-line arrays (workspace `members`, `features`) keep their layout. A `.taplo.toml` in the project is not read.                                                                                                                                                                                                                                                                                            |
 
 ### Markdown formatting rules applied by ImmosquareCleaner::Markdown
 
@@ -60,12 +73,18 @@ immosquare-cleaner also ships custom erb_lint linters for ERB files. Each row be
 | `CustomHtmlToContentTag`      | Converts `<div class="x"><%= y %></div>` to `<%= content_tag(:div, y, :class => "x") %>` |
 | `CustomAlignConsecutiveCalls` | Aligns args of consecutive ERB calls (default: `link_to`) when keys/arity match          |
 
-## Installing immosquare-cleaner and running it on a file or a whole app
+## Installing immosquare-cleaner and running it on a file or a whole repository
 
-immosquare-cleaner requires [bun](https://bun.sh/) and [shfmt](https://github.com/mvdan/sh) (`brew install shfmt`). Add the gem to the development group of your `Gemfile`:
+immosquare-cleaner requires [bun](https://bun.sh/) and [shfmt](https://github.com/mvdan/sh) (`brew install shfmt`). In a Ruby project, add the gem to the development group of your `Gemfile`:
 
 ```ruby
 gem "immosquare-cleaner", :group => :development
+```
+
+In a project without a `Gemfile` (a Rust or JS repository), install the gem globally and call `immosquare-cleaner` without `bundle exec`:
+
+```bash
+gem install immosquare-cleaner
 ```
 
 The config file is optional. If you want to use it, it must be placed in the `config/initializers` folder and must be named `immosquare-cleaner.rb`:
@@ -87,10 +106,10 @@ bundle exec immosquare-cleaner path/to/your/file.rb
 
 The command-line options of the `immosquare-cleaner` executable:
 
-| Option                             | Description                                                                                                                                                                                               |
-| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-p`, `--prevent-concurrent-write` | Wait 2 seconds, clean a copy of the file in `/tmp`, then overwrite the original only if it hasn't changed in the meantime. Use when an IDE may be saving the file in parallel (e.g. editor on-save hook). |
-| `-h`, `--help`                     | Print usage and exit.                                                                                                                                                                                     |
+| Option                             | Description                                                                                                                                                                                                                                                                                                                     |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-p`, `--prevent-concurrent-write` | Wait 2 seconds, clean a copy of the file in `/tmp`, then overwrite the original only if it hasn't changed in the meantime. Use when an IDE may be saving the file in parallel (e.g. editor on-save hook). The project configuration (`Cargo.toml`, `rustfmt.toml`) is still read from the original location. Single files only. |
+| `-h`, `--help`                     | Print usage and exit.                                                                                                                                                                                                                                                                                                           |
 
 On first run, the CLI runs `bun install` automatically if the gem's `node_modules/` is missing.
 
@@ -100,19 +119,36 @@ The same single-file cleaning is available from Ruby:
 ImmosquareCleaner.clean("path/to/your/file.rb")
 ```
 
-To clean every source file of a Rails app in bulk (onboarding, cleaner upgrade, large refactor), immosquare-cleaner provides a rake task:
+### Cleaning a whole repository in one run
+
+Given a directory instead of a file, immosquare-cleaner cleans every source file of the repository in one run (onboarding, cleaner upgrade, large refactor), whatever its stack: Rails app, gem, Rust/Tauri app, JS package. Run it from the repository root:
 
 ```bash
-bundle exec rake immosquare_cleaner:clean_app
+bundle exec immosquare-cleaner .
 ```
 
-The task is parallelized via threads (defaults to `min(nprocessors, 8)` since linters shell out and release the GVL). Override with:
+The directory clean selects its files as follows:
+
+| Step               | Behaviour                                                                                                                                                                                                                                                                                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Listing            | Files come from `git ls-files` (tracked and untracked, minus `.gitignore`), so each stack's build output is skipped by the repository's own rules. A nested repository or a submodule is walked with its own listing, so a folder holding several repositories cleans all of them. Outside a git repository, every file under the directory is listed. |
+| Excluded folders   | `.git`, `build`, `coverage`, `dist`, `log`, `node_modules`, `target`, `tmp` and `vendor` at any depth; `app/assets/builds`, `app/assets/fonts`, `app/assets/images`, `db`, `public`, `src-tauri/gen`, `src-tauri/permissions/autogenerated` and `test` from the root of each repository.                                                               |
+| Excluded files     | `package-lock.json`, `pnpm-lock.yaml`, `npm-shrinkwrap.json`, `*.min.js`, `*.min.css`, symlinks, and the `exclude_files` of the project's `config/initializers/immosquare-cleaner.rb`.                                                                                                                                                                 |
+| Supported formats  | Only files with a dedicated processor, or an extension Prettier formats out of the box (`.css`, `.scss`, `.less`, `.yml`, `.yaml`, `.vue`, `.graphql`, `.gql`, `.hbs`, `.handlebars`), are cleaned. `LICENSE`, `.env`, images and other unknown files are left alone.                                                                                  |
+
+The run is parallelized via threads (defaults to `min(nprocessors, 8)` since linters shell out and release the GVL). Override with:
 
 ```bash
-CLEANER_THREADS=4 bundle exec rake immosquare_cleaner:clean_app
+CLEANER_THREADS=4 bundle exec immosquare-cleaner .
 ```
 
-Generated/non-source folders (`app/assets/builds`, `app/assets/fonts`, `app/assets/images`, `coverage`, `db`, `log`, `node_modules`, `public`, `test`, `tmp`, `vendor`) and binary/lock files (`.lock`, `.lockb`, `.otf`, `.ttf`, `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg`, `.ico`, `.webp`, `.csv`) are skipped.
+The same directory clean is available from Ruby:
+
+```ruby
+ImmosquareCleaner.clean_directory("path/to/your/repository")
+```
+
+The directory clean replaces the `rake immosquare_cleaner:clean_app` task, which was limited to Rails apps and no longer exists.
 
 To run immosquare-cleaner from Visual Studio Code or Cursor, simply install the [immosquare-vscode](https://marketplace.visualstudio.com/items?itemName=immosquare.immosquare-vscode) extension from the VS Code marketplace. That's it!
 
