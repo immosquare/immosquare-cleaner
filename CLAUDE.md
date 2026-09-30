@@ -53,7 +53,8 @@ bin/ci                                             # Point d'entrée CI (bundle 
 - Ajoute bordures `//====...====//` autour des commentaires standalone
 
 **Shim ESLint 10** (`linters/eslint-plugins/eslint10-compat.mjs`) :
-- Wrappe `eslint-plugin-align-assignments` et `eslint-plugin-align-import` (non maintenus, derniers releases 2019-2020) pour re-injecter `context.getSourceCode()` supprimé par ESLint 10. À supprimer dès qu'une alternative maintenue émerge.
+- Wrappe `eslint-plugin-align-import` (non maintenu, dernière release 2020) pour re-injecter `context.getSourceCode()` supprimé par ESLint 10. À supprimer dès qu'une alternative maintenue émerge.
+- `align-assignments` est un fork local (`linters/eslint-plugins/align-assignments.mjs`, MIT, notice d'origine en tête de fichier) : lit `context.sourceCode` et gère `||=`, `&&=`, `??=` — sans eux, l'autofix ne converge jamais (« Circular fixes detected »).
 
 ## Points critiques
 
