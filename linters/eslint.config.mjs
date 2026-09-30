@@ -176,7 +176,11 @@ export default [
       
       //============================================================//
       // TypeScript specific rules
+      // The core rule reports parameter names of function types
+      // (`onOpen: (path: string) => void`) as unused variables;
+      // the TypeScript-aware version replaces it
       //============================================================//
+      "no-unused-vars":                                   "off",
       "@typescript-eslint/no-unused-vars":                [2],
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/no-explicit-any":               "warn",
