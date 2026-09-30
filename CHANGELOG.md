@@ -1,3 +1,10 @@
+## [1.0.2] - 2026-09-30
+
+### Changed
+- RuboCop: `Naming/PredicateMethod` allows methods whose name is set by a framework or that act and then return a success status (`call`, CarrierWave's `move_to_cache`/`move_to_store`, ActiveModel-style `save`, `check_health`, `elastic_import_with_progressbar`)
+- RuboCop: `Style/OptionalBooleanParameter` allows `perform`, since Sidekiq and ActiveJob job arguments stay positional
+- RuboCop: `Style/FormatStringToken` runs in conservative mode — only strings passed to `format`/`sprintf`/`%` are checked, so prose that lists `%<x>s` placeholders (e.g. an AI prompt) is no longer rewritten
+
 ## [1.0.1] - 2026-09-30
 
 ### Fixed
