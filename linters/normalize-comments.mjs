@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from "fs"
-import * as babelParser from "@babel/parser"
+import * as babelParser                from "@babel/parser"
 
 //============================================================//
 // Constants
@@ -36,7 +36,7 @@ const normalizeComments = (filePath) => {
   // Process blocks in reverse order to avoid line number shifts
   //============================================================//
   const blocksReversed = [...commentBlocks].reverse()
-  let hasChanges = false
+  let hasChanges       = false
 
   blocksReversed.forEach((block) => {
     const normalized = normalizeCommentBlock(block, lines)
@@ -111,7 +111,7 @@ const groupConsecutiveComments = (comments, originalLines) => {
     // Check if this is a standalone comment (line starts with //)
     // Skip end-of-line comments (e.g., const x = 1 // comment)
     //============================================================//
-    const lineContent = originalLines[comment.loc.start.line - 1]
+    const lineContent  = originalLines[comment.loc.start.line - 1]
     const isStandalone = lineContent.trim().startsWith("//")
 
     if (!isStandalone) {
