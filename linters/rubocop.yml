@@ -247,3 +247,5 @@ CustomCops/Style/KwargPriorityOrder:
 #################### GEM ###########################
 Gemspec/RequireMFA:
   Enabled: false # Don't require MFA to push a gem
+Gemspec/RequiredRubyVersion:
+  Enabled: false # TargetRubyVersion is always set to the Ruby running the cleaner, so it never matches the minimum a gemspec declares (`>= 3.2.6` vs 4.0.x): the cop would flag every gemspec.
