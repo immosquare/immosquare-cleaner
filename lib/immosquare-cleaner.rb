@@ -96,8 +96,6 @@ module ImmosquareCleaner
       File.expand_path("..", __dir__)
     end
 
-    private
-
     ##============================================================##
     ## Processor registry — order matters.
     ##
@@ -124,6 +122,8 @@ module ImmosquareCleaner
       Processors::Rust,
       Processors::Toml
     ].freeze
+
+    private
 
     def processor_for(file_path)
       PROCESSORS.find {|p| p.match?(file_path) } || Processors::Prettier

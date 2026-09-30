@@ -286,7 +286,9 @@ module ERBLint
       ##============================================================##
       def extract_erb_code(erb_node)
         code_node = erb_node.children.find {|c| c&.type == :code }
-        code_node&.loc&.source&.strip
+        return nil unless code_node
+
+        code_node.loc&.source&.strip
       end
 
       ##============================================================##

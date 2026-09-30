@@ -3,6 +3,7 @@ require "json"
 module ImmosquareCleaner
   module Processors
     class Json < Base
+
       def self.match?(file_path)
         file_path.end_with?(".json")
       end
@@ -14,6 +15,7 @@ module ImmosquareCleaner
         File.write(file_path, formatted)
         normalize_last_line
       end
+
     end
   end
 end

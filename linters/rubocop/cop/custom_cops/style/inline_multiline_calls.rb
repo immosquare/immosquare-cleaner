@@ -32,7 +32,7 @@ module RuboCop
 
           extend AutoCorrector
 
-          MSG = "Collapse multi-line `%<name>s` call into a single line.".freeze
+          MSG = "Collapse multi-line `%{name}` call into a single line.".freeze
 
           DEFAULT_METHODS = ["link_to"].freeze
 

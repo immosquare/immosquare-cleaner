@@ -24,7 +24,7 @@ module RuboCop
 
           extend AutoCorrector
 
-          MSG = "Move priority kwargs (%<keys>s) to the front of the call.".freeze
+          MSG = "Move priority kwargs (%{keys}) to the front of the call.".freeze
 
           DEFAULT_METHODS = ["link_to"].freeze
           DEFAULT_PRIORITY_KEYS = ["remote", "method"].freeze

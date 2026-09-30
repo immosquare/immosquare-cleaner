@@ -39,14 +39,14 @@ module RuboCop
             ##============================================================##
             jbuilder_block_node = node.each_ancestor(:block).find do |ancestor_node|
               block_method_name = ancestor_node.children.first.method_name
-              (block_method_name == :encode || block_method_name == :new) && ancestor_node.children.first.receiver&.const_name == "Jbuilder"
+              [:encode, :new].include?(block_method_name) && ancestor_node.children.first.receiver&.const_name == "Jbuilder"
             end
 
             ##============================================================##
             ## Source Name is the name of the method called. Here in our
             ## block it will be "json" but it can be any value put in the
             ## Jbuilder.encode do |name|
-            ## ----
+            ## ---------
             ## In .json.jbuilder files, it will always be "json"
             ##============================================================##
             source_name   = receiver.loc.expression.source
