@@ -1,3 +1,14 @@
+## [1.1.0] - 2026-10-02
+
+### Added
+- `--hook` CLI mode: `immosquare-cleaner --hook` reads the edited file from the JSON an AI agent pipes on stdin (Claude Code and Gemini CLI `tool_input.file_path`, Kimi Code `tool_input.path`, Grok `toolInput.file_path`, Cursor top-level `file_path`; relative paths resolved against `cwd`). Unsupported or missing files are skipped, linter output goes to stderr, and the exit status is always 0 so the agent is never blocked
+- Go processor (`.go` → `gofmt -s`): canonical gofmt output with its simplifications, tab indentation kept since gofmt has no option for it; `go.mod`, `go.work` and `go.sum` are left alone
+- `LICENSE` file (MIT), shipped with the gem
+
+### Changed
+- Directory clean skips `testdata` folders at any depth (Go test fixtures that must stay as written)
+- Gem summary, description and metadata (source code, changelog and issue tracker links) describe the multi-stack, agent-hook use; the description no longer lists Stylelint, which the gem never ran
+
 ## [1.0.2] - 2026-09-30
 
 ### Changed
