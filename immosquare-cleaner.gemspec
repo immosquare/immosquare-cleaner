@@ -7,9 +7,14 @@ Gem::Specification.new do |spec|
   spec.version        = ImmosquareCleaner::VERSION.dup
   spec.authors        = ["immosquare"]
   spec.email          = ["jules@immosquare.com"]
-  spec.homepage       = "https://github.com/immosquare/Immosquare-cleaner"
-  spec.summary        = "A gem to lint and organize files in a Rails application."
-  spec.description    = "Immosquare-cleaner streamlines Rails applications by running tools like RuboCop, ERBLint, Stylelint and more. It ensures code quality, readability, and consistency across the application."
+  spec.homepage       = "https://github.com/immosquare/immosquare-cleaner"
+  spec.summary        = "One command to format every file of a repository, built to run as an AI agent hook."
+  spec.description    = "immosquare-cleaner formats Ruby, ERB, JS/TS, Rust, Go, TOML, Markdown, Shell, JSON, YAML and CSS files with one consistent house style, delegating each format to the right tool (RuboCop, erb_lint, ESLint, rustfmt, gofmt, taplo, shfmt, Prettier). Run it on a file, a whole repository, on save, or as a Claude Code, Cursor or Gemini CLI hook so every file an AI agent writes comes out formatted."
+  spec.metadata       = {
+    "source_code_uri" => "https://github.com/immosquare/immosquare-cleaner",
+    "changelog_uri"   => "https://github.com/immosquare/immosquare-cleaner/blob/main/CHANGELOG.md",
+    "bug_tracker_uri" => "https://github.com/immosquare/immosquare-cleaner/issues"
+  }
 
   ##============================================================##
   ## we add package.json so that the gems is autonomous to launch
@@ -18,7 +23,7 @@ Gem::Specification.new do |spec|
   ## bin/ is listed file by file: bin/ci is the CI entry point,
   ## it has no business being shipped to the people installing the gem.
   ##============================================================##
-  spec.files          = Dir["lib/**/*", "linters/**/*"] + ["bin/immosquare-cleaner", "package.json", ".erb_linters"]
+  spec.files          = Dir["lib/**/*", "linters/**/*"] + ["bin/immosquare-cleaner", "package.json", ".erb_linters", "LICENSE"]
   spec.executables    = ["immosquare-cleaner"]
   spec.require_paths  = ["lib", "linters"]
 
