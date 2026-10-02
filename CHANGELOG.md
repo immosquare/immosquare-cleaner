@@ -1,3 +1,8 @@
+## [1.2.1] - 2026-10-02
+
+### Fixed
+- Repository clean: test code (`test/**/*_test.rb`, Go and JS tests under `test/`) is cleaned like any source file — only `test/fixtures` and `spec/fixtures` are skipped, since YAML fixtures hold ERB and sample files are compared byte for byte. The whole `test/` folder used to be skipped, while a single-file clean formatted the same files
+
 ## [1.2.0] - 2026-10-02
 
 ### Added
