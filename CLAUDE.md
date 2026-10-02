@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Gem de formatting/linting multi-format, pour tout dépôt (app Rails, gem, app Rust/Tauri, package JS). Points d'entrée : `ImmosquareCleaner.clean(file_path)` et `ImmosquareCleaner.clean_directory(root)` dans `lib/immosquare-cleaner.rb`.
+Gem de formatting/linting multi-format, pour tout dépôt (app Rails, gem, app Rust/Tauri, module Go, package JS). Points d'entrée : `ImmosquareCleaner.clean(file_path)` et `ImmosquareCleaner.clean_directory(root)` dans `lib/immosquare-cleaner.rb`.
 
 ## Architecture
 
@@ -18,6 +18,7 @@ Un processor par type de fichier dans `lib/immosquare-cleaner/processors/` — c
 | `Processors::Markdown`   | `.md`, `.md.erb`                                                                     | `ImmosquareCleaner::Markdown.clean` (tables + listes ; frontmatter YAML verbatim) |
 | `Processors::Shell`      | `.sh`, `bash`, `zsh`, `zshrc`, `bashrc`, `bash_profile`, `zprofile`                  | shfmt                                                                             |
 | `Processors::Rust`       | `.rs`                                                                                | rustfmt via stdin (édition et `rustfmt.toml` lus dans le projet)                  |
+| `Processors::Go`         | `.go`                                                                                | `gofmt -s` (indentation en tabulations : gofmt n'a pas d'option)                  |
 | `Processors::Toml`       | `.toml`                                                                              | taplo                                                                             |
 | `Processors::Prettier`   | Fallback (tout le reste)                                                             | Prettier                                                                          |
 
@@ -71,4 +72,4 @@ bin/ci                                             # Point d'entrée CI (bundle 
 
 ## Prérequis
 
-Bun, Ruby 3.2.6+, shfmt (`brew install shfmt`) ; rustfmt (`rustup component add rustfmt`) et taplo (`brew install taplo`) pour les fichiers Rust et TOML
+Bun, Ruby 3.2.6+, shfmt (`brew install shfmt`) ; rustfmt (`rustup component add rustfmt`), gofmt (`brew install go`) et taplo (`brew install taplo`) pour les fichiers Rust, Go et TOML
