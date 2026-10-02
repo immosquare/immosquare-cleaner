@@ -32,14 +32,46 @@ class HookTest < Test::Unit::TestCase
       "Grok"                     => {"toolInput" => {"file_path" => @rb_file}},
       "Cursor"                   => {"file_path" => @rb_file}
     }.each do |agent, payload|
-      assert_equal(@rb_file, ImmosquareCleaner::Hook.file_path(payload.to_json), agent)
+      assert_equal([@rb_file], ImmosquareCleaner::Hook.file_paths(payload.to_json), agent)
     end
   end
 
   def test_relative_path_resolved_against_payload_cwd
     payload = {"cwd" => @tmp_dir, "tool_input" => {"file_path" => "user.rb"}}
 
-    assert_equal(@rb_file, ImmosquareCleaner::Hook.file_path(payload.to_json))
+    assert_equal([@rb_file], ImmosquareCleaner::Hook.file_paths(payload.to_json))
+  end
+
+  ##============================================================##
+  ## Codex (apply_patch) lists every edited file in the patch held
+  ## by tool_input.command, relative to tool_input.workdir, itself
+  ## relative to cwd. Deleted files and symlinks are dropped: there
+  ## is nothing left to format, and a symlink could point outside
+  ## the project.
+  ##============================================================##
+  def test_codex_patch_lists_every_edited_file
+    src_dir = File.join(@tmp_dir, "src")
+    FileUtils.mkdir_p(src_dir)
+    File.write(File.join(src_dir, "a.rb"), "puts 1\n")
+    File.write(File.join(src_dir, "b.go"), "package main\n")
+    File.symlink(File.join(src_dir, "a.rb"), File.join(src_dir, "link.rb"))
+
+    patch   = ["*** Begin Patch", "*** Update File: a.rb", "*** Add File: b.go", "*** Delete File: gone.rb", "*** Update File: link.rb", "*** End Patch"].join("\n")
+    payload = {"cwd" => @tmp_dir, "tool_name" => "apply_patch", "tool_input" => {"command" => patch, "workdir" => "src"}}
+
+    assert_equal([File.join(src_dir, "a.rb"), File.join(src_dir, "b.go")], ImmosquareCleaner::Hook.file_paths(payload.to_json))
+  end
+
+  def test_codex_patch_sent_as_an_argv_array
+    payload = {"cwd" => @tmp_dir, "tool_input" => {"command" => ["apply_patch", "*** Begin Patch\n*** Update File: user.rb\n*** End Patch\n"]}}
+
+    assert_equal([@rb_file], ImmosquareCleaner::Hook.file_paths(payload.to_json))
+  end
+
+  def test_codex_shell_command_without_patch_is_skipped
+    payload = {"cwd" => @tmp_dir, "tool_name" => "Bash", "tool_input" => {"command" => "sed -i '' 's/a/b/' user.rb"}}
+
+    assert_equal([], ImmosquareCleaner::Hook.file_paths(payload.to_json))
   end
 
   ##============================================================##
@@ -57,13 +89,13 @@ class HookTest < Test::Unit::TestCase
       {"tool_input" => {"file_path" => ""}},
       {"tool_input" => {"command" => "ls"}}
     ].each do |payload|
-      assert_nil(ImmosquareCleaner::Hook.file_path(payload.to_json), payload.inspect)
+      assert_equal([], ImmosquareCleaner::Hook.file_paths(payload.to_json), payload.inspect)
     end
   end
 
   def test_invalid_payloads_are_skipped
     ["", "not json", "[1, 2]", "null", "{\"tool_input\": \"oops\"}"].each do |raw|
-      assert_nil(ImmosquareCleaner::Hook.file_path(raw), raw.inspect)
+      assert_equal([], ImmosquareCleaner::Hook.file_paths(raw), raw.inspect)
     end
   end
 

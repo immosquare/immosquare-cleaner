@@ -41,16 +41,18 @@ OptionParser.new do |parser|
 end.parse!
 
 ##============================================================##
-## Hook mode : the edited file comes from the agent's JSON payload.
-## Linters write their reports on stdout, which some agents
-## (Gemini CLI) parse as the hook's JSON answer: everything goes
-## to stderr instead. An unsupported or missing file ends the
-## hook silently with exit 0, so the agent is never blocked.
+## Hook mode : the edited files come from the agent's JSON payload
+## (one file, or several for a Codex patch). Linters write their
+## reports on stdout, which some agents (Gemini CLI, Codex) parse
+## as the hook's JSON answer: everything goes to stderr instead.
+## No supported file ends the hook silently with exit 0, so the
+## agent is never blocked.
 ##============================================================##
 if options[:hook]
-  file_path = ImmosquareCleaner::Hook.file_path($stdin.read)
-  exit(0) if file_path.nil?
+  hook_files = ImmosquareCleaner::Hook.file_paths($stdin.read)
+  exit(0) if hook_files.empty?
   $stdout.reopen($stderr)
+  file_path = hook_files.first
 else
   file_path = ARGV[0]
 end
@@ -95,7 +97,9 @@ end
 ## We can now call the clean method, passing the file absolute path and options
 ##============================================================##
 file_path = File.expand_path(file_path)
-if File.directory?(file_path)
+if options[:hook]
+  hook_files.each {|path| ImmosquareCleaner.clean(path) }
+elsif File.directory?(file_path)
   ##============================================================##
   ## Run from the cleaned directory: the project's
   ## config/initializers/immosquare-cleaner.rb (exclude_files) is
