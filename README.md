@@ -11,6 +11,8 @@ tags:
 
 [![Gem Version](https://img.shields.io/gem/v/immosquare-cleaner)](https://rubygems.org/gems/immosquare-cleaner) [![Downloads](https://img.shields.io/gem/dt/immosquare-cleaner)](https://rubygems.org/gems/immosquare-cleaner) [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
+![immosquare-cleaner --hook fixing the indentation and 36 RuboCop offenses of a Ruby file written by Claude Code](assets/demo.gif)
+
 AI agents write code fast, but not in your style: single quotes in one file, semicolons in the next, a `return` nobody needs. immosquare-cleaner picks the right tool for each file (RuboCop, erb_lint, ESLint, rustfmt, gofmt, taplo, shfmt, Prettier, plus in-house formatters for Markdown, JSON and YAML locales), runs it with a shared configuration, and writes the result back. Run it on one file, on a whole repository, from your editor on save, or from an agent hook after every edit.
 
 - **One entry point for every format**: no per-language formatter to install and configure in each project.
