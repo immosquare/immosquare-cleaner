@@ -7,6 +7,7 @@ require "fileutils"
 require_relative "immosquare-cleaner/configuration"
 require_relative "immosquare-cleaner/markdown"
 require_relative "immosquare-cleaner/directory_cleaner"
+require_relative "immosquare-cleaner/hook"
 
 ##============================================================##
 ## Processors

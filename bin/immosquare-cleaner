@@ -31,6 +31,9 @@ OptionParser.new do |parser|
   parser.on("-p", "--prevent-concurrent-write", "Prevent concurrent write") do
     options[:prevent_concurrent_write] = true
   end
+  parser.on("--hook", "Read the edited file from an AI agent hook payload on stdin") do
+    options[:hook] = true
+  end
   parser.on("-h", "--help", "Prints this help") do
     puts(parser)
     exit
@@ -38,9 +41,23 @@ OptionParser.new do |parser|
 end.parse!
 
 ##============================================================##
+## Hook mode : the edited file comes from the agent's JSON payload.
+## Linters write their reports on stdout, which some agents
+## (Gemini CLI) parse as the hook's JSON answer: everything goes
+## to stderr instead. An unsupported or missing file ends the
+## hook silently with exit 0, so the agent is never blocked.
+##============================================================##
+if options[:hook]
+  file_path = ImmosquareCleaner::Hook.file_path($stdin.read)
+  exit(0) if file_path.nil?
+  $stdout.reopen($stderr)
+else
+  file_path = ARGV[0]
+end
+
+##============================================================##
 ## Check if the file path is provided
 ##============================================================##
-file_path = ARGV[0]
 if !file_path
   puts("Error: Please provide a file or directory path.")
   exit(1)
