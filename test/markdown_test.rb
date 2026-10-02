@@ -36,6 +36,26 @@ class MarkdownTest < Test::Unit::TestCase
   end
 
   ##============================================================##
+  ## A pipe escaped as `\|` is cell content (GFM): splitting on it
+  ## would add a column to every row of the table.
+  ##============================================================##
+  def test_escaped_pipe_stays_in_its_cell
+    source = <<~'MARKDOWN'
+      | Rule | Effect |
+      | - | - |
+      | `align` | handles `\|\|=` and `&&=` |
+    MARKDOWN
+
+    expected = <<~'MARKDOWN'
+      | Rule    | Effect                    |
+      | ------- | ------------------------- |
+      | `align` | handles `\|\|=` and `&&=` |
+    MARKDOWN
+
+    assert_equal(expected, clean(source))
+  end
+
+  ##============================================================##
   ## An empty cell keeps its column: dropping it would shift every
   ## following cell one column to the left and file values under
   ## the wrong header.

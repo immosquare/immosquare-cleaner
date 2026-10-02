@@ -145,6 +145,33 @@ module ImmosquareCleaner
       end
 
       ##============================================================##
+      ## Splits a table row on its delimiting pipes. A pipe escaped as
+      ## `\|` is cell content (GFM), not a delimiter: splitting on it
+      ## would add a column to the whole table. A trailing empty field
+      ## only exists when the row ends with a delimiting pipe, which
+      ## closes the row rather than opening an extra cell.
+      ##============================================================##
+      def table_cells(line)
+        cells   = [+""]
+        escaped = false
+        line.strip.delete_prefix("|").each_char do |char|
+          if escaped
+            cells.last << char
+            escaped = false
+          elsif char == "\\"
+            cells.last << char
+            escaped = true
+          elsif char == "|"
+            cells << +""
+          else
+            cells.last << char
+          end
+        end
+        cells.pop if cells.size > 1 && cells.last.empty?
+        cells.map(&:strip)
+      end
+
+      ##============================================================##
       ## we want to clean the markdown files to have a uniform style
       ## for the tables.
       ##============================================================##
@@ -161,9 +188,9 @@ module ImmosquareCleaner
           ## above a column of row labels, a value that does not apply).
           ## Rejecting empty cells would shift every following cell one
           ## column to the left and silently file values under the wrong
-          ## header. `split("|", -1)` keeps trailing empty fields.
+          ## header.
           ##============================================================##
-          cells = line.strip.delete_prefix("|").delete_suffix("|").split("|", -1).map(&:strip)
+          cells = table_cells(line)
 
           ##============================================================##
           ## We increase the size of the array if needed
