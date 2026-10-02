@@ -20,7 +20,7 @@ AI agents write code fast, but not in your style: single quotes in one file, sem
 
 ## Quick start
 
-immosquare-cleaner needs Ruby 3.2.6+ and [bun](https://bun.sh/) (for ESLint and Prettier, installed automatically on first run).
+immosquare-cleaner needs Ruby 3.2.6+ and [bun](https://bun.sh/), which runs ESLint and Prettier; their packages are installed automatically on first run.
 
 ```bash
 gem install immosquare-cleaner
