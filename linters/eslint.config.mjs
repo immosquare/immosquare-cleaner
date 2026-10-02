@@ -134,6 +134,20 @@ export default [
       "no-undef": 0
     }
   },
+  //============================================================//
+  // JSX files: ESLint only lints .js/.mjs/.cjs by default, so a
+  // .jsx file matched by no `files` pattern is skipped with
+  // "File ignored because no matching configuration was supplied".
+  // The common rules above carry no `files` key and apply here too.
+  //============================================================//
+  {
+    files:           ["**/*.jsx"],
+    languageOptions: {
+      parserOptions: {
+        ecmaFeatures: { jsx: true }
+      }
+    }
+  },
   erb.configs.recommended,
   {
     linterOptions: {

@@ -80,6 +80,32 @@ class JavascriptPipelineTest < Test::Unit::TestCase
   end
 
   ##============================================================##
+  ## .jsx — ESLint lints only .js/.mjs/.cjs unless a config block
+  ## matches the extension: without it, a .jsx file is skipped
+  ## with "no matching configuration" and keeps its quotes and
+  ## semicolons. A component used only in JSX must keep its import.
+  ##============================================================##
+  def test_jsx_pipeline_runs_eslint_and_keeps_jsx_imports
+    content = clean("card.jsx", <<~JSX)
+      import Button from './Button'
+      export const Card = ({label}) => {
+          const text = label.trim();
+          return <Button label={text} />;
+      }
+    JSX
+
+    expected = <<~JSX
+      import Button from "./Button"
+      export const Card = ({label}) => {
+        const text = label.trim()
+        return <Button label={text} />
+      }
+    JSX
+
+    assert_equal(expected, content)
+  end
+
+  ##============================================================##
   ## .tsx — JSX + TS together; arrow-body-style collapses the
   ## block body to an expression and the JSX literal survives.
   ##============================================================##
