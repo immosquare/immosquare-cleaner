@@ -19,6 +19,7 @@ require_relative "immosquare-cleaner/processors/json"
 require_relative "immosquare-cleaner/processors/markdown"
 require_relative "immosquare-cleaner/processors/shell"
 require_relative "immosquare-cleaner/processors/rust"
+require_relative "immosquare-cleaner/processors/go"
 require_relative "immosquare-cleaner/processors/toml"
 require_relative "immosquare-cleaner/processors/yaml"
 require_relative "immosquare-cleaner/processors/prettier"
@@ -123,6 +124,7 @@ module ImmosquareCleaner
       Processors::Markdown,
       Processors::Shell,
       Processors::Rust,
+      Processors::Go,
       Processors::Toml
     ].freeze
 

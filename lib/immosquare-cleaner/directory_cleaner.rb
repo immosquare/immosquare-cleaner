@@ -37,6 +37,7 @@ module ImmosquareCleaner
       "log",
       "node_modules",
       "target",
+      "testdata",
       "tmp",
       "vendor"
     ].freeze
