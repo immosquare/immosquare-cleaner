@@ -1,3 +1,13 @@
+## [1.2.0] - 2026-10-02
+
+### Added
+- `--hook` formats OpenAI Codex edits: every file listed in an `apply_patch` payload (`*** Update File:`, `*** Add File:`, `*** Move to:` lines of `tool_input.command`, as a string or an argv array) is cleaned, resolved against `tool_input.workdir` then `cwd`; deleted files and symlinks are skipped
+- Per-format documentation in `docs/` (agent hooks, repository clean, JavaScript, Rust and TOML, Go, Shell, Markdown, other formats, Ruby and ERB) and a demo GIF in the README
+
+### Fixed
+- ESLint: `.jsx` files are linted — the flat config matched no `.jsx` pattern, so ESLint skipped them ("no matching configuration") and only the comment normalization ran
+- Markdown: an escaped pipe (`\|`) stays inside its table cell instead of adding a column to the whole table
+
 ## [1.1.0] - 2026-10-02
 
 ### Added
