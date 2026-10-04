@@ -12,7 +12,7 @@
     "@typescript-eslint/eslint-plugin": "^8.71.0",
     "@typescript-eslint/parser":        "^8.71.0",
     "@typescript/native":               "npm:typescript@^7.0.2",
-    "eslint":                           "^10.11.0",
+    "eslint":                           "^10.12.0",
     "eslint-plugin-align-import":       "^1.0.0",
     "eslint-plugin-erb":                "^2.1.1",
     "eslint-plugin-prefer-arrow":       "^1.2.3",
