@@ -1,3 +1,11 @@
+## [1.2.2] - 2026-10-04
+
+### Changed
+- ESLint bumped to 10.12
+
+### Fixed
+- Prettier: YAML files holding ERB tags (Rails' `database.yml`, `cable.yml`…) are left as is — Prettier's YAML parser read the Ruby inside the tags as YAML, rewriting `a ? :ci : :personal` into `a ? :ci: :personal` or aborting with "Nested mappings are not allowed"
+
 ## [1.2.1] - 2026-10-02
 
 ### Fixed
