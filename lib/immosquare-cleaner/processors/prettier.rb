@@ -29,6 +29,8 @@ module ImmosquareCleaner
       ].freeze
 
       def run
+        return if erb_templated_yaml?
+
         ##============================================================##
         ## Prettier flags:
         ## --no-color : strip ANSI escape codes — VS Code Output panel
@@ -38,6 +40,19 @@ module ImmosquareCleaner
         ##============================================================##
         cmds = ["bun prettier --no-color --write #{Shellwords.escape(file_path)} --config #{ImmosquareCleaner.gem_root}/linters/prettier.yml"]
         launch_cmds(cmds)
+      end
+
+      private
+
+      ##============================================================##
+      ## A YAML file holding ERB tags (Rails' database.yml, cable.yml…)
+      ## is a template, not YAML. Prettier's YAML parser reads the Ruby
+      ## inside the tags as YAML syntax: `a ? :ci : :personal` becomes
+      ## `a ? :ci: :personal`, and a ternary in a value aborts with
+      ## "Nested mappings are not allowed". Such files are left as is.
+      ##============================================================##
+      def erb_templated_yaml?
+        file_path.end_with?(".yml", ".yaml") && File.read(file_path).include?("<%")
       end
 
     end
