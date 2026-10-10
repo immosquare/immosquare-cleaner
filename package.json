@@ -18,7 +18,7 @@
     "eslint-plugin-prefer-arrow":       "^1.2.3",
     "eslint-plugin-sonarjs":            "^4.2.2",
     "eslint-plugin-unused-imports":     "^4.4.1",
-    "prettier":                         "^3.9.9",
+    "prettier":                         "^3.9.10",
     "typescript":                       "https://registry.npmjs.org/typescript/-/typescript-6.0.3.tgz"
   }
 }
