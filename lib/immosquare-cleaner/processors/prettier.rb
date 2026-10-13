@@ -33,12 +33,15 @@ module ImmosquareCleaner
 
         ##============================================================##
         ## Prettier flags:
-        ## --no-color : strip ANSI escape codes — VS Code Output panel
-        ##              renders them as raw `ESC` characters
-        ## --write    : format the file in place
-        ## --config   : pin the shared config shipped with the gem
+        ## --no-color       : strip ANSI escape codes — VS Code Output
+        ##                    panel renders them as raw `ESC` characters
+        ## --write          : format the file in place
+        ## --ignore-unknown : leave files Prettier has no parser for
+        ##                    (bun.lock, LICENSE…) untouched instead of
+        ##                    failing with "No parser could be inferred"
+        ## --config         : pin the shared config shipped with the gem
         ##============================================================##
-        cmds = ["bun prettier --no-color --write #{Shellwords.escape(file_path)} --config #{ImmosquareCleaner.gem_root}/linters/prettier.yml"]
+        cmds = ["bun prettier --no-color --write --ignore-unknown #{Shellwords.escape(file_path)} --config #{ImmosquareCleaner.gem_root}/linters/prettier.yml"]
         launch_cmds(cmds)
       end
 
