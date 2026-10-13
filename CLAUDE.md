@@ -1,78 +1,85 @@
 # CLAUDE.md
 
-Gem de formatting/linting multi-format, pour tout dépôt (app Rails, gem, app Rust/Tauri, module Go, package JS). Points d'entrée : `ImmosquareCleaner.clean(file_path)` et `ImmosquareCleaner.clean_directory(root)` dans `lib/immosquare-cleaner.rb`.
+Multi-format formatting/linting gem for any repository (Rails app, Ruby gem, Rust/Tauri app, Go module, JS package). Entry points: `ImmosquareCleaner.clean(file_path)` and `ImmosquareCleaner.clean_directory(root)` in `lib/immosquare-cleaner.rb`.
+
+This is a public gem. Use English for project documentation, source comments, and project communication.
 
 ## Architecture
 
-Un processor par type de fichier dans `lib/immosquare-cleaner/processors/` — chaque classe expose `match?(file_path)` + `run`. `ImmosquareCleaner.processor_for` scanne le registre `PROCESSORS` (ordre significatif : `Erb` avant `Javascript`, `Ruby` avant `Shell` pour les shebangs) et tombe sur `Processors::Prettier` en fallback.
+One processor per file type in `lib/immosquare-cleaner/processors/`; each class exposes `match?(file_path)` and `run`. `ImmosquareCleaner.processor_for` scans the `PROCESSORS` registry (order matters: `Erb` before `Javascript`, `Ruby` before `Shell` for shebangs) and falls back to `Processors::Prettier`.
 
-`ImmosquareCleaner.clean_directory(root)` (`lib/immosquare-cleaner/directory_cleaner.rb`) nettoie tout un dépôt, quelle que soit sa stack : fichiers issus de `git ls-files` (dépôts imbriqués et submodules parcourus avec leur propre listing, `Dir.glob` hors git), exclusions en dur (`EXCLUDED_DIRS` à toute profondeur, `EXCLUDED_PATHS` depuis la racine de chaque dépôt), et seulement les fichiers qu'un processor gère ou dont Prettier connaît l'extension (`Prettier::EXTENSIONS`, via `ImmosquareCleaner.supported?`).
+`ImmosquareCleaner.clean_directory(root)` (`lib/immosquare-cleaner/directory_cleaner.rb`) cleans an entire repository regardless of its stack: files come from `git ls-files` (nested repositories and submodules use their own listings; `Dir.glob` is used outside Git), hardcoded exclusions apply (`EXCLUDED_DIRS` at any depth, `EXCLUDED_PATHS` relative to each repository root), and only files handled by a processor or whose extension Prettier supports are processed (`Prettier::EXTENSIONS`, through `ImmosquareCleaner.supported?`).
 
-| Processor                | Extension                                                                            | Outil                                                                             |
-| ------------------------ | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
-| `Processors::Ruby`       | `.rb`, `.rake`, Gemfile et autres (cf. `RUBY_FILES`) + shebang `#!/usr/bin/env ruby` | RuboCop                                                                           |
-| `Processors::Erb`        | `.html.erb`, `.html`                                                                 | htmlbeautifier + erb_lint                                                         |
-| `Processors::Yaml`       | `.yml` dans `locales/`                                                               | ImmosquareYaml                                                                    |
-| `Processors::Javascript` | `.js`, `.mjs`, `.cjs`, `.jsx`, `.ts`, `.tsx`, `.{js,mjs,cjs,jsx,ts,tsx,coffee}.erb`  | ESLint + normalize-comments.mjs (ou erb_lint pour les `.erb`)                     |
-| `Processors::Json`       | `.json`                                                                              | ImmosquareExtensions                                                              |
-| `Processors::Markdown`   | `.md`, `.md.erb`                                                                     | `ImmosquareCleaner::Markdown.clean` (tables + listes ; frontmatter YAML verbatim) |
-| `Processors::Shell`      | `.sh`, `bash`, `zsh`, `zshrc`, `bashrc`, `bash_profile`, `zprofile`                  | shfmt                                                                             |
-| `Processors::Rust`       | `.rs`                                                                                | rustfmt via stdin (édition et `rustfmt.toml` lus dans le projet)                  |
-| `Processors::Go`         | `.go`                                                                                | `gofmt -s` (indentation en tabulations : gofmt n'a pas d'option)                  |
-| `Processors::Toml`       | `.toml`                                                                              | taplo                                                                             |
-| `Processors::Prettier`   | Fallback (tout le reste)                                                             | Prettier                                                                          |
+| Processor                | Extension                                                                             | Tool                                                                                      |
+| ------------------------ | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `Processors::Ruby`       | `.rb`, `.rake`, Gemfile and others (see `RUBY_FILES`) + shebang `#!/usr/bin/env ruby` | RuboCop                                                                                   |
+| `Processors::Erb`        | `.html.erb`, `.html`                                                                  | htmlbeautifier + erb_lint                                                                 |
+| `Processors::Yaml`       | `.yml` in `locales/`                                                                  | ImmosquareYaml                                                                            |
+| `Processors::Javascript` | `.js`, `.mjs`, `.cjs`, `.jsx`, `.ts`, `.tsx`, `.{js,mjs,cjs,jsx,ts,tsx,coffee}.erb`   | ESLint + normalize-comments.mjs (or erb_lint for `.erb` files)                            |
+| `Processors::Json`       | `.json`                                                                               | ImmosquareExtensions                                                                      |
+| `Processors::Markdown`   | `.md`, `.md.erb`                                                                      | `ImmosquareCleaner::Markdown.clean` (tables + lists; YAML frontmatter preserved verbatim) |
+| `Processors::Shell`      | `.sh`, `bash`, `zsh`, `zshrc`, `bashrc`, `bash_profile`, `zprofile`                   | shfmt                                                                                     |
+| `Processors::Rust`       | `.rs`                                                                                 | rustfmt via stdin (edition and `rustfmt.toml` read from the project)                      |
+| `Processors::Go`         | `.go`                                                                                 | `gofmt -s` (tab indentation: gofmt has no indentation option)                             |
+| `Processors::Toml`       | `.toml`                                                                               | taplo                                                                                     |
+| `Processors::Prettier`   | Fallback (all remaining supported formats)                                            | Prettier                                                                                  |
 
-## Commandes
+## Commands
 
 ```bash
 bundle exec rake test                              # Tests
-bundle exec ruby -Itest test/xxx_test.rb           # Test unique
-bundle exec immosquare-cleaner path/to/file        # Nettoyer un fichier
-bundle exec immosquare-cleaner path/to/repo        # Tout un dépôt, toute stack (parallèle, CLEANER_THREADS=N pour override)
-COVERAGE=true bundle exec rake test                # Tests + rapport HTML et coverage/lcov.info
-bin/ci                                             # Point d'entrée CI (bundle + bun install, puis la suite)
+bundle exec ruby -Itest test/xxx_test.rb            # Single test
+bundle exec immosquare-cleaner path/to/file         # Clean a file
+bundle exec immosquare-cleaner path/to/repo         # Entire repository, any stack (parallel; override with CLEANER_THREADS=N)
+COVERAGE=true bundle exec rake test                # Tests + HTML report and coverage/lcov.info
+bin/ci                                            # CI entry point (bundle + bun install, then the suite)
 ```
 
 ## Custom Linters
 
-**RuboCop** (`linters/rubocop/cop/custom_cops/style/`) :
-- `CommentNormalization` : Bordures autour des commentaires
-- `FontAwesomeNormalization` : `fas`/`far` → `fa-solid`/`fa-regular`
-- `AlignAssignments` : Aligne les `=` consécutifs (désactivé par défaut)
-- `InlineMultilineCalls` : `link_to(...)` multi-ligne → single-line (skip si commentaire/string multi-ligne dans l'appel)
-- `KwargPriorityOrder` : Réordonne les kwargs de `link_to` pour mettre `:remote` puis `:method` en premier (configurable)
+**RuboCop** (`linters/rubocop/cop/custom_cops/style/`):
 
-**RuboCop** (`linters/rubocop/cop/style/`) :
-- `MethodCallWithArgsParentheses` override : Autorise l'omission des parenthèses dans les blocs/fichiers Jbuilder (`json.field "value"`)
+- `CommentNormalization`: Adds borders around comments.
+- `FontAwesomeNormalization`: Converts `fas`/`far` to `fa-solid`/`fa-regular`.
+- `AlignAssignments`: Aligns consecutive `=` operators (disabled by default).
+- `InlineMultilineCalls`: Collapses multiline `link_to(...)` calls to a single line (skips calls containing multiline comments or strings).
+- `KwargPriorityOrder`: Reorders `link_to` keyword arguments to put `:remote` first, followed by `:method` (configurable).
 
-**erb_lint** (`linters/erb_lint/`) :
-- `CustomSingleLineIfModifier` : `<% if x %><%= y %><% end %>` → `<%= y if x %>`
-- `CustomHtmlToContentTag` : `<div class="x"><%= y %></div>` → `<%= content_tag(:div, y, :class => "x") %>`
-- `CustomAlignConsecutiveCalls` : Aligne les colonnes des `link_to` consécutifs (même arity + mêmes clés kwargs) via padding après la virgule
+**RuboCop** (`linters/rubocop/cop/style/`):
 
-**JS** (`linters/normalize-comments.mjs`) :
-- Ajoute bordures `//====...====//` autour des commentaires standalone
+- `MethodCallWithArgsParentheses` override: Allows omitted parentheses in Jbuilder blocks/files (`json.field "value"`).
 
-**Shim ESLint 10** (`linters/eslint-plugins/eslint10-compat.mjs`) :
-- Wrappe `eslint-plugin-align-import` (non maintenu, dernière release 2020) pour re-injecter `context.getSourceCode()` supprimé par ESLint 10. À supprimer dès qu'une alternative maintenue émerge.
-- `align-assignments` est un fork local (`linters/eslint-plugins/align-assignments.mjs`, MIT, notice d'origine en tête de fichier) : lit `context.sourceCode` et gère `||=`, `&&=`, `??=` — sans eux, l'autofix ne converge jamais (« Circular fixes detected »).
+**erb_lint** (`linters/erb_lint/`):
 
-## Points critiques
+- `CustomSingleLineIfModifier`: Converts `<% if x %><%= y %><% end %>` to `<%= y if x %>`.
+- `CustomHtmlToContentTag`: Converts `<div class="x"><%= y %></div>` to `<%= content_tag(:div, y, :class => "x") %>`.
+- `CustomAlignConsecutiveCalls`: Aligns columns in consecutive `link_to` calls (same arity and keyword argument keys) using padding after commas.
 
-- **Symlink erb_lint** : `.erb_linters -> linters/erb_lint` requis (chemin hardcodé par erb_lint)
-- **ESLint 10** : Fichiers copiés dans `tmp/` avant lint puis recopiés (workaround "outside of base path", cf. `eslint/eslint#19118`). Plugins legacy adaptés via le shim `eslint10-compat.mjs`.
+**JS** (`linters/normalize-comments.mjs`):
+
+- Adds `//====...====//` borders around standalone comments.
+
+**ESLint 10 compatibility shim** (`linters/eslint-plugins/eslint10-compat.mjs`):
+
+- Wraps `eslint-plugin-align-import` (unmaintained; last release in 2020) to restore `context.getSourceCode()`, removed in ESLint 10. Remove the shim once a maintained alternative is available.
+- `align-assignments` is a local fork (`linters/eslint-plugins/align-assignments.mjs`, MIT, original notice at the top of the file): it reads `context.sourceCode` and handles `||=`, `&&=`, and `??=`. Without support for these operators, autofix never converges ("Circular fixes detected").
+
+## Critical Details
+
+- **erb_lint symlink**: `.erb_linters -> linters/erb_lint` is required (the path is hardcoded by erb_lint).
+- **ESLint 10**: Files are copied into `tmp/` before linting, then copied back (workaround for "outside of base path"; see `eslint/eslint#19118`). Legacy plugins are adapted through the `eslint10-compat.mjs` shim.
 - **TypeScript 7**: Keep the native compiler and the lint compatibility API separate; see [TypeScript 7 compatibility](#typescript-7-compatibility) before changing either dependency.
-- **Configs versionnées** : `rubocop-{VERSION}.yml` + `erb-lint-{VERSION}.yml` + `js-erb-lint-{VERSION}.yml` générés au premier run. Supprimer pour forcer régénération
-- **Parser Ruby** : `parser_prism` (Ruby 3.3+) ou `parser_whitequark` (versions antérieures)
-- **Exécution** : Commandes lancées depuis la racine du gem via `system(cmd, :chdir => gem_root)` (thread-safe ; pas `Dir.chdir`)
-- **`bin/ci` non packagé** : le gemspec liste `bin/` fichier par fichier (`bin/immosquare-cleaner` seul) — `bin/ci` est le point d'entrée CI et n'a rien à faire chez qui installe la gem
-- **Couverture** : `test/coverage_helper.rb` est chargé par `ruby_opts` du Rakefile, avant la lib — sinon un fichier déjà requis échappe à la mesure. No-op sans `COVERAGE=true`
-- **`--hook` CLI** : `bin/immosquare-cleaner --hook` lit les fichiers édités dans le JSON qu'un agent IA envoie sur stdin (`ImmosquareCleaner::Hook.file_paths`, `lib/immosquare-cleaner/hook.rb` : `tool_input.file_path`, `tool_input.path`, `toolInput.file_path`, `file_path` racine, ou pour Codex les lignes `*** Update File:` / `Add File:` / `Move to:` du patch dans `tool_input.command`, relatifs à `tool_input.workdir` puis `cwd`). Fichiers absents, symlinks ou non `supported?` ignorés → sortie 0 sans rien faire ; stdout redirigé vers stderr car Codex et Gemini CLI parsent le stdout d'un hook comme du JSON. Ne jamais faire sortir ce mode en non-zéro : il bloquerait l'agent
-- **`-p` CLI** : `bin/immosquare-cleaner -p` clean une copie `/tmp` après 2s d'attente et n'écrit que si l'original n'a pas bougé — pour cohabiter avec un IDE qui sauvegarde en parallèle. Le chemin d'origine est passé en `origin_path` (`Processors::Base`) : un processor qui lit la config du projet (`Cargo.toml`, `rustfmt.toml`) la cherche depuis l'original, pas depuis `/tmp`
-- **Tableaux Markdown** : `Markdown.table_cells` découpe une ligne sur les `|` non échappés — un `\|` est du contenu de cellule (GFM) ; un `split("|")` ajouterait une colonne à tout le tableau
-- **`.jsx` dans ESLint** : la flat config ne lint que `.js`/`.mjs`/`.cjs` par défaut — le bloc `files: ["**/*.jsx"]` de `linters/eslint.config.mjs` est requis, sinon ESLint ignore le fichier (« no matching configuration ») sans erreur
-- **GIF du README** : `assets/demo.gif` est généré par `vhs assets/demo.tape` (vhs, bat et git-delta requis) ; `assets/` n'est pas packagé dans la gem
-- **rustfmt via stdin** : lancé sur un chemin, rustfmt réécrit aussi les modules enfants (`mod foo;`) ; `skip_children` est nightly only
+- **Versioned configs**: `rubocop-{VERSION}.yml`, `erb-lint-{VERSION}.yml`, and `js-erb-lint-{VERSION}.yml` are generated on the first run. Delete them to force regeneration.
+- **Ruby parser**: `parser_prism` (Ruby 3.3+) or `parser_whitequark` (earlier versions).
+- **Execution**: Commands run from the gem root through `system(cmd, :chdir => gem_root)` (thread-safe; no `Dir.chdir`).
+- **`bin/ci` is not packaged**: The gemspec lists `bin/` files individually (`bin/immosquare-cleaner` only). `bin/ci` is the CI entry point and does not belong in an installed gem.
+- **Coverage**: `test/coverage_helper.rb` is loaded through the Rakefile's `ruby_opts`, before the library; otherwise, files already required escape coverage measurement. It does nothing unless `COVERAGE=true`.
+- **`--hook` CLI**: `bin/immosquare-cleaner --hook` reads edited file paths from the JSON an AI agent sends on stdin (`ImmosquareCleaner::Hook.file_paths`, `lib/immosquare-cleaner/hook.rb`: `tool_input.file_path`, `tool_input.path`, `toolInput.file_path`, top-level `file_path`, or, for Codex, the patch lines `*** Update File:` / `Add File:` / `Move to:` in `tool_input.command`, resolved relative to `tool_input.workdir`, then `cwd`). Missing files, symlinks, or files that are not `supported?` are ignored, with exit status 0 and no action. Stdout is redirected to stderr because Codex and Gemini CLI parse hook stdout as JSON. Never return a nonzero exit status in this mode: it would block the agent.
+- **`-p` CLI**: `bin/immosquare-cleaner -p` cleans a copy in `/tmp` after a 2-second delay and writes back only if the original has not changed, so it can coexist with an IDE saving concurrently. The original path is passed as `origin_path` (`Processors::Base`); processors that read project configuration (`Cargo.toml`, `rustfmt.toml`) look it up from the original path rather than `/tmp`.
+- **Markdown tables**: `Markdown.table_cells` splits a line on unescaped `|` characters. An escaped `\|` is cell content (GFM); using `split("|")` would add a column to the entire table.
+- **`.jsx` in ESLint**: The flat config only lints `.js`/`.mjs`/`.cjs` by default. The `files: ["**/*.jsx"]` block in `linters/eslint.config.mjs` is required; otherwise, ESLint silently ignores the file ("no matching configuration").
+- **README GIF**: `assets/demo.gif` is generated with `vhs assets/demo.tape` (requires vhs, bat, and git-delta). `assets/` is not packaged in the gem.
+- **rustfmt via stdin**: When given a file path, rustfmt also rewrites child modules (`mod foo;`); `skip_children` is only available on nightly.
 
 ## TypeScript 7 compatibility
 
@@ -95,6 +102,6 @@ Microsoft expects a new native API in TypeScript 7.1; the release of 7.1 alone i
 
 Official references: [Microsoft's side-by-side installation guidance](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-6-0), [typescript-eslint dependency support](https://typescript-eslint.io/users/dependency-versions/), and [SonarJS releases](https://github.com/SonarSource/SonarJS/releases).
 
-## Prérequis
+## Requirements
 
-Bun, Ruby 3.2.6+, shfmt (`brew install shfmt`) ; rustfmt (`rustup component add rustfmt`), gofmt (`brew install go`) et taplo (`brew install taplo`) pour les fichiers Rust, Go et TOML
+Bun, Ruby 3.2.6+, and shfmt (`brew install shfmt`); rustfmt (`rustup component add rustfmt`), gofmt (`brew install go`), and taplo (`brew install taplo`) for Rust, Go, and TOML files.

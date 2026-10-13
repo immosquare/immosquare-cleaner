@@ -58,7 +58,7 @@ class CommentNormalizationTest < Test::Unit::TestCase
   end
 
   ##============================================================##
-  ## Nettoyage des lignes
+  ## Line cleanup
   ##============================================================##
   def test_collapses_repeated_hashes
     source = "### Hello\n"
@@ -268,7 +268,7 @@ class CommentNormalizationTest < Test::Unit::TestCase
   end
 
   ##============================================================##
-  ## Indentation du bloc
+  ## Block indentation
   ##============================================================##
   def test_respects_indentation_of_block
     source = <<~RUBY

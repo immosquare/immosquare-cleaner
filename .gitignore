@@ -25,8 +25,7 @@ linters/js-erb-lint-*
 .rubocop.yml
 
 ##============================================================##
-## Fichiers d'échange des éditeurs (vim). Un fichier ouvert au
-## moment d'un `git status` remonterait sinon comme un fichier
-## non suivi du dépôt.
+## Editor swap files (Vim). Without this exclusion, opening a file
+## would make its swap file appear as untracked in `git status`.
 ##============================================================##
 .*.sw[a-p]
