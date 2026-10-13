@@ -1,3 +1,12 @@
+## [1.2.3] - 2026-10-13
+
+### Changed
+- TypeScript 7 (`@typescript/native`) provides `tsc`, while ESLint and SonarJS keep the TypeScript 6 API through the official `@typescript/typescript6` alias
+- RuboCop bumped to 1.92, Prettier to 3.9.10, typescript-eslint to 8.71.2
+
+### Fixed
+- Prettier: files without a parser (`bun.lock`, `LICENSE`…) are left untouched instead of failing with "No parser could be inferred"
+
 ## [1.2.2] - 2026-10-04
 
 ### Changed
