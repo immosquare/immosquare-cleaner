@@ -1,9 +1,9 @@
 {
   "name":         "immosquare-cleaner",
   "//":           [
-    "TypeScript 7.0 has no stable programmatic API.",
-    "ESLint uses the TypeScript 6.0.3 tarball so bun update --latest cannot replace it.",
-    "Remove this lock when typescript-eslint supports the TypeScript 7.1 API."
+    "TypeScript 7 provides tsc through @typescript/native.",
+    "ESLint and SonarJS use the TypeScript 6 API through the official @typescript/typescript6 alias.",
+    "Keep this alias until both tools support the native TypeScript API."
   ],
   "private":      true,
   "dependencies": {
@@ -19,6 +19,6 @@
     "eslint-plugin-sonarjs":            "^4.2.2",
     "eslint-plugin-unused-imports":     "^4.4.1",
     "prettier":                         "^3.9.10",
-    "typescript":                       "^7.0.2"
+    "typescript":                       "npm:@typescript/typescript6@^6.0.2"
   }
 }

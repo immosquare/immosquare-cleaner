@@ -61,7 +61,7 @@ bin/ci                                             # Point d'entrée CI (bundle 
 
 - **Symlink erb_lint** : `.erb_linters -> linters/erb_lint` requis (chemin hardcodé par erb_lint)
 - **ESLint 10** : Fichiers copiés dans `tmp/` avant lint puis recopiés (workaround "outside of base path", cf. `eslint/eslint#19118`). Plugins legacy adaptés via le shim `eslint10-compat.mjs`.
-- **TypeScript 7** : Le compilateur natif est installé sous `@typescript/native`, tandis qu'ESLint résout `typescript` vers le tarball 6.0.3. TypeScript 7.0 n'expose pas l'API requise par `typescript-eslint`/SonarJS et l'URL empêche `bun update --latest` de casser le lint ; supprimer ce verrou quand `typescript-eslint` supportera l'API TypeScript 7.1.
+- **TypeScript 7**: Keep the native compiler and the lint compatibility API separate; see [TypeScript 7 compatibility](#typescript-7-compatibility) before changing either dependency.
 - **Configs versionnées** : `rubocop-{VERSION}.yml` + `erb-lint-{VERSION}.yml` + `js-erb-lint-{VERSION}.yml` générés au premier run. Supprimer pour forcer régénération
 - **Parser Ruby** : `parser_prism` (Ruby 3.3+) ou `parser_whitequark` (versions antérieures)
 - **Exécution** : Commandes lancées depuis la racine du gem via `system(cmd, :chdir => gem_root)` (thread-safe ; pas `Dir.chdir`)
@@ -73,6 +73,27 @@ bin/ci                                             # Point d'entrée CI (bundle 
 - **`.jsx` dans ESLint** : la flat config ne lint que `.js`/`.mjs`/`.cjs` par défaut — le bloc `files: ["**/*.jsx"]` de `linters/eslint.config.mjs` est requis, sinon ESLint ignore le fichier (« no matching configuration ») sans erreur
 - **GIF du README** : `assets/demo.gif` est généré par `vhs assets/demo.tape` (vhs, bat et git-delta requis) ; `assets/` n'est pas packagé dans la gem
 - **rustfmt via stdin** : lancé sur un chemin, rustfmt réécrit aussi les modules enfants (`mod foo;`) ; `skip_children` est nightly only
+
+## TypeScript 7 compatibility
+
+Last reviewed: **2026-10-12**. The latest stable compiler is TypeScript **7.0.2**. `@typescript-eslint/parser` and `@typescript-eslint/eslint-plugin` **8.71.2** require TypeScript `>=4.8.4 <6.1.0`; `eslint-plugin-sonarjs` **4.2.2** depends on TypeScript `>=5 <6.1.0`.
+
+TypeScript 7.0 is a native compiler written in Go and does not expose the JavaScript compiler API that these lint tools require. Installing it directly as `typescript` makes the ESLint configuration fail to load, including when formatting plain JavaScript. This is an upstream API compatibility blocker.
+
+Keep Microsoft's official side-by-side setup in `package.json`:
+
+- `@typescript/native: "npm:typescript@^7.0.2"` provides the TypeScript 7 `tsc` executable.
+- `typescript: "npm:@typescript/typescript6@^6.0.2"` provides the TypeScript 6 API for ESLint and SonarJS, plus the separate `tsc6` executable. The compatibility package version is 6.0.2; its underlying compiler API currently resolves to 6.0.3.
+
+The immosquare dependency updater (`app/services/dependencies/js_updater.rb` in immosquare (app)) runs `bun update <package> --latest --lockfile-only --ignore-scripts`, then a global update. A tarball URL is not an update guard: Bun can replace it with the latest `typescript` release. The official npm alias makes Bun follow `@typescript/typescript6` instead. With Bun 1.4.3, the complete updater pass and its major-version lookup preserve both aliases and the lockfile. Do not replace this compatibility alias with a tarball URL or a direct TypeScript 7 dependency while the API blocker remains.
+
+### Periodic compatibility review
+
+When working on JS/TS dependencies or investigating lint/CI failures, recheck this blocker if the last review is at least one week old. Check the npm stable releases and official release notes for TypeScript, both `@typescript-eslint` packages above, and SonarJS. Update the review date and version findings in this section.
+
+Microsoft expects a new native API in TypeScript 7.1; the release of 7.1 alone is not sufficient to remove TypeScript 6. Remove the compatibility setup only once the stable native API is available and both typescript-eslint and SonarJS explicitly support it. Before changing the dependency setup, verify a clean `bun install --frozen-lockfile`, JS/JSX/TS/TSX lint and autofix, and a complete dependency-updater pass in a disposable workspace. Regenerate `bun.lock` with Bun rather than editing it by hand.
+
+Official references: [Microsoft's side-by-side installation guidance](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/#running-side-by-side-with-typescript-6-0), [typescript-eslint dependency support](https://typescript-eslint.io/users/dependency-versions/), and [SonarJS releases](https://github.com/SonarSource/SonarJS/releases).
 
 ## Prérequis
 
