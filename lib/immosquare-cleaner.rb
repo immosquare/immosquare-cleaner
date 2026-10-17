@@ -4,6 +4,8 @@ require "json"
 require "immosquare-yaml"
 require "immosquare-extensions"
 require "fileutils"
+require "digest"
+require_relative "immosquare-cleaner/ruby_target"
 require_relative "immosquare-cleaner/configuration"
 require_relative "immosquare-cleaner/markdown"
 require_relative "immosquare-cleaner/directory_cleaner"
@@ -39,6 +41,9 @@ require_relative "immosquare-cleaner/processors/prettier"
 ## See: https://github.com/Shopify/erb_lint/blob/main/lib/erb_lint/linter_registry.rb#L7
 ##============================================================##
 module ImmosquareCleaner
+  LINTER_CONFIG_MUTEX = Mutex.new
+  LINTER_CONFIG_NAMES = ["rubocop", "erb-lint", "js-erb-lint"].freeze
+
   class << self
 
     ##============================================================##
@@ -67,11 +72,6 @@ module ImmosquareCleaner
 
     def clean(file_path, origin_path = nil)
       ##============================================================##
-      ## Ensure linter configurations are ready
-      ##============================================================##
-      setup_linter_configs!
-
-      ##============================================================##
       ## Return if the file is in the exclusion list or is a generator
       ## template. With `-p`, file_path is a /tmp copy: the template
       ## check runs on origin_path
@@ -99,6 +99,17 @@ module ImmosquareCleaner
 
     def gem_root
       File.expand_path("..", __dir__)
+    end
+
+    ##============================================================##
+    ## path : the file's location in its project (origin_path), which
+    ##        decides the Ruby target unless ruby_target_version is set
+    ##============================================================##
+    def linter_config_path(name, path)
+      raise(ArgumentError, "Unknown Ruby linter configuration") if !LINTER_CONFIG_NAMES.include?(name)
+
+      target = configuration.ruby_target_version || RubyTarget.detect(path)
+      setup_linter_configs!(target).fetch(name)
     end
 
     ##============================================================##
@@ -136,36 +147,43 @@ module ImmosquareCleaner
     end
 
     ##============================================================##
-    ## Setup linter with the correct ruby version
-    ## This is run once to avoid redundant file operations.
+    ## Configs are shared by target Ruby and template fingerprint.
+    ## Atomic writes and a mutex prevent partially generated YAML
+    ## during parallel cleaning; template edits invalidate the cache.
     ##============================================================##
-    def setup_linter_configs!
-      @setup_linter_configs ||= begin
-        rubocop_config_with_version_path = "#{gem_root}/linters/rubocop-#{RUBY_VERSION}.yml"
+    def setup_linter_configs!(target)
+      templates = LINTER_CONFIG_NAMES.to_h {|name| [name, File.join(gem_root, "linters", "#{name}.yml")] }
+      signature = templates.values.map {|path| [File.mtime(path), File.size(path)] }
+      LINTER_CONFIG_MUTEX.synchronize do
+        @linter_configs ||= {}
+        key = [target, signature]
+        return @linter_configs[key] if @linter_configs.key?(key)
 
-        if !File.exist?(rubocop_config_with_version_path)
-          rubocop_config                                  = YAML.load_file("#{gem_root}/linters/rubocop.yml")
-          rubocop_config["AllCops"]["TargetRubyVersion"]  = RUBY_VERSION
-          rubocop_config["AllCops"]["ParserEngine"]       = RUBY_VERSION >= "3.3" ? "parser_prism" : "parser_whitequark"
-          File.write(rubocop_config_with_version_path, rubocop_config.to_yaml)
+        sources = templates.transform_values {|path| File.read(path) }
+        fingerprint = Digest::SHA256.hexdigest(sources.values.join("\n")).slice(0, 16)
+        paths = LINTER_CONFIG_NAMES.to_h {|name| [name, File.join(gem_root, "linters", "#{name}-#{target}-#{fingerprint}.yml")] }
+        rubocop_config = YAML.safe_load(sources.fetch("rubocop"))
+        rubocop_config["AllCops"]["TargetRubyVersion"] = target
+        rubocop_config["AllCops"]["ParserEngine"] = Gem::Version.new(target) >= Gem::Version.new("3.3") ? "parser_prism" : "parser_whitequark"
+        write_linter_config(paths.fetch("rubocop"), rubocop_config)
+
+        ["erb-lint", "js-erb-lint"].each do |name|
+          config = YAML.safe_load(sources.fetch(name))
+          config["linters"]["Rubocop"]["rubocop_config"]["inherit_from"] = ["linters/#{File.basename(paths.fetch("rubocop"))}"]
+          write_linter_config(paths.fetch(name), config)
         end
-
-        ##============================================================##
-        ## erb_lint configs that inherit the versioned rubocop config.
-        ## - erb-lint     : default config for .html.erb
-        ## - js-erb-lint  : JS-specific config for .js.erb / .ts.erb / etc.
-        ##============================================================##
-        ["erb-lint", "js-erb-lint"].each do |basename|
-          versioned_path = "#{gem_root}/linters/#{basename}-#{RUBY_VERSION}.yml"
-          next if File.exist?(versioned_path)
-
-          config                                                         = YAML.load_file("#{gem_root}/linters/#{basename}.yml")
-          config["linters"]["Rubocop"]["rubocop_config"]["inherit_from"] = ["linters/rubocop-#{RUBY_VERSION}.yml"]
-          File.write(versioned_path, config.to_yaml)
-        end
-
-        true
+        @linter_configs[key] = paths.freeze
       end
+    end
+
+    def write_linter_config(path, config)
+      return if File.file?(path)
+
+      temporary = "#{path}.#{Process.pid}.#{Thread.current.object_id}.tmp"
+      File.write(temporary, config.to_yaml)
+      File.rename(temporary, path)
+    ensure
+      File.delete(temporary) if temporary && File.file?(temporary)
     end
 
   end

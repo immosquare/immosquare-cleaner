@@ -47,9 +47,9 @@ module ImmosquareCleaner
         ##                       overhead and breaks custom cop loading
         ##============================================================##
         rubocop_options = ImmosquareCleaner.configuration.rubocop_options || "--autocorrect-all --no-parallel"
-        config_path     = "#{ImmosquareCleaner.gem_root}/linters/rubocop-#{RUBY_VERSION}.yml"
+        config_path     = ImmosquareCleaner.linter_config_path("rubocop", origin_path)
 
-        cmds = ["bundle exec rubocop -c #{config_path} #{Shellwords.escape(file_path)} #{rubocop_options}"]
+        cmds = ["bundle exec rubocop -c #{Shellwords.escape(config_path)} #{Shellwords.escape(file_path)} #{rubocop_options}"]
         launch_cmds(cmds)
         normalize_last_line
       end

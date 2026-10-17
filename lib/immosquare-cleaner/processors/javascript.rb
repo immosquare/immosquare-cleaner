@@ -70,9 +70,9 @@ module ImmosquareCleaner
             ## HTML-context linters off the host string literals.
             ##============================================================##
             config_basename = file_path.downcase.end_with?(*JS_ERB_EXTENSIONS) ? "js-erb-lint" : "erb-lint"
-            erblint_config  = "#{ImmosquareCleaner.gem_root}/linters/#{config_basename}-#{RUBY_VERSION}.yml"
+            erblint_config  = ImmosquareCleaner.linter_config_path(config_basename, origin_path)
             erblint_options = ImmosquareCleaner.configuration.erblint_options || "--autocorrect"
-            cmds << "bundle exec erb_lint --config #{erblint_config} #{escaped_temp} #{erblint_options}"
+            cmds << "bundle exec erb_lint --config #{Shellwords.escape(erblint_config)} #{escaped_temp} #{erblint_options}"
           else
             cmds << "bun #{ImmosquareCleaner.gem_root}/linters/normalize-comments.mjs #{escaped_temp}"
           end

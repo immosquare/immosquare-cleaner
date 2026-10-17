@@ -22,14 +22,14 @@ module ImmosquareCleaner
         ##                        rubocop-X.Y.Z.yml)
         ## --autocorrect        : apply autocorrectable offenses in place
         ##============================================================##
-        config_path            = "#{ImmosquareCleaner.gem_root}/linters/erb-lint-#{RUBY_VERSION}.yml"
+        config_path            = ImmosquareCleaner.linter_config_path("erb-lint", origin_path)
         htmlbeautifier_options = ImmosquareCleaner.configuration.htmlbeautifier_options || "--keep-blank-lines 4"
         erblint_options        = ImmosquareCleaner.configuration.erblint_options || "--autocorrect"
         escaped_file           = Shellwords.escape(file_path)
 
         cmds = [
           "bundle exec htmlbeautifier #{escaped_file} #{htmlbeautifier_options}",
-          "bundle exec erb_lint --config #{config_path} #{escaped_file} #{erblint_options}"
+          "bundle exec erb_lint --config #{Shellwords.escape(config_path)} #{escaped_file} #{erblint_options}"
         ]
 
         launch_cmds(cmds)

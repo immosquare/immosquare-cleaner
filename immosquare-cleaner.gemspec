@@ -22,8 +22,11 @@ Gem::Specification.new do |spec|
   ##
   ## bin/ is listed file by file: bin/ci is the CI entry point,
   ## it has no business being shipped to the people installing the gem.
+  ##
+  ## Linter configs generated per Ruby target (rubocop-<target>-<fingerprint>.yml…)
+  ## are local artefacts: Dir ignores .gitignore, so they are rejected here.
   ##============================================================##
-  spec.files          = Dir["lib/**/*", "linters/**/*"] + ["bin/immosquare-cleaner", "package.json", ".erb_linters", "LICENSE"]
+  spec.files          = Dir["lib/**/*", "linters/**/*"].grep_v(%r{\Alinters/(?:rubocop|erb-lint|js-erb-lint)-.+\.yml\z}) + ["bin/immosquare-cleaner", "package.json", ".erb_linters", "LICENSE"]
   spec.executables    = ["immosquare-cleaner"]
   spec.require_paths  = ["lib", "linters"]
 
