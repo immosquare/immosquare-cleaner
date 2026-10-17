@@ -1,6 +1,6 @@
 ---
 created_at: "2026-10-02"
-updated_at: "2026-10-02"
+updated_at: "2026-10-17"
 locale: en
 tags:
   - app:immosquare-cleaner
@@ -43,6 +43,18 @@ RuboCop formats `.rb`, `.rake`, `.gemspec`, `.ru`, `.jbuilder`, `.rabl`, `.thor`
 +
  end
 ```
+
+### Target Ruby version of the RuboCop corrections
+
+RuboCop only applies corrections that the project's Ruby understands, so immosquare-cleaner sets `TargetRubyVersion` from the project that owns each file. It walks up from the file to the project root (the first folder holding a `*.gemspec`, a `Gemfile` or a `.git`) and takes the first version it finds:
+
+| Source                                            | Example                            | Target |
+| ------------------------------------------------- | ---------------------------------- | ------ |
+| Minimum of `required_ruby_version` in the gemspec | `Gem::Requirement.new(">= 3.2.6")` | `3.2`  |
+| `.ruby-version`                                   | `ruby-4.0.7`                       | `4.0`  |
+| The Ruby running immosquare-cleaner               | `RUBY_VERSION` is `4.0.7`          | `4.0`  |
+
+The gemspec comes first because a gem must keep working on the oldest Ruby it accepts: with a 4.0 target, RuboCop rewrites `items.map { _1 * 2 }` into `items.map { it * 2 }`, which Ruby 3.2 and 3.3 reject. A `.ruby-version` in a folder above the project root is never used. A version the installed RuboCop cannot target falls back to the running Ruby, with a warning on stderr. Set `ruby_target_version` in the configuration file to force a target instead (see [Configuration file and Gemfile setup](#configuration-file-and-gemfile-setup-for-ruby-projects)).
 
 ## Custom RuboCop cops shipped with immosquare-cleaner
 
@@ -99,15 +111,17 @@ ImmosquareCleaner.config do |config|
   config.rubocop_options        = "--autocorrect-all --no-parallel"
   config.htmlbeautifier_options = "--keep-blank-lines 4"
   config.erblint_options        = "--autocorrect"
+  config.ruby_target_version    = "3.2"
 end
 ```
 
-| Setting                  | Default                            | Effect                                                                             |
-| ------------------------ | ---------------------------------- | ---------------------------------------------------------------------------------- |
-| `exclude_files`          | none                               | Paths, relative to the project root, that are never cleaned                        |
-| `rubocop_options`        | `--autocorrect-all --no-parallel`  | Replaces the RuboCop options; the configuration file stays the gem's               |
-| `htmlbeautifier_options` | `--keep-blank-lines 4`             | Replaces the htmlbeautifier options                                                |
-| `erblint_options`        | `--autocorrect`                    | Replaces the erb_lint options; without `--autocorrect`, offenses are only reported |
+| Setting                  | Default                            | Effect                                                                                          |
+| ------------------------ | ---------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `exclude_files`          | none                               | Paths, relative to the project root, that are never cleaned                                     |
+| `rubocop_options`        | `--autocorrect-all --no-parallel`  | Replaces the RuboCop options; the configuration file stays the gem's                            |
+| `htmlbeautifier_options` | `--keep-blank-lines 4`             | Replaces the htmlbeautifier options                                                             |
+| `erblint_options`        | `--autocorrect`                    | Replaces the erb_lint options; without `--autocorrect`, offenses are only reported              |
+| `ruby_target_version`    | detected per project               | Forces the RuboCop target (`"3.2"` or `"3.2.6"`); an unsupported version raises `ArgumentError` |
 
 In a Ruby project, add the gem to the development group of the `Gemfile` so that every developer runs the same version, and call it through Bundler:
 

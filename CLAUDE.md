@@ -69,8 +69,9 @@ bin/ci                                            # CI entry point (bundle + bun
 - **erb_lint symlink**: `.erb_linters -> linters/erb_lint` is required (the path is hardcoded by erb_lint).
 - **ESLint 10**: Files are copied into `tmp/` before linting, then copied back (workaround for "outside of base path"; see `eslint/eslint#19118`). Legacy plugins are adapted through the `eslint10-compat.mjs` shim.
 - **TypeScript 7**: Keep the native compiler and the lint compatibility API separate; see [TypeScript 7 compatibility](#typescript-7-compatibility) before changing either dependency.
-- **Versioned configs**: `rubocop-{VERSION}.yml`, `erb-lint-{VERSION}.yml`, and `js-erb-lint-{VERSION}.yml` are generated on the first run. Delete them to force regeneration.
-- **Ruby parser**: `parser_prism` (Ruby 3.3+) or `parser_whitequark` (earlier versions).
+- **Generated linter configs**: `rubocop-{TARGET}-{FINGERPRINT}.yml`, `erb-lint-…` and `js-erb-lint-…` are generated on demand in `linters/` (`ImmosquareCleaner.linter_config_path`). `{FINGERPRINT}` hashes the three templates, so editing a template regenerates them; writes are atomic under a mutex for parallel cleaning. They are gitignored and excluded from `spec.files`.
+- **Ruby target**: `RubyTarget.detect` (`lib/immosquare-cleaner/ruby_target.rb`) takes the gemspec `required_ruby_version` minimum, then `.ruby-version`, then `RUBY_VERSION`, stopping at the project root (`*.gemspec`, `Gemfile` or `.git`); `ruby_target_version` in the configuration overrides it. Processors pass `origin_path`, never the `/tmp` copy.
+- **Ruby parser**: `parser_prism` (target 3.3+) or `parser_whitequark` (earlier targets).
 - **Execution**: Commands run from the gem root through `system(cmd, :chdir => gem_root)` (thread-safe; no `Dir.chdir`).
 - **`bin/ci` is not packaged**: The gemspec lists `bin/` files individually (`bin/immosquare-cleaner` only). `bin/ci` is the CI entry point and does not belong in an installed gem.
 - **Coverage**: `test/coverage_helper.rb` is loaded through the Rakefile's `ruby_opts`, before the library; otherwise, files already required escape coverage measurement. It does nothing unless `COVERAGE=true`.

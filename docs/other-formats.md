@@ -1,6 +1,6 @@
 ---
 created_at: "2026-10-02"
-updated_at: "2026-10-02"
+updated_at: "2026-10-17"
 locale: en
 tags:
   - app:immosquare-cleaner
@@ -13,7 +13,7 @@ Besides its dedicated processors, immosquare-cleaner formats stylesheets, YAML, 
 
 ## Files formatted by Prettier
 
-Prettier formats every file that no dedicated processor claims. In a repository clean, only the extensions Prettier knows out of the box are sent to it: `.css`, `.scss`, `.less`, `.yml`, `.yaml`, `.vue`, `.graphql`, `.gql`, `.hbs` and `.handlebars`. A `.yml` file inside a `locales` folder is the exception: it is a translation file, formatted by immosquare-yaml (see [Ruby, ERB and YAML locales](ruby-erb.md)).
+Prettier formats every file that no dedicated processor claims. In a repository clean, only the extensions Prettier knows out of the box are sent to it: `.css`, `.scss`, `.less`, `.yml`, `.yaml`, `.vue`, `.graphql`, `.gql`, `.hbs` and `.handlebars`. A `.yml` file inside a `locales` folder is the exception: it is a translation file, formatted by immosquare-yaml (see [Ruby, ERB and YAML locales](ruby-erb.md)). A YAML file holding ERB tags (`<%`), such as Rails' `database.yml` or `cable.yml`, is a template rather than YAML and is left untouched: Prettier would read the Ruby inside the tags as YAML syntax. Files Prettier has no parser for are skipped too (`--ignore-unknown`).
 
 Prettier runs with the shared configuration [`linters/prettier.yml`](../linters/prettier.yml):
 

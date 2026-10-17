@@ -1,6 +1,6 @@
 ---
 created_at: "2023-09-28"
-updated_at: "2026-10-02"
+updated_at: "2026-10-17"
 locale: en
 tags:
   - app:immosquare-cleaner
@@ -184,17 +184,17 @@ immosquare-cleaner started as the formatter of immosquare's Rails apps and still
 
 The README covers installation and the agent hook; the `docs/` folder goes deeper, one page per topic:
 
-| Page                                      | Content                                                                                   |
-| ----------------------------------------- | ----------------------------------------------------------------------------------------- |
-| [agent-hooks.md](docs/agent-hooks.md)     | How `--hook` finds the edited files for each agent, its guarantees, troubleshooting       |
-| [repository.md](docs/repository.md)       | Cleaning a whole repository: file selection, exclusions, threads                          |
-| [javascript.md](docs/javascript.md)       | ESLint rules fixed and reported, comment normalization, known limits                      |
-| [rust-toml.md](docs/rust-toml.md)         | rustfmt edition and configuration lookup, taplo options                                   |
-| [go.md](docs/go.md)                       | `gofmt -s`, why Go keeps tabs, Go files left alone                                        |
-| [shell.md](docs/shell.md)                 | Shell files matched, shfmt options                                                        |
-| [markdown.md](docs/markdown.md)           | The four rules of the built-in Markdown formatter                                         |
-| [other-formats.md](docs/other-formats.md) | Prettier configuration for CSS, YAML, Vue, GraphQL; JSON layout; unknown files            |
-| [ruby-erb.md](docs/ruby-erb.md)           | RuboCop style and custom cops, ERB linters, Rails locales, configuration file, Gemfile    |
+| Page                                      | Content                                                                                                     |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| [agent-hooks.md](docs/agent-hooks.md)     | How `--hook` finds the edited files for each agent, its guarantees, troubleshooting                         |
+| [repository.md](docs/repository.md)       | Cleaning a whole repository: file selection, exclusions, threads                                            |
+| [javascript.md](docs/javascript.md)       | ESLint rules fixed and reported, comment normalization, known limits                                        |
+| [rust-toml.md](docs/rust-toml.md)         | rustfmt edition and configuration lookup, taplo options                                                     |
+| [go.md](docs/go.md)                       | `gofmt -s`, why Go keeps tabs, Go files left alone                                                          |
+| [shell.md](docs/shell.md)                 | Shell files matched, shfmt options                                                                          |
+| [markdown.md](docs/markdown.md)           | The four rules of the built-in Markdown formatter                                                           |
+| [other-formats.md](docs/other-formats.md) | Prettier configuration for CSS, YAML, Vue, GraphQL; JSON layout; unknown files                              |
+| [ruby-erb.md](docs/ruby-erb.md)           | RuboCop style, target Ruby version and custom cops, ERB linters, Rails locales, configuration file, Gemfile |
 
 ## 🤝 Contributing and license
 
