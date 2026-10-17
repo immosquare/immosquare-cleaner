@@ -127,6 +127,10 @@ Style/RescueModifier:
   Enabled: false # Allow inline rescue modifier (some_method rescue SomeException)
 Style/ArrayIntersect:
   Enabled: false # The cop assumes the receiver of `include?` is a collection, so `MARKERS.any? { |m| some_string.include?(m) }` (searching several markers in one string) is rewritten as `MARKERS.intersect?(some_string)`. `Array#intersect?` only takes an Array, so the corrected code raises `TypeError: no implicit conversion of String into Array` — at runtime, not on save. The correction is unsafe, hence applied by our `--autocorrect-all`. Fixed upstream in rubocop/rubocop#15439 but unreleased as of 1.88.2; re-enable once a release ships it. To match several markers in a string, use `some_string.match?(Regexp.union(*MARKERS))`.
+Style/HashSlice:
+  AutoCorrect: false # The cop assumes the receiver of `select {|key, _value| LIST.include?(key) }` is a Hash and rewrites it as `.slice(*LIST)`. On an Array of pairs (e.g. `Gem::Requirement#requirements`) the corrected code raises `TypeError: no implicit conversion of String into Integer` at runtime. The correction is unsafe, hence applied by our `--autocorrect-all`. Keep the warning, drop the rewrite.
+Style/HashExcept:
+  AutoCorrect: false # Same receiver guess as Style/HashSlice: `reject {|key, _value| LIST.include?(key) }` on an Array of pairs becomes `.except(*LIST)`, which Array does not define (NoMethodError at runtime). Keep the warning, drop the rewrite.
 Style/NestedParenthesizedCalls:
   Enabled: false # Redundant with Style/MethodCallWithArgsParentheses (require_parentheses) — both flag `outer(inner arg)`. RuboCop dedupes the inserted `(` but not the matching `)`, and erb_lint's integration ships both corrections independently → output gets an extra `)` (e.g. `j(render :partial => "x")` becomes `j(render(:partial => "x")))`, breaking the ERB at render time).
 
