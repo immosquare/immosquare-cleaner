@@ -1,3 +1,13 @@
+## [1.2.4] - 2026-10-17
+
+### Changed
+- RuboCop target follows the project of each file: the gemspec `required_ruby_version` minimum, then `.ruby-version`, then the running Ruby, without looking above the project root. A gem accepting Ruby 3.2 cleaned under Ruby 4.0 no longer gets `_1` rewritten into `it` (Ruby 3.4+). The new `ruby_target_version` setting forces a target
+- Generated linter configs are named after the target and a fingerprint of the templates, so editing a template regenerates them; they are written atomically for parallel cleaning and no longer packaged in the gem
+- ESLint bumped to 10.13
+
+### Fixed
+- RuboCop: `Style/HashSlice` and `Style/HashExcept` no longer autocorrect — on an Array of pairs, the rewrite to `slice`/`except` raised at runtime (TypeError or NoMethodError)
+
 ## [1.2.3] - 2026-10-13
 
 ### Changed
