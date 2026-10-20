@@ -1,3 +1,8 @@
+## [1.3.0] - 2026-10-19
+
+### Added
+- New RuboCop cop `CustomCops/Style/AlignRoutes`: in `config/routes.rb` and `config/routes/*.rb`, consecutive routes are aligned in columns (verb, path, target, then one column per option name, so a route without `:via` still lands its `:as` under its neighbours'). Only whitespace is corrected, gap by gap between tokens; a block whose routes impose opposite option orders is left untouched
+
 ## [1.2.4] - 2026-10-17
 
 ### Changed
