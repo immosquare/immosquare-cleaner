@@ -5,6 +5,7 @@ require:
   - rubocop/cop/custom_cops/style/align_assignments
   - rubocop/cop/custom_cops/style/inline_multiline_calls
   - rubocop/cop/custom_cops/style/kwarg_priority_order
+  - rubocop/cop/custom_cops/style/align_routes
 
 # Enable all RuboCop methods and turn caching on for large files
 AllCops:
@@ -260,6 +261,9 @@ CustomCops/Style/KwargPriorityOrder:
   PriorityKeys:
     - remote
     - method
+
+CustomCops/Style/AlignRoutes:
+  Enabled: true # Align the columns of consecutive routes in config/routes.rb and config/routes/*.rb
 
 #################### GEM ###########################
 Gemspec/RequireMFA:
