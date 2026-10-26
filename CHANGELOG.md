@@ -1,3 +1,11 @@
+## [1.3.2] - 2026-10-26
+
+### Changed
+- typescript-eslint bumped to 8.72.1
+
+### Fixed
+- RuboCop: `Style/CollectionQuerying` is disabled — its autocorrect rewrote `x.count > 0` / `x.count == 0` to `!x.empty?` / `x.empty?` on objects that have `count` but no `empty?` (a Pagy object), raising NoMethodError at render time
+
 ## [1.3.1] - 2026-10-26
 
 ### Fixed
