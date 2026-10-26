@@ -38,8 +38,6 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //============================================================//
-const hasRequire   = /require\(/
-const spaceMatcher = /(\s*)((?:\|\||&&|\?\?|\+|-|\*|\/|%|&|\^|\||<<|>>|\*\*|>>>)?=)/
 
 const assignmentOperators = ["=", "+=", "-=", "*=", "/=", "%=", "&=", "^=", "|=", "<<=", ">>=", "**=", ">>>=", "||=", "&&=", "??="]
 
@@ -100,35 +98,31 @@ const rule = {
       previousNode = groupNode
     }
 
-    const getPrefix = (node) => {
-      const nodeBefore = isAssignmentExpression(node) ? node.left : node.declarations.find((dcl) => dcl.type === "VariableDeclarator").id
-      return nodeBefore.loc.end.column - nodeBefore.loc.start.column
+    const assignmentTokenOf = (node) => {
+      const left = isAssignmentExpression(node) ? node.left : node.declarations[0]?.id
+      if (!left) return null
+      const token = sourceCode.getTokenAfter(left)
+      return token && assignmentOperators.includes(token.value) ? token : null
     }
 
-    const findAssigment = (node) => {
-      const prefix = getPrefix(node)
-      const source = sourceCode.getText(node)
-      const match  = source.slice(prefix).match(spaceMatcher)
-      return match ? match.index + prefix + match[2].length : null
+    const findAssignment = (node) => {
+      const token = assignmentTokenOf(node)
+      return token ? token.loc.end.column - sourceCode.getFirstToken(node).loc.start.column - 1 : null
     }
 
     const assignmentOnFirstLine = (node) => {
-      if (isAssignmentExpression(node)) return node.left.loc.start.line === node.right.loc.start.line
-
-      const source = sourceCode.getText(node)
-      const lines  = source.split("\n")
-      return lines[0].includes("=")
+      const token = assignmentTokenOf(node)
+      return token && !isMultiline(sourceCode.getFirstToken(node), token)
     }
 
     const areAligned = (maxPos, nodes) => nodes
       .filter(assignmentOnFirstLine)
-      .map((node) => sourceCode.getText(node))
-      .every((source) => source.charAt(maxPos) === "=")
+      .every((node) => findAssignment(node) === maxPos)
 
     const getMaxPos = (nodes) => nodes
       .filter(assignmentOnFirstLine)
-      .map(findAssigment)
-      .reduce((last, current) => Math.max(last, current), [])
+      .map(findAssignment)
+      .reduce((last, current) => Math.max(last, current), 0)
 
     const check = (group) => {
       const maxPos = getMaxPos(group)
@@ -141,27 +135,21 @@ const rule = {
           end:   getLast(group).loc.end
         },
         message: "This group of assignments is not aligned",
-        fix:     (fixer) => group.map((node) => {
-          const tokens          = sourceCode.getTokens(node)
-          const firstToken      = tokens[0]
-          const assignmentToken = tokens.find((token) => assignmentOperators.includes(token.value))
-          const line            = sourceCode.getText(node)
-          const lineIsAligned   = line.charAt(maxPos) === "="
-
-          if (lineIsAligned || !assignmentToken || isMultiline(firstToken, assignmentToken)) return fixer.replaceText(node, line)
+        fix:     (fixer) => group.flatMap((node) => {
+          const firstToken      = sourceCode.getFirstToken(node)
+          const assignmentToken = assignmentTokenOf(node)
+          if (!assignmentToken || isMultiline(firstToken, assignmentToken) || findAssignment(node) === maxPos) return []
+          const previousToken = sourceCode.getTokenBefore(assignmentToken)
+          const gap           = [previousToken.range[1], assignmentToken.range[0]]
+          if (sourceCode.commentsExistBetween(previousToken, assignmentToken)) return []
 
           //============================================================//
-          // Source line may include spaces, we need to accomodate
-          // for that.
+          // Only the spacing before the operator belongs to this rule. Replacing a declaration
+          // can cut a template processor's placeholder at an AST boundary inside that marker.
           //============================================================//
-          const spacePrefix    = firstToken.loc.start.column
-          const startDelimiter = assignmentToken.loc.start.column - spacePrefix
-          const endDelimiter   = assignmentToken.loc.end.column - spacePrefix
-          const start          = line.slice(0, startDelimiter).replace(/\s+$/m, "")
-          const ending         = line.slice(endDelimiter).replace(/^\s+/m, "")
-          const spacesRequired = maxPos - start.length - assignmentToken.value.length + 1
-          const spaces         = " ".repeat(spacesRequired)
-          return fixer.replaceText(node, `${start}${spaces}${assignmentToken.value} ${ending}`)
+          const prefixWidth    = previousToken.loc.end.column - firstToken.loc.start.column
+          const spacesRequired = maxPos - prefixWidth - assignmentToken.value.length + 1
+          return [fixer.replaceTextRange(gap, " ".repeat(spacesRequired))]
         })
       })
     }
@@ -169,7 +157,7 @@ const rule = {
     return {
       VariableDeclaration: (node) => {
         const source = sourceCode.getText(node)
-        if (requiresOnly && !hasRequire.test(source)) return
+        if (requiresOnly && !source.includes("require(")) return
 
         addNode(node, node)
       },
