@@ -1,6 +1,6 @@
 ---
 created_at: "2026-10-02"
-updated_at: "2026-10-17"
+updated_at: "2026-10-26"
 locale: en
 tags:
   - app:immosquare-cleaner
@@ -60,14 +60,15 @@ The gemspec comes first because a gem must keep working on the oldest Ruby it ac
 
 On top of the stock cops, immosquare-cleaner ships its own cops:
 
-| Cop                                         | Description                                                                        |
-| ------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `CustomCops/Style/CommentNormalization`     | Frames `##` comment blocks with borders                                            |
-| `CustomCops/Style/FontAwesomeNormalization` | Rewrites short Font Awesome prefixes to long ones (`fas` → `fa-solid`)             |
-| `CustomCops/Style/AlignAssignments`         | Aligns consecutive variable assignments (disabled by default)                      |
-| `CustomCops/Style/InlineMultilineCalls`     | Collapses multi-line calls (default: `link_to`) onto a single line                 |
-| `CustomCops/Style/KwargPriorityOrder`       | Reorders the kwargs of `link_to` so `:remote` then `:method` come first            |
-| `Style/MethodCallWithArgsParentheses`       | Allows omitting parentheses in Jbuilder blocks and `.jbuilder` files               |
+| Cop                                         | Description                                                                                                                                                        |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `CustomCops/Style/CommentNormalization`     | Frames `##` comment blocks with borders                                                                                                                            |
+| `CustomCops/Style/FontAwesomeNormalization` | Rewrites short Font Awesome prefixes to long ones (`fas` → `fa-solid`)                                                                                             |
+| `CustomCops/Style/AlignAssignments`         | Aligns consecutive variable assignments (disabled by default)                                                                                                      |
+| `CustomCops/Style/InlineMultilineCalls`     | Collapses multi-line calls (default: `link_to`) onto a single line                                                                                                 |
+| `CustomCops/Style/KwargPriorityOrder`       | Reorders the kwargs of `link_to` so `:remote` then `:method` come first                                                                                            |
+| `CustomCops/Style/AlignRoutes`              | Aligns consecutive routes in `config/routes.rb` and `config/routes/*.rb` in columns (verb, path, target, then one column per option name); only whitespace changes |
+| `Style/MethodCallWithArgsParentheses`       | Allows omitting parentheses in Jbuilder blocks and `.jbuilder` files                                                                                               |
 
 ## ERB and HTML templates: htmlbeautifier and erb_lint
 
