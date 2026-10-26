@@ -114,6 +114,8 @@ Style/OptionalBooleanParameter:
     - perform # Sidekiq and ActiveJob serialize `perform` arguments as JSON: keyword arguments are not reliably supported, and jobs already enqueued keep their positional shape.
 Style/NumericPredicate:
   EnforcedStyle: comparison # No `.zero?` `.negative?` `.positive?`
+Style/CollectionQuerying:
+  Enabled: false # Unsafe: rewrites `x.count > 0` / `x.count == 0` to `!x.empty?` / `x.empty?` without knowing `x` is a collection. A Pagy object has `count` but no `empty?`, so the page raises NoMethodError at render time, and `--autocorrect-all` applies it silently.
 Style/StringLiterals:
   EnforcedStyle: double_quotes # Double quotes everywhere (strings)
 Style/StringLiteralsInInterpolation:
