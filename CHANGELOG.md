@@ -1,3 +1,8 @@
+## [1.3.1] - 2026-10-26
+
+### Fixed
+- ESLint `align-assignments`: in `.js.erb` files, an ERB output tag ending the last assignment of an aligned group (`el.dataset.id = <%= @resource.id %>`) was replaced by a fragment of the ERB placeholder (`/* eslint-disable */{}`). The rule now locates the operator through tokens rather than regexes and only rewrites the spacing before it, so the rest of the line, ERB tags and comments included, is never touched
+
 ## [1.3.0] - 2026-10-19
 
 ### Added
