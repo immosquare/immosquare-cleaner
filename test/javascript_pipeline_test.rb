@@ -62,6 +62,29 @@ class JavascriptPipelineTest < Test::Unit::TestCase
   end
 
   ##============================================================##
+  ## eslint --fix exits with status 1 when an error it cannot fix
+  ## remains (here no-unused-vars). The autofixes it applied must
+  ## still be written back to the original file.
+  ##============================================================##
+  def test_js_pipeline_writes_fixes_when_unfixable_errors_remain
+    content = clean("unfixable.js", <<~JS)
+      const unused = 1;
+      const x = 1;
+      const yy = 2;
+      console.log(x, yy)
+    JS
+
+    expected = <<~JS
+      const unused = 1
+      const x      = 1
+      const yy     = 2
+      console.log(x, yy)
+    JS
+
+    assert_equal(expected, content)
+  end
+
+  ##============================================================##
   ## .ts — the @typescript-eslint parser must accept the type
   ## annotations; types are preserved and semicolons stripped.
   ##============================================================##
