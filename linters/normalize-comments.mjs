@@ -15,11 +15,11 @@ const normalizeComments = (filePath) => {
   const lines = code.split("\n")
 
   //============================================================//
-  // Parse the code with babel to get comment positions
+  // Plain TypeScript keeps JSX off so generic arrows are not parsed as opening tags.
   //============================================================//
   const ast = babelParser.parse(code, {
     sourceType: "module",
-    plugins:    ["typescript", "jsx"]
+    plugins:    filePath.toLowerCase().endsWith(".ts") ? ["typescript"] : ["typescript", "jsx"]
   })
 
   //============================================================//
