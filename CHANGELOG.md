@@ -1,3 +1,11 @@
+## [1.3.3] - 2026-11-11
+
+### Changed
+- ESLint bumped to 10.14, typescript-eslint to 8.72.2, Prettier to 3.10
+
+### Fixed
+- JS comment normalization: plain `.ts` files are parsed without JSX, so a generic arrow function (`const id = <T>(x: T) => x`) is no longer read as an opening tag, which made parsing fail
+
 ## [1.3.2] - 2026-10-26
 
 ### Changed
